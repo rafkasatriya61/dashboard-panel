@@ -58,7 +58,7 @@
         input.info-value { border-bottom: 1px solid var(--border); padding-bottom: 2px; }
         input.info-value:focus { border-bottom-color: var(--net); }
 
-        .feature-section { background: var(--input-bg); padding: 20px; border-radius: 12px; border: 1px solid #162445; }
+        .feature-section { background: var(--input-bg); padding: 20px; border-radius: 12px; border: 1px solid #162445; position: relative;}
         .feature-title { font-size: 12px; color: var(--net); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
         .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .feature-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; }
@@ -94,7 +94,7 @@
         <a href="groups.html" class="active">👥 Manajemen Grup & Sewa</a>
         <a href="users.html">👤 User, Limit & Premium</a>
         <a href="settings.html">⚙️ Pengaturan Fitur Bot</a>
-        <a onclick="logout()" style="color:var(--danger); margin-top:30px; border-top: 1px solid var(--border); padding-top: 15px; cursor: pointer;">🔒 Logout Admin</a>
+        <a id="auth-btn" style="color:var(--success); margin-top:30px; border-top: 1px solid var(--border); padding-top: 15px; cursor: pointer; display: block; font-weight: bold;">🔒 Loading...</a>
     </div>
 </div>
 
@@ -129,15 +129,18 @@
 </div>
 
 <script>
-    // 🛡️ KEAMANAN: CEK LOGIN
-    if (localStorage.getItem('rafkavl_token') !== 'AUTH_VALID_2026') {
-        window.location.href = "login.html";
-    }
+    // CEK STATUS LOGIN (Tidak Ada Redirect Paksa)
+    const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
+    const authBtn = document.getElementById('auth-btn');
 
-    // FUNGSI LOGOUT
-    function logout() {
-        localStorage.removeItem('rafkavl_token');
-        window.location.href = "login.html";
+    if (isAdmin) {
+        authBtn.innerHTML = '🔓 Logout Admin';
+        authBtn.style.color = 'var(--danger)';
+        authBtn.onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
+    } else {
+        authBtn.innerHTML = '🔒 Login Admin';
+        authBtn.style.color = 'var(--success)';
+        authBtn.onclick = () => { window.location.href = 'login.html'; };
     }
 
     let cachedData = [];
@@ -164,7 +167,7 @@
     }
 
     async function loadData() {
-        if (expandedRows.size > 0) {
+        if (expandedRows.size > 0 && isAdmin) {
             document.getElementById('sync-status').innerText = "SYNC PAUSED (EDITING)";
             document.getElementById('sync-status').style.color = "var(--warn)";
             return;
@@ -213,7 +216,7 @@
                                         <div class="info-grid">
                                             <div class="info-box full">
                                                 <div class="info-label">NAMA GRUP</div>
-                                                <input type="text" class="info-value" value="${g.name}" id="edit-name-${index}">
+                                                ${isAdmin ? `<input type="text" class="info-value" value="${g.name}" id="edit-name-${index}">` : `<div class="info-value">${g.name}</div>`}
                                             </div>
                                             <div class="info-box">
                                                 <div class="info-label">SISA HARI</div>
@@ -233,10 +236,12 @@
                                             </div>
                                         </div>
 
+                                        ${isAdmin ? `
                                         <div class="admin-actions">
                                             <button class="btn-save" onclick="saveEdit(${index}, '${g.id}')"><i class="fas fa-save"></i> Simpan Nama</button>
                                             <button class="btn-leave" onclick="leaveGroup('${g.id}')"><i class="fas fa-sign-out-alt"></i> Keluar Grup</button>
                                         </div>
+                                        ` : ''}
                                     </div>
 
                                     <div class="feature-section">
@@ -251,6 +256,7 @@
                                             ${createSwitch(g.id, 'Anti Delete', 'antidelete', s.antidelete)}
                                             ${createSwitch(g.id, 'Notif Gempa', 'notifgempa', s.notifgempa)}
                                         </div>
+                                        ${!isAdmin ? `<div style="position: absolute; bottom: 10px; right: 20px; font-size: 10px; color: var(--danger); font-style: italic;">*Login Admin untuk mengubah fitur</div>` : ''}
                                     </div>
                                 </div>
                             </td>
@@ -268,8 +274,9 @@
             <div class="feature-item">
                 <span class="feature-name">${label}</span>
                 <label class="switch">
-                    <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="sendToggleCommand('${groupId}', '${featureKey}', this.checked)">
-                    <span class="slider"></span>
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} 
+                    ${isAdmin ? `onchange="sendToggleCommand('${groupId}', '${featureKey}', this.checked)"` : 'disabled'}>
+                    <span class="slider" style="${isAdmin ? '' : 'cursor: not-allowed; opacity: 0.6;'}"></span>
                 </label>
             </div>
         `;
