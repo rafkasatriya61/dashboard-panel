@@ -172,18 +172,52 @@
     const updRing = (id, pct) => { const e = document.getElementById(id); if(e) e.style.strokeDashoffset = 314 - (pct/100)*314; };
     const updBar = (id, pct) => { const e = document.getElementById(id); if(e) e.style.width = pct + '%'; };
 
+    // 🔥 SISTEM RADAR ANTI-STUCK 🔥
+    let lastPingRecord = 0;
+    let stuckCounter = 0;
+
     const fetchStatus = async () => {
         try {
-            const res = await fetch('/api/antena');
+            // Tambah parameter ?t= biar browser ga nge-cache file Vercel
+            const res = await fetch('/api/antena?t=' + Date.now());
             const data = await res.json();
             
-            if (data.status === 'offline') {
-                document.getElementById('offline-alert').style.display = 'block';
-                return;
+            // Cek apakah bot ngirim data baru?
+            if (data.last_ping) {
+                if (data.last_ping === lastPingRecord) {
+                    stuckCounter++; // Datanya macet! Tambah hitungan.
+                } else {
+                    lastPingRecord = data.last_ping;
+                    stuckCounter = 0; // Lancar, reset hitungan.
+                }
             }
+
+            // 🚨 JIKA STATUS OFFLINE ATAU MACET LEBIH DARI 3X (9 Detik) 🚨
+            if (data.status === 'offline' || stuckCounter >= 3) {
+                document.getElementById('offline-alert').style.display = 'block';
+                
+                // Matikan semua angka & grafik ke 0!
+                if(document.getElementById('val-latency')) {
+                    document.getElementById('val-latency').innerText = '0ms';
+                    document.getElementById('val-latency').style.color = '#ff4455';
+                    document.getElementById('val-latency').style.textShadow = '0 0 15px #ff4455';
+                }
+
+                ['pct-cpu', 'pct-ram', 'pct-disk'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).innerText = '0%'; });
+                ['ring-cpu', 'ring-ram', 'ring-disk'].forEach(id => updRing(id, 0));
+                
+                ['bar-cpu', 'bar-ram', 'bar-disk', 'bar-lat'].forEach(id => updBar(id, 0));
+                ['bar-txt-cpu', 'bar-txt-ram', 'bar-txt-disk'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).innerText = '0%'; });
+                if(document.getElementById('bar-txt-lat')) document.getElementById('bar-txt-lat').innerText = '0ms';
+
+                ['info-bup', 'info-sup', 'net-rx', 'net-tx'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).innerText = '-'; });
+
+                return; // Berhenti ngejalanin kode di bawah
+            }
+
+            // --- JIKA ONLINE, JALANKAN NORMAL ---
             document.getElementById('offline-alert').style.display = 'none';
 
-            // PENCEGAH UNDEFINED MS
             let ping = data.latency || Math.floor(Math.random() * 50) + 10;
             let latPct = Math.min(100, (ping / 1000) * 100);
             
@@ -194,32 +228,23 @@
                 latEl.style.textShadow = '0 0 15px ' + latEl.style.color;
             }
 
-            let cpu = data.system?.cpu || 0;
-            let ram = data.system?.ram_percent || 0;
-            let disk = data.system?.disk_percent || 0;
-            let uptimeBot = data.system?.uptime || 0;
+            let cpu = data.system?.cpu || 0; let ram = data.system?.ram_percent || 0; let disk = data.system?.disk_percent || 0; let uptimeBot = data.system?.uptime || 0;
 
-            // LINGKARAN ATAS
             if(document.getElementById('pct-cpu')) document.getElementById('pct-cpu').innerText = cpu + '%';
             if(document.getElementById('pct-ram')) document.getElementById('pct-ram').innerText = ram + '%';
             if(document.getElementById('pct-disk')) document.getElementById('pct-disk').innerText = disk + '%';
-            updRing('ring-cpu', cpu);
-            updRing('ring-ram', ram);
-            updRing('ring-disk', disk);
+            updRing('ring-cpu', cpu); updRing('ring-ram', ram); updRing('ring-disk', disk);
 
-            // GRAFIK BAR BAWAH
             updBar('bar-cpu', cpu); if(document.getElementById('bar-txt-cpu')) document.getElementById('bar-txt-cpu').innerText = cpu + '%';
             updBar('bar-ram', ram); if(document.getElementById('bar-txt-ram')) document.getElementById('bar-txt-ram').innerText = ram + '%';
             updBar('bar-disk', disk); if(document.getElementById('bar-txt-disk')) document.getElementById('bar-txt-disk').innerText = disk + '%';
             updBar('bar-lat', latPct); if(document.getElementById('bar-txt-lat')) document.getElementById('bar-txt-lat').innerText = ping + 'ms';
 
-            // NETWORK & UPTIME
             if(document.getElementById('net-rx')) document.getElementById('net-rx').innerText = data.system?.net_rx || "0 MB";
             if(document.getElementById('net-tx')) document.getElementById('net-tx').innerText = data.system?.net_tx || "0 MB";
             if(document.getElementById('info-bup')) document.getElementById('info-bup').innerText = formatUp(uptimeBot);
             if(document.getElementById('info-sup')) document.getElementById('info-sup').innerText = formatUp(uptimeBot);
 
-            // SPESIFIKASI OS DAN NODE
             if(data.system) {
                 if(document.getElementById('info-host')) document.getElementById('info-host').innerText = data.system.hostname || "Server";
                 if(document.getElementById('info-os')) document.getElementById('info-os').innerText = (data.system.platform || "Linux").toUpperCase();
