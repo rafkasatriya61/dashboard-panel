@@ -1,1 +1,10 @@
+{
+  "name": "jagoan-dashboard",
+  "version": "1.0.0",
+  "description": "Dashboard Monitoring Jagoan Project",
+  "scripts": {},
+  "dependencies": {
+    "@vercel/kv": "^1.0.0"
+  }
+}
 
