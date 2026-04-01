@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - RafkaVL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; 
+            --net: #00cfff; --success: #00e676; --danger: #ff4455; 
+            --text-sub: #8ab0d8; --text-main: #ffffff;
+            --input-bg: #0a1020;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-dark); 
+            background-image: radial-gradient(circle at 50% 30%, rgba(0, 207, 255, 0.15) 0%, rgba(6, 12, 28, 1) 70%);
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card {
+            background: linear-gradient(145deg, var(--card-bg) 0%, #0a1329 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 20px rgba(0, 207, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--net), transparent);
+        }
+
+        .logo-area { text-align: center; margin-bottom: 30px; }
+        .logo-area i { font-size: 40px; color: var(--net); margin-bottom: 10px; text-shadow: 0 0 15px var(--net); }
+        .logo-area h1 { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+        .logo-area p { font-size: 12px; color: var(--text-sub); margin-top: 5px; }
+
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-sub); font-size: 14px; }
+        .input-field {
+            width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: #fff;
+            padding: 14px 15px 14px 45px; border-radius: 10px; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        .input-field:focus { border-color: var(--net); box-shadow: 0 0 10px rgba(0, 207, 255, 0.2); }
+        .input-field::placeholder { color: #4a628a; }
+
+        .btn-login {
+            width: 100%; background: var(--net); color: #000; border: none; padding: 14px;
+            border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s;
+            text-transform: uppercase; letter-spacing: 1px; margin-top: 10px;
+        }
+        .btn-login:hover { background: #00b3e6; box-shadow: 0 0 15px var(--net); transform: translateY(-2px); }
+
+        .error-msg {
+            color: var(--danger); font-size: 12px; text-align: center; margin-top: 15px; display: none;
+            font-weight: 600; background: rgba(255, 68, 85, 0.1); padding: 8px; border-radius: 6px; border: 1px solid var(--danger);
+        }
+
+        .footer-text { text-align: center; font-size: 11px; color: var(--text-sub); margin-top: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="logo-area">
+            <i class="fas fa-shield-alt"></i>
+            <h1>RafkaVL Panel</h1>
+            <p>Sign in to access Bot Dashboard</p>
+        </div>
+
+        <form id="loginForm" onsubmit="processLogin(event)">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" class="input-field" placeholder="Username" required autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" class="input-field" placeholder="Password" required>
+            </div>
+
+            <button type="submit" class="btn-login" id="btn-submit">
+                <i class="fas fa-sign-in-alt" style="margin-right: 5px;"></i> Login
+            </button>
+
+            <div id="error-alert" class="error-msg">
+                <i class="fas fa-exclamation-triangle"></i> Autentikasi Gagal!
+            </div>
+        </form>
+
+        <div class="footer-text">
+            &copy; 2026 RafkaVL Botzz. All rights reserved.
+        </div>
+    </div>
+</div>
+
+<script>
+    // DATA TERENKRIPSI (BASE64)
+    const ENC_USER = "UmFma2FWTF9Pd25lcg=="; 
+    const ENC_PASS = "Q2ludGFrdV9saWx5eXlfYWZuaWlp"; 
+
+    function processLogin(event) {
+        event.preventDefault(); 
+        
+        const userStr = document.getElementById('username').value;
+        const passStr = document.getElementById('password').value;
+        const btn = document.getElementById('btn-submit');
+        const errorAlert = document.getElementById('error-alert');
+
+        // Enkripsi inputan yang diketik untuk dicocokkan dengan data rahasia
+        const inputUser = btoa(userStr);
+        const inputPass = btoa(passStr);
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+        btn.style.opacity = "0.8";
+        errorAlert.style.display = "none";
+
+        setTimeout(() => {
+            if (inputUser === ENC_USER && inputPass === ENC_PASS) {
+                btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                btn.style.background = "var(--success)";
+                btn.style.boxShadow = "0 0 15px var(--success)";
+                
+                // Set tiket masuk (Token Sesi)
+                localStorage.setItem('rafkavl_token', 'AUTH_VALID_2026');
+                
+                setTimeout(() => {
+                    window.location.href = "index.html"; // Lempar ke Dashboard
+                }, 1000);
+
+            } else {
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                btn.style.opacity = "1";
+                errorAlert.style.display = "block";
+            }
+        }, 1200);
+    }
+</script>
+</body>
+  </html>
