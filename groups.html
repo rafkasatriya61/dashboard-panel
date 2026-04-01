@@ -7,50 +7,73 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; --net: #00cfff; --success: #00e676; --danger: #ff4455; --text-sub: #8ab0d8; --modal-bg: #091024; --input-bg: #0c152d; }
+        :root { 
+            --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; 
+            --net: #00cfff; --success: #00e676; --danger: #ff4455; 
+            --text-sub: #8ab0d8; --text-main: #ffffff; --warn: #ffcc00;
+            --modal-bg: #0b132b; --input-bg: #121f40;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-dark); color: #fff; padding: 20px; overflow-x: hidden; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; overflow-x: hidden; }
         
+        /* SIDEBAR (MENU KIRI) */
         #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #0a1020; border-right: 1px solid var(--border); z-index: 1000; transition: 0.3s; padding: 20px; }
         #sidebar.active { left: 0; }
-        .sidebar-links a { display: block; padding: 12px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; }
+        .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
         .sidebar-links a:hover, .sidebar-links a.active { background: rgba(0, 207, 255, 0.1); color: var(--net); }
 
+        /* HEADER & CONTAINER */
         .container { max-width: 1400px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 12px; border-bottom: 1px solid var(--border); }
-        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        .header h1 { font-size: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
+        .header h1 span.icon { color: var(--net); }
+        .menu-btn { cursor: pointer; font-size: 22px; margin-right: 10px; transition: 0.2s; }
+        .menu-btn:hover { color: var(--net); }
 
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .badge-active { background: rgba(0, 230, 118, 0.1); color: var(--success); border: 1px solid var(--success); }
-        .badge-banned { background: rgba(255, 68, 85, 0.1); color: var(--danger); border: 1px solid var(--danger); }
-        .btn-detail { background: rgba(0, 207, 255, 0.1); color: var(--net); border: 1px solid var(--net); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 12px; }
-        .btn-detail:hover { background: var(--net); color: #000; }
+        /* TABEL STYLE (MIRIP JAGPRO) */
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); letter-spacing: 0.5px; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; font-weight: 600; vertical-align: middle; }
+        
+        /* WARNA TEXT TABEL */
+        .grup-name { color: var(--net); font-weight: 700; }
+        .grup-id { color: var(--text-sub); font-family: monospace; font-size: 12px; font-weight: 400; }
+        .sewa-hari { color: var(--warn); font-weight: 700; }
+        
+        /* BADGE OUTLINE */
+        .badge { padding: 4px 12px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; background: transparent; }
+        .badge-aktif { color: var(--success); border: 1px solid var(--success); }
+        .badge-banned { color: var(--danger); border: 1px solid var(--danger); }
+        
+        /* BUTTON OUTLINE */
+        .btn-detail { background: transparent; color: var(--text-sub); border: 1px solid var(--border); padding: 5px 15px; border-radius: 4px; cursor: pointer; transition: 0.3s; font-size: 11px; font-weight: 600; }
+        .btn-detail:hover { border-color: var(--net); color: var(--net); }
 
-        /* MODAL ALA JAGOAN PROJECT */
-        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; backdrop-filter: blur(4px); }
-        .modal-box { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 480px; background: var(--modal-bg); border-radius: 16px; z-index: 2001; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #1a2a4c; }
+        /* MODAL POP-UP (PERSIS SCREENSHOT MAS RAFKA) */
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; backdrop-filter: blur(3px); }
+        .modal-box { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 450px; background: var(--modal-bg); border-radius: 12px; z-index: 2001; padding: 25px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
         
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h3 { font-size: 14px; color: #fff; font-weight: 600; }
-        .close-btn { background: #162445; color: #fff; border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .close-btn:hover { background: #ff4455; }
+        .modal-header h3 { font-size: 14px; font-weight: 700; }
+        .close-btn { background: #162445; color: #fff; border: none; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .close-btn:hover { background: var(--danger); }
 
-        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .info-box { background: var(--input-bg); padding: 12px 15px; border-radius: 10px; border: 1px solid #162445; display: flex; flex-direction: column; justify-content: center;}
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .info-box { background: var(--input-bg); padding: 12px 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; border: 1px solid transparent; }
         .info-box.full { grid-column: span 2; }
+        .info-label { font-size: 9px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px; }
+        .info-value { font-size: 13px; color: #fff; font-weight: 700; border: none; background: transparent; width: 100%; outline: none; }
+        input.info-value { border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+        input.info-value:focus { border-bottom-color: var(--net); }
         
-        .info-label { font-size: 10px; color: var(--text-sub); text-transform: uppercase; font-weight: 600; margin-bottom: 5px; letter-spacing: 0.5px; }
-        .info-value { font-size: 14px; color: #fff; font-weight: 700; border: none; background: transparent; width: 100%; outline: none; }
-        
-        /* Tombol Admin */
         .admin-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; grid-column: span 2; }
-        .btn-save { background: var(--net); color: #000; padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .btn-leave { background: rgba(255,68,85,0.1); color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .btn-save { background: var(--net); color: #000; padding: 10px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .btn-save:hover { box-shadow: 0 0 10px var(--net); }
+        .btn-leave { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px; transition: 0.2s; }
+        .btn-leave:hover { background: rgba(255, 68, 85, 0.1); }
 
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
     </style>
 </head>
 <body>
@@ -60,7 +83,7 @@
 
 <div id="modal-box" class="modal-box">
     <div class="modal-header">
-        <h3 id="modal-title">Detail User: -</h3>
+        <h3 id="modal-title">Detail Grup: -</h3>
         <button class="close-btn" onclick="closeModal()">×</button>
     </div>
     <div class="modal-grid" id="modal-content">
@@ -68,18 +91,29 @@
 </div>
 
 <div id="sidebar">
-    <h2 style="color:var(--net); margin-bottom:30px;">👑 RafkaVL Menu</h2>
+    <h2 style="color:var(--net); margin-bottom:30px; font-size: 18px; display: flex; justify-content: space-between;">
+        <span>👑 RafkaVL Menu</span>
+        <span onclick="toggleSidebar()" style="cursor:pointer; color:#fff;">×</span>
+    </h2>
     <div class="sidebar-links">
         <a href="index.html">📊 Dashboard</a>
         <a href="groups.html" class="active">👥 Groups Database</a>
         <a href="users.html">👤 Users & Limit</a>
         <a href="settings.html">⚙️ Settings</a>
+        <a href="login.html" style="color:var(--danger); margin-top:30px; border-top: 1px solid var(--border); padding-top: 15px;">🔒 Logout</a>
     </div>
 </div>
 
 <div class="container">
     <div class="header">
-        <h1 style="font-size: 24px;"><span onclick="toggleSidebar()" style="cursor:pointer; margin-right:15px;">☰</span> <span style="color:var(--net);">◆</span> GROUP MANAGEMENT</h1>
+        <h1>
+            <span class="menu-btn" onclick="toggleSidebar()">☰</span> 
+            <span class="icon">◆</span> GROUP MANAGEMENT
+        </h1>
+        <div style="text-align: right;">
+            <div id="count-gc" style="font-size: 20px; font-weight: 700; color: var(--net);">0</div>
+            <div style="font-size: 9px; color: var(--text-sub); letter-spacing: 1px;">TOTAL GROUPS</div>
+        </div>
     </div>
 
     <div class="card">
@@ -94,7 +128,7 @@
                 </tr>
             </thead>
             <tbody id="list-gc">
-                <tr><td colspan="5" style="text-align:center; padding:50px;">Menghubungkan ke Bot Rafka...</td></tr>
+                <tr><td colspan="5" style="text-align:center; padding:40px; color: var(--text-sub);">Menarik data dari database bot...</td></tr>
             </tbody>
         </table>
     </div>
@@ -102,7 +136,7 @@
 
 <script>
     let cachedData = [];
-    let isAdmin = true; // Set true untuk memunculkan input edit
+    let isAdmin = true; // Set true jika login sebagai admin
 
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
@@ -118,19 +152,23 @@
         try {
             const res = await fetch('/api/antena');
             const data = await res.json();
+            
             if (data.database && data.database.chats) {
                 cachedData = data.database.chats;
                 const tbody = document.getElementById('list-gc');
                 tbody.innerHTML = '';
+                document.getElementById('count-gc').innerText = cachedData.length;
                 
                 cachedData.forEach((g, index) => {
-                    const statusClass = g.status.toUpperCase() === 'AKTIF' ? 'badge-active' : 'badge-banned';
+                    const statusClass = g.status.toUpperCase() === 'AKTIF' ? 'badge-aktif' : 'badge-banned';
+                    const sewaColor = (g.sisa_sewa === 'NOT SET' || g.sisa_sewa === 'EXPIRED') ? 'var(--danger)' : 'var(--warn)';
+
                     tbody.innerHTML += `
                         <tr>
-                            <td><b style="color:var(--net)">${g.name}</b></td>
-                            <td style="font-family:monospace; font-size:12px; color:var(--text-sub);">${g.id}</td>
+                            <td class="grup-name">${g.name}</td>
+                            <td class="grup-id">${g.full_id}</td>
                             <td><span class="badge ${statusClass}">${g.status}</span></td>
-                            <td style="color:#ffcc00; font-weight:bold;">${g.sisa_sewa}</td>
+                            <td class="sewa-hari" style="color: ${sewaColor};">${g.sisa_sewa}</td>
                             <td><button class="btn-detail" onclick="showDetail(${index})">Detail</button></td>
                         </tr>
                     `;
@@ -169,24 +207,24 @@
 
             <div class="info-box">
                 <div class="info-label">CHAT HARI INI</div>
-                <div class="info-value" style="color: var(--net);">${g.chat_today} Pesan</div>
+                <div class="info-value" style="color: var(--net);">${g.chat_today}</div>
             </div>
             <div class="info-box">
                 <div class="info-label">TOTAL CHAT</div>
-                <div class="info-value" style="color: var(--net);">${g.chat_all} Pesan</div>
+                <div class="info-value" style="color: var(--net);">${g.chat_all}</div>
             </div>
             
-            <div class="info-box full">
+            <div class="info-box full" style="background: transparent; border: 1px solid var(--border);">
                 <div class="info-label">STATUS (Badge)</div>
-                <div><span class="badge ${g.status.toUpperCase() === 'AKTIF' ? 'badge-active' : 'badge-banned'}">${g.status}</span></div>
+                <div><span class="badge ${g.status.toUpperCase() === 'AKTIF' ? 'badge-aktif' : 'badge-banned'}">${g.status}</span></div>
             </div>
         `;
 
         if(isAdmin) {
             content += `
                 <div class="admin-actions">
-                    <button class="btn-save" onclick="saveEdit('${g.id}')">Simpan Perubahan</button>
-                    <button class="btn-leave" onclick="leaveGroup('${g.id}')">Keluarkan Bot</button>
+                    <button class="btn-save" onclick="alert('Fitur simpan nama grup sedang dikembangkan!')">SIMPAN</button>
+                    <button class="btn-leave" onclick="if(confirm('Keluarkan bot dari grup ini?')) alert('Perintah dikirim!')">KELUARKAN BOT</button>
                 </div>
             `;
         }
@@ -196,11 +234,10 @@
         document.getElementById('modal-overlay').style.display = 'block';
     }
 
-    function saveEdit(id) { alert("Fitur edit grup ID " + id + " akan dikirim ke Bot."); }
-    function leaveGroup(id) { if(confirm("Keluarkan bot dari grup ini?")) alert("Perintah dikirim!"); }
-
+    // Auto-refresh data tiap 5 detik
     loadData();
     setInterval(loadData, 5000); 
 </script>
 </body>
 </html>
+
