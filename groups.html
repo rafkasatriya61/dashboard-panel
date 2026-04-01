@@ -7,17 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; --net: #00cfff; --success: #00e676; --danger: #ff4455; --text-sub: #8ab0d8; }
+        :root { --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; --net: #00cfff; --success: #00e676; --danger: #ff4455; --text-sub: #8ab0d8; --modal-bg: #091024; --input-bg: #0c152d; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-dark); color: #fff; padding: 20px; overflow-x: hidden; }
         
-        /* SIDEBAR */
         #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #0a1020; border-right: 1px solid var(--border); z-index: 1000; transition: 0.3s; padding: 20px; }
         #sidebar.active { left: 0; }
         .sidebar-links a { display: block; padding: 12px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; }
         .sidebar-links a:hover, .sidebar-links a.active { background: rgba(0, 207, 255, 0.1); color: var(--net); }
 
-        /* CONTENT */
         .container { max-width: 1400px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; overflow-x: auto; }
@@ -28,23 +26,29 @@
         .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .badge-active { background: rgba(0, 230, 118, 0.1); color: var(--success); border: 1px solid var(--success); }
         .badge-banned { background: rgba(255, 68, 85, 0.1); color: var(--danger); border: 1px solid var(--danger); }
-        
-        .btn-detail { background: rgba(0, 207, 255, 0.1); color: var(--net); border: 1px solid var(--net); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        .btn-detail { background: rgba(0, 207, 255, 0.1); color: var(--net); border: 1px solid var(--net); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 12px; }
         .btn-detail:hover { background: var(--net); color: #000; }
 
-        /* MODAL DETAIL (POKOK PERSIS SS) */
-        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; backdrop-filter: blur(5px); }
-        .modal-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 500px; background: #0e1830; border: 1px solid var(--border); border-radius: 20px; z-index: 2001; padding: 25px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1e3060; padding-bottom: 15px; }
-        .modal-body { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .info-item { background: #0a1329; border: 1px solid #1a2e50; padding: 12px; border-radius: 12px; }
-        .info-item label { font-size: 10px; color: var(--text-sub); text-transform: uppercase; display: block; margin-bottom: 4px; }
-        .info-item span, .info-item input { font-size: 14px; font-weight: bold; color: #fff; background: transparent; border: none; width: 100%; outline: none; }
-        .full-width { grid-column: span 2; }
+        /* MODAL ALA JAGOAN PROJECT */
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; backdrop-filter: blur(4px); }
+        .modal-box { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 480px; background: var(--modal-bg); border-radius: 16px; z-index: 2001; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #1a2a4c; }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-size: 14px; color: #fff; font-weight: 600; }
+        .close-btn { background: #162445; color: #fff; border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .close-btn:hover { background: #ff4455; }
 
-        .btn-save { grid-column: span 2; background: var(--net); color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn-save:hover { box-shadow: 0 0 15px var(--net); }
-        .btn-leave { grid-column: span 2; background: rgba(255, 68, 85, 0.1); color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .info-box { background: var(--input-bg); padding: 12px 15px; border-radius: 10px; border: 1px solid #162445; display: flex; flex-direction: column; justify-content: center;}
+        .info-box.full { grid-column: span 2; }
+        
+        .info-label { font-size: 10px; color: var(--text-sub); text-transform: uppercase; font-weight: 600; margin-bottom: 5px; letter-spacing: 0.5px; }
+        .info-value { font-size: 14px; color: #fff; font-weight: 700; border: none; background: transparent; width: 100%; outline: none; }
+        
+        /* Tombol Admin */
+        .admin-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; grid-column: span 2; }
+        .btn-save { background: var(--net); color: #000; padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .btn-leave { background: rgba(255,68,85,0.1); color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
     </style>
@@ -54,12 +58,12 @@
 <div id="overlay" onclick="toggleSidebar()"></div>
 <div id="modal-overlay" onclick="closeModal()"></div>
 
-<div id="modal-box" class="modal-box" style="display: none;">
+<div id="modal-box" class="modal-box">
     <div class="modal-header">
-        <h3 id="modal-title">Detail Grup</h3>
-        <span onclick="closeModal()" style="cursor:pointer; color:var(--text-sub);">&times;</span>
+        <h3 id="modal-title">Detail User: -</h3>
+        <button class="close-btn" onclick="closeModal()">×</button>
     </div>
-    <div class="modal-body" id="modal-content">
+    <div class="modal-grid" id="modal-content">
         </div>
 </div>
 
@@ -70,17 +74,12 @@
         <a href="groups.html" class="active">👥 Groups Database</a>
         <a href="users.html">👤 Users & Limit</a>
         <a href="settings.html">⚙️ Settings</a>
-        <a href="login.html" style="color:var(--danger); margin-top:30px;">🔒 Logout</a>
     </div>
 </div>
 
 <div class="container">
     <div class="header">
-        <h1><span onclick="toggleSidebar()" style="cursor:pointer;">☰</span> <span>◆</span> GROUP MANAGEMENT</h1>
-        <div style="text-align:right;">
-            <div id="count-gc" style="font-size:24px; font-weight:bold; color:var(--net);">0</div>
-            <p style="font-size:10px; color:var(--text-sub);">GROUPS CONNECTED</p>
-        </div>
+        <h1 style="font-size: 24px;"><span onclick="toggleSidebar()" style="cursor:pointer; margin-right:15px;">☰</span> <span style="color:var(--net);">◆</span> GROUP MANAGEMENT</h1>
     </div>
 
     <div class="card">
@@ -89,21 +88,21 @@
                 <tr>
                     <th>Grup Name</th>
                     <th>ID WhatsApp</th>
-                    <th>Members</th>
                     <th>Status</th>
                     <th>Masa Sewa</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody id="list-gc">
-                </tbody>
+                <tr><td colspan="5" style="text-align:center; padding:50px;">Menghubungkan ke Bot Rafka...</td></tr>
+            </tbody>
         </table>
     </div>
 </div>
 
 <script>
     let cachedData = [];
-    let isAdmin = true; // Anggap saja Mas Rafka admin (Nanti hubungkan ke login)
+    let isAdmin = true; // Set true untuk memunculkan input edit
 
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
@@ -123,15 +122,13 @@
                 cachedData = data.database.chats;
                 const tbody = document.getElementById('list-gc');
                 tbody.innerHTML = '';
-                document.getElementById('count-gc').innerText = cachedData.length;
                 
                 cachedData.forEach((g, index) => {
-                    const statusClass = g.status === 'ACTIVE' ? 'badge-active' : 'badge-banned';
+                    const statusClass = g.status.toUpperCase() === 'AKTIF' ? 'badge-active' : 'badge-banned';
                     tbody.innerHTML += `
                         <tr>
                             <td><b style="color:var(--net)">${g.name}</b></td>
                             <td style="font-family:monospace; font-size:12px; color:var(--text-sub);">${g.id}</td>
-                            <td>${g.member} User</td>
                             <td><span class="badge ${statusClass}">${g.status}</span></td>
                             <td style="color:#ffcc00; font-weight:bold;">${g.sisa_sewa}</td>
                             <td><button class="btn-detail" onclick="showDetail(${index})">Detail</button></td>
@@ -147,23 +144,50 @@
         document.getElementById('modal-title').innerText = "Detail Grup: " + g.name;
         
         let content = `
-            <div class="info-item full-width"><label>NAMA</label>
-                ${isAdmin ? `<input type="text" value="${g.name}" id="edit-name">` : `<span>${g.name}</span>`}
+            <div class="info-box full">
+                <div class="info-label">NAMA</div>
+                ${isAdmin ? `<input type="text" class="info-value" value="${g.name}" id="edit-name">` : `<div class="info-value">${g.name}</div>`}
             </div>
-            <div class="info-item"><label>STATUS</label><span>${g.status}</span></div>
-            <div class="info-item"><label>SISA HARI</label><span>${g.sisa_sewa}</span></div>
-            <div class="info-item"><label>TANGGAL GABUNG</label><span>${g.last_activity || '-'}</span></div>
-            <div class="info-item"><label>ID WHATSAPP</label><span style="font-size:10px;">${g.id}</span></div>
             
-            <div class="info-item full-width"><label>STATUS (Badge)</label>
-                <span class="badge ${g.status === 'ACTIVE' ? 'badge-active' : 'badge-banned'}">${g.status}</span>
+            <div class="info-box">
+                <div class="info-label">STATUS</div>
+                <div class="info-value">${g.status}</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">SISA HARI</div>
+                <div class="info-value">${g.sisa_angka}</div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-label">TANGGAL GABUNG</div>
+                <div class="info-value">${g.tgl_join}</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">EXPIRED</div>
+                <div class="info-value">${g.tgl_exp}</div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-label">CHAT HARI INI</div>
+                <div class="info-value" style="color: var(--net);">${g.chat_today} Pesan</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">TOTAL CHAT</div>
+                <div class="info-value" style="color: var(--net);">${g.chat_all} Pesan</div>
+            </div>
+            
+            <div class="info-box full">
+                <div class="info-label">STATUS (Badge)</div>
+                <div><span class="badge ${g.status.toUpperCase() === 'AKTIF' ? 'badge-active' : 'badge-banned'}">${g.status}</span></div>
             </div>
         `;
 
         if(isAdmin) {
             content += `
-                <button class="btn-save" onclick="saveEdit('${g.id}')">SIMPAN PERUBAHAN</button>
-                <button class="btn-leave" onclick="leaveGroup('${g.id}')">KELUARKAN BOT DARI GRUP</button>
+                <div class="admin-actions">
+                    <button class="btn-save" onclick="saveEdit('${g.id}')">Simpan Perubahan</button>
+                    <button class="btn-leave" onclick="leaveGroup('${g.id}')">Keluarkan Bot</button>
+                </div>
             `;
         }
 
@@ -172,22 +196,11 @@
         document.getElementById('modal-overlay').style.display = 'block';
     }
 
-    async function saveEdit(id) {
-        const newName = document.getElementById('edit-name').value;
-        alert("Bot Rafka akan mengubah nama grup ke: " + newName);
-        // Nanti kirim perintah fetch ke API untuk diteruskan ke bot
-    }
-
-    async function leaveGroup(id) {
-        if(confirm("Yakin ingin mengeluarkan bot dari grup ini?")) {
-            // Kirim perintah action: 'leave_gc' ke bot
-            alert("Perintah dikirim ke Bot!");
-        }
-    }
+    function saveEdit(id) { alert("Fitur edit grup ID " + id + " akan dikirim ke Bot."); }
+    function leaveGroup(id) { if(confirm("Keluarkan bot dari grup ini?")) alert("Perintah dikirim!"); }
 
     loadData();
-    setInterval(loadData, 10000); // Update tiap 10 detik
+    setInterval(loadData, 5000); 
 </script>
 </body>
 </html>
-    
