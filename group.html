@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Management - RafkaVL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-dark: #060c1c; --card-bg-1: #0e1830; --card-bg-2: #0a1020; --border: #1e3060; --text-main: #ffffff; --text-sub: #5a7aaa; --net: #00cfff; --up: #ffcc00; --danger: #ff4455; --success: #00e676; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding: 20px; overflow-x: hidden; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* Header Style */
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 207, 255, 0.3); padding-bottom: 20px; margin-bottom: 24px; }
+        .title h1 { font-size: 24px; display: flex; align-items: center; gap: 10px; }
+        .title h1 span.icon-diamond { color: var(--net); text-shadow: 0 0 10px var(--net); }
+        .hamburger-btn { cursor: pointer; font-size: 24px; margin-left: 15px; }
+
+        /* Table & Card Style */
+        .card { background: linear-gradient(145deg, var(--card-bg-1) 0%, var(--card-bg-2) 100%); border: 1px solid var(--border); border-radius: 16px; padding: 20px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 13px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; vertical-align: middle; }
+        
+        /* Status Badge */
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .badge-active { background: rgba(0, 230, 118, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .badge-expired { background: rgba(255, 68, 85, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        
+        .group-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--net); }
+        .action-btn { background: rgba(0, 207, 255, 0.1); border: 1px solid var(--net); color: var(--net); padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-size: 12px; }
+        .action-btn:hover { background: var(--net); color: black; }
+
+        /* Sidebar Style (Sama Seperti Dashboard) */
+        #sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
+        #sidebar-overlay.active { display: block; }
+        #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: rgba(14, 24, 48, 0.95); backdrop-filter: blur(10px); border-right: 1px solid rgba(0, 207, 255, 0.3); z-index: 1000; transition: 0.3s ease; padding: 20px; }
+        #sidebar.active { left: 0; }
+        .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 10px; font-weight: 600; }
+        .sidebar-links a:hover, .sidebar-links a.active-link { background: rgba(0, 207, 255, 0.1); color: var(--net); }
+    </style>
+</head>
+<body>
+
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div id="sidebar">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h2 style="color: var(--net);">👑 RafkaVL Menu</h2>
+        <span onclick="toggleSidebar()" style="cursor:pointer; color:white;">✖</span>
+    </div>
+    <div class="sidebar-links">
+        <a href="index.html">📊 Dashboard Status</a>
+        <a href="groups.html" class="active-link">👥 Manajemen Grup & Sewa</a>
+        <a href="users.html">👤 User, Limit & Premium</a>
+        <a href="settings.html">⚙️ Pengaturan Fitur Bot</a>
+        <a href="login.html" style="color: #ff4455; margin-top: 20px; display: block; border-top: 1px solid #333; padding-top: 20px;">🔒 Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <div class="title">
+            <h1><span class="icon-diamond">◆</span> MANAJEMEN GRUP <span class="hamburger-btn" onclick="toggleSidebar()">☰</span></h1>
+            <p>Total grup terdaftar: <span id="count-groups" style="color: var(--net);">0</span></p>
+        </div>
+        <button class="action-btn" onclick="fetchGroups()"><i class="fas fa-sync"></i> Refresh Data</button>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Grup</th>
+                    <th>ID Chat</th>
+                    <th>Status Sewa</th>
+                    <th>Masa Aktif</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="group-list">
+                <tr><td colspan="5" style="text-align:center; color:var(--text-sub);">Memuat data grup...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebar-overlay').classList.toggle('active');
+    }
+
+    async function fetchGroups() {
+        try {
+            const res = await fetch('/api/antena');
+            const data = await res.json();
+            
+            const list = document.getElementById('group-list');
+            list.innerHTML = ''; // Kosongkan loading
+
+            if (data.database && data.database.chats) {
+                const groups = data.database.chats;
+                document.getElementById('count-groups').innerText = groups.length;
+
+                groups.forEach(g => {
+                    const isSewa = g.sewa && g.sewa.status;
+                    const row = `
+                        <tr>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div class="group-icon"><i class="fas fa-users"></i></div>
+                                    <div style="font-weight:bold;">${g.subject || 'Grup Bot'}</div>
+                                </div>
+                            </td>
+                            <td style="color: var(--text-sub); font-family: monospace;">${g.id}</td>
+                            <td>
+                                <span class="badge ${isSewa ? 'badge-active' : 'badge-expired'}">
+                                    ${isSewa ? 'AKTIF' : 'TIDAK SEWA'}
+                                </span>
+                            </td>
+                            <td style="color: var(--up);">${g.sewa ? g.sewa.expired : '-'}</td>
+                            <td>
+                                <button class="action-btn" onclick="alert('Fitur edit grup ID: ${g.id} segera hadir!')">
+                                    <i class="fas fa-edit"></i> Atur
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    list.innerHTML += row;
+                });
+            } else {
+                list.innerHTML = '<tr><td colspan="5" style="text-align:center;">Tidak ada data grup.</td></tr>';
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('group-list').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Gagal mengambil data dari bot.</td></tr>';
+        }
+    }
+
+    // Ambil data pas halaman dibuka
+    fetchGroups();
+</script>
+</body>
+</html>
+
