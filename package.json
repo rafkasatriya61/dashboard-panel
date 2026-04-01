@@ -1,10 +1,8 @@
 {
-  "name": "jagoan-dashboard",
+  "name": "rafkavl-dashboard",
   "version": "1.0.0",
-  "description": "Dashboard Monitoring Jagoan Project",
-  "scripts": {},
+  "type": "module",
   "dependencies": {
-    "@vercel/kv": "^1.0.0"
+    "@vercel/kv": "^1.0.1"
   }
 }
-
