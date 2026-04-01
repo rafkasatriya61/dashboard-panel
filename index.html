@@ -133,9 +133,8 @@
     </div>
     <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #2a3d60;" id="last-update">Dashboard Generated: -</div>
 </div>
-
 <script>
-    // CEK STATUS LOGIN (Bisa Dilihat Semua Orang)
+    // CEK STATUS LOGIN
     const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
     const authBtn = document.getElementById('auth-btn');
 
@@ -178,39 +177,28 @@
 
             let cpuUsage = data.system?.cpu || 0;
             let ramPct = data.system?.ram_percent || 0;
-            let diskPct = data.system?.disk_percent || 0;
             let uptimeBot = data.system?.uptime || 0;
 
             document.getElementById('cpu-sub').innerText = 'Pterodactyl Node';
             document.getElementById('pct-cpu').innerText = cpuUsage + '%';
-            document.getElementById('cpu-footer').innerText = 'Active Core';
             updRing('ring-cpu', cpuUsage); updBar('bar-cpu', cpuUsage); document.getElementById('bar-txt-cpu').innerText = cpuUsage + '%';
 
             document.getElementById('ram-sub').innerText = 'Memory Monitor';
             document.getElementById('pct-ram').innerText = ramPct + '%';
-            document.getElementById('ram-used').innerText = 'Used';
-            document.getElementById('ram-free').innerText = 'Free';
             updRing('ring-ram', ramPct); updBar('bar-ram', ramPct); document.getElementById('bar-txt-ram').innerText = ramPct + '%';
 
-            document.getElementById('disk-sub').innerText = 'Storage Monitor';
-            document.getElementById('pct-disk').innerText = diskPct + '%';
-            document.getElementById('disk-used').innerText = 'Used';
-            document.getElementById('disk-free').innerText = 'Free';
-            updRing('ring-disk', diskPct); updBar('bar-disk', diskPct); document.getElementById('bar-txt-disk').innerText = diskPct + '%';
-            
             updBar('bar-lat', latPct); document.getElementById('bar-txt-lat').innerText = data.latency + 'ms';
 
-            document.getElementById('net-iface').innerText = 'Interface: eth0';
-            document.getElementById('info-host').innerText = 'Rafka-Server';
-            document.getElementById('info-os').innerText = 'Linux x64';
             document.getElementById('info-bup').innerText = formatUp(uptimeBot);
             document.getElementById('info-sup').innerText = formatUp(uptimeBot);
-            document.getElementById('info-node').innerText = 'v20.20.2'; 
-            document.getElementById('spec-os').innerText = 'Ubuntu / Linux';
-            document.getElementById('spec-cores').innerText = 'Auto';
-            document.getElementById('spec-speed').innerText = 'Auto';
-            document.getElementById('spec-tmem').innerText = '-';
-            document.getElementById('spec-fmem').innerText = '-';
+
+            // 🔥 UPDATE DATA KOSONG MENJADI REAL DARI BACKEND 🔥
+            if(data.system) {
+                if(data.system.cpu_cores) document.getElementById('spec-cores').innerText = data.system.cpu_cores + ' Cores';
+                if(data.system.cpu_speed) document.getElementById('spec-speed').innerText = data.system.cpu_speed + ' MHz';
+                if(data.system.total_mem) document.getElementById('spec-tmem').innerText = formatBytes(data.system.total_mem);
+                if(data.system.free_mem) document.getElementById('spec-fmem').innerText = formatBytes(data.system.free_mem);
+            }
 
             document.getElementById('last-update').innerText = 'Dashboard Generated: ' + (data.timestamp || new Date().toLocaleString());
 
