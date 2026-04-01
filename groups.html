@@ -3,74 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Groups Management - RafkaVL</title>
+    <title>Group Management - RafkaVL</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-dark: #060c1c; --card-bg-1: #0e1830; --card-bg-2: #0a1020; --border: #1e3060; --text-main: #ffffff; --text-sub: #5a7aaa; --cpu: #2196f3; --ram: #00e676; --disk: #9c64ff; --net: #00cfff; --up: #ffcc00; --danger: #ff4455; --success: #00e676; }
+        :root { --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; --net: #00cfff; --success: #00e676; --danger: #ff4455; --text-sub: #8ab0d8; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 30%, rgba(12, 25, 70, 0.85) 0%, rgba(2, 4, 14, 0) 70%); color: var(--text-main); min-height: 100vh; padding: 20px; overflow-x: hidden; }
-        .container { max-width: 1400px; margin: 0 auto; }
+        body { background-color: var(--bg-dark); color: #fff; padding: 20px; overflow-x: hidden; }
         
-        .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(0, 207, 255, 0.3); padding-bottom: 20px; margin-bottom: 24px; }
-        .title h1 { font-size: 28px; display: flex; align-items: center; gap: 10px; }
-        .title h1 span.icon-diamond { color: var(--net); text-shadow: 0 0 10px var(--net); font-size: 32px; }
-        .hamburger-btn { cursor: pointer; font-size: 28px; color: var(--text-main); margin-left: 15px; transition: 0.3s; }
-        .hamburger-btn:hover { color: var(--net); text-shadow: 0 0 10px var(--net); }
-        .title p { color: var(--text-sub); font-size: 14px; margin-top: 4px; }
-
-        .card { background: linear-gradient(145deg, var(--card-bg-1) 0%, var(--card-bg-2) 100%); border: 1px solid var(--border); border-radius: 16px; padding: 25px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
-        td { padding: 18px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
-        
-        .badge { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; border: 1px solid transparent; }
-        .bg-active { background: rgba(0, 230, 118, 0.1); color: var(--success); border-color: var(--success); }
-        .bg-banned { background: rgba(255, 68, 85, 0.1); color: var(--danger); border-color: var(--danger); }
-        .bg-forever { background: rgba(0, 207, 255, 0.1); color: var(--net); border-color: var(--net); box-shadow: 0 0 8px var(--net); }
-        .bg-notset { background: rgba(90, 122, 170, 0.1); color: var(--text-sub); border-color: var(--text-sub); }
-
-        .action-btn { background: #162545; border: 1px solid var(--border); color: #fff; padding: 8px 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-size: 12px; display: flex; align-items: center; gap: 8px; font-weight: 600; }
-        .action-btn:hover { border-color: var(--net); background: var(--card-bg-1); color: var(--net); box-shadow: 0 0 10px rgba(0, 207, 255, 0.2); }
-        
-        /* --- SIDEBAR STYLE --- */
-        #sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
-        #sidebar-overlay.active { display: block; }
-        #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: rgba(14, 24, 48, 0.98); backdrop-filter: blur(10px); border-right: 1px solid var(--net); z-index: 1000; transition: 0.3s ease; padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        /* SIDEBAR */
+        #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #0a1020; border-right: 1px solid var(--border); z-index: 1000; transition: 0.3s; padding: 20px; }
         #sidebar.active { left: 0; }
-        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
-        .sidebar-header h2 { font-size: 18px; color: var(--net); font-weight: bold; }
-        .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 10px; transition: 0.2s; font-weight: 600; font-size: 14px;}
-        .sidebar-links a:hover, .sidebar-links a.active-link { background: rgba(0, 207, 255, 0.1); color: var(--net); }
-        .logout { color: #ff4455 !important; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+        .sidebar-links a { display: block; padding: 12px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; }
+        .sidebar-links a:hover, .sidebar-links a.active { background: rgba(0, 207, 255, 0.1); color: var(--net); }
+
+        /* CONTENT */
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { font-size: 24px; display: flex; align-items: center; gap: 10px; }
+        .header h1 span { color: var(--net); }
+
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 12px; border-bottom: 1px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge-active { background: rgba(0, 230, 118, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .badge-banned { background: rgba(255, 68, 85, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        
+        .btn-detail { background: rgba(0, 207, 255, 0.1); color: var(--net); border: 1px solid var(--net); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 12px; }
+        .btn-detail:hover { background: var(--net); color: #000; }
+        
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
+        #overlay.active { display: block; }
     </style>
 </head>
 <body>
 
-<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div id="overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
-    <div class="sidebar-header">
-        <h2>👑 RafkaVL Menu</h2>
-        <span onclick="toggleSidebar()" style="cursor:pointer; color:white; font-size: 20px;">✖</span>
-    </div>
+    <h2 style="color:var(--net); margin-bottom:30px;">👑 RafkaVL Menu</h2>
     <div class="sidebar-links">
-        <a href="index.html">📊 Dashboard Status</a>
-        <a href="groups.html" class="active-link">👥 Groups & Sewa</a>
-        <a href="users.html">👤 User, Limit & Premium</a>
-        <a href="settings.html">⚙️ Bot Settings</a>
-        <a href="login.html" class="logout">🔒 Login Admin</a>
+        <a href="index.html">📊 Dashboard</a>
+        <a href="groups.html" class="active">👥 Groups Database</a>
+        <a href="users.html">👤 Users & Limit</a>
+        <a href="settings.html">⚙️ Settings</a>
+        <a href="login.html" style="color:var(--danger); margin-top:30px;">🔒 Logout</a>
     </div>
 </div>
 
 <div class="container">
     <div class="header">
-        <div class="title">
-            <h1><span class="icon-diamond">◆</span> GROUP MANAGEMENT <span class="hamburger-btn" onclick="toggleSidebar()">☰</span></h1>
-            <p>Monitoring real-time database grup & sisa masa aktif sewa.</p>
-        </div>
+        <h1><span onclick="toggleSidebar()" style="cursor:pointer;">☰</span> <span>◆</span> GROUP MANAGEMENT</h1>
         <div style="text-align:right;">
-            <div id="count-gc" style="font-size:36px; font-weight:bold; color:var(--up); text-shadow: 0 0 10px var(--up);">0</div>
-            <div style="font-size:12px; color:var(--text-sub); letter-spacing:2px; font-weight: 700;">TOTAL GROUPS</div>
+            <div id="count-gc" style="font-size:24px; font-weight:bold; color:var(--net);">0</div>
+            <p style="font-size:10px; color:var(--text-sub);">GROUPS CONNECTED</p>
         </div>
     </div>
 
@@ -78,74 +66,56 @@
         <table>
             <thead>
                 <tr>
-                    <th>Group Name</th>
+                    <th>Grup Name</th>
                     <th>ID WhatsApp</th>
-                    <th>Bot Status</th>
-                    <th>Sisa Sewa</th>
+                    <th>Members</th>
+                    <th>Status</th>
+                    <th>Masa Sewa</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody id="list-gc">
-                <tr><td colspan="5" style="text-align:center; padding:100px; color:var(--text-sub);">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
-                    Menghubungkan ke Database Bot...
-                </td></tr>
+                <tr><td colspan="6" style="text-align:center; padding:50px;">Menghubungkan ke Bot Rafka...</td></tr>
             </tbody>
         </table>
     </div>
-    <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #2a3d60;" id="last-update">Sync Time: -</div>
 </div>
 
 <script>
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('sidebar-overlay').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
     }
 
-    async function loadGroups() {
+    async function loadData() {
         try {
             const res = await fetch('/api/antena');
             const data = await res.json();
-            
             const tbody = document.getElementById('list-gc');
-            
-            if (data.status === 'online' && data.database && data.database.chats) {
-                tbody.innerHTML = ''; // Kosongkan loading
-                const groups = data.database.chats;
-                document.getElementById('count-gc').innerText = groups.length;
 
-                groups.forEach(g => {
-                    // Logika Warna Badge Sesuai Status
-                    let statusClass = g.status === 'ACTIVE' ? 'bg-active' : 'bg-banned';
-                    let sewaClass = 'bg-notset';
-                    
-                    if (g.sisa_sewa === 'FOREVER') sewaClass = 'bg-forever';
-                    else if (g.sisa_sewa !== 'NOT SET') sewaClass = 'bg-active';
-
+            if (data.database && data.database.chats) {
+                tbody.innerHTML = '';
+                document.getElementById('count-gc').innerText = data.database.chats.length;
+                
+                data.database.chats.forEach(g => {
+                    const statusClass = g.status === 'ACTIVE' ? 'badge-active' : 'badge-banned';
                     tbody.innerHTML += `
                         <tr>
-                            <td><b style="color:#fff; font-size: 15px;">${g.name}</b></td>
-                            <td style="font-family:monospace; color:var(--text-sub); font-size:12px;">${g.full_id || g.id}@g.us</td>
+                            <td><b style="color:var(--net)">${g.name}</b></td>
+                            <td style="font-family:monospace; font-size:12px; color:var(--text-sub);">${g.id}</td>
+                            <td>${g.member} User</td>
                             <td><span class="badge ${statusClass}">${g.status}</span></td>
-                            <td><span class="badge ${sewaClass}">${g.sisa_sewa}</span></td>
-                            <td>
-                                <button class="action-btn" onclick="alert('Membuka detail untuk ${g.name}...')">
-                                    <i class="fas fa-external-link-alt"></i> Detail Grup
-                                </button>
-                            </td>
+                            <td style="color:#ffcc00; font-weight:bold;">${g.sisa_sewa}</td>
+                            <td><button class="btn-detail" onclick="alert('Detail ${g.name} Segera Hadir')">Detail</button></td>
                         </tr>
                     `;
                 });
-                document.getElementById('last-update').innerText = 'Sync Time: ' + (data.timestamp || new Date().toLocaleTimeString());
             }
-        } catch (e) {
-            console.error("Error Fetch:", e);
-        }
+        } catch (e) { console.log("Fetch error..."); }
     }
 
-    // Jalankan Sinkronisasi
-    loadGroups();
-    setInterval(loadGroups, 5000); // Update tiap 5 detik
+    setInterval(loadData, 5000);
+    loadData();
 </script>
 </body>
 </html>
