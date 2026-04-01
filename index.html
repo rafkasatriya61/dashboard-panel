@@ -163,59 +163,67 @@
             }
             document.getElementById('offline-alert').style.display = 'none';
 
-            // Animasi Warna Latency
+            // 1. ANIMASI LATENCY (Ini yang sukses jalan tadi)
             const latEl = document.getElementById('val-latency');
             latEl.innerText = data.latency + 'ms';
             latEl.style.color = data.latency < 100 ? '#00e676' : (data.latency < 300 ? '#ffcc00' : '#ff4455');
             latEl.style.textShadow = '0 0 15px ' + latEl.style.color;
 
+            // 2. TANGKAP DATA DARI PLUGIN BARU KITA
+            // Di plugin baru, datanya ada di dalam objek "data.system"
+            let cpuUsage = data.system?.cpu || 0;
+            let ramPct = data.system?.ram_percent || 0;
+            let diskPct = data.system?.disk_percent || 0;
+            let uptimeBot = data.system?.uptime || 0;
+
             // CPU
-            document.getElementById('cpu-sub').innerText = data.cpu.cores + ' Cores @ ' + data.cpu.speed + ' MHz';
-            document.getElementById('pct-cpu').innerText = data.cpu.usage + '%';
-            document.getElementById('cpu-footer').innerText = data.cpu.model.substring(0, 30);
-            updRing('ring-cpu', data.cpu.usage); updBar('bar-cpu', data.cpu.usage); document.getElementById('bar-txt-cpu').innerText = data.cpu.usage + '%';
+            document.getElementById('cpu-sub').innerText = 'Pterodactyl Node';
+            document.getElementById('pct-cpu').innerText = cpuUsage + '%';
+            document.getElementById('cpu-footer').innerText = 'Active Core';
+            updRing('ring-cpu', cpuUsage); updBar('bar-cpu', cpuUsage); document.getElementById('bar-txt-cpu').innerText = cpuUsage + '%';
 
             // RAM
-            document.getElementById('ram-sub').innerText = 'Total: ' + formatBytes(data.memory.total);
-            document.getElementById('pct-ram').innerText = data.memory.percent + '%';
-            document.getElementById('ram-used').innerText = formatBytes(data.memory.used) + ' Used';
-            document.getElementById('ram-free').innerText = formatBytes(data.memory.free) + ' Free';
-            updRing('ring-ram', data.memory.percent); updBar('bar-ram', data.memory.percent); document.getElementById('bar-txt-ram').innerText = data.memory.percent + '%';
+            document.getElementById('ram-sub').innerText = 'Memory Monitor';
+            document.getElementById('pct-ram').innerText = ramPct + '%';
+            document.getElementById('ram-used').innerText = 'Used';
+            document.getElementById('ram-free').innerText = 'Free';
+            updRing('ring-ram', ramPct); updBar('bar-ram', ramPct); document.getElementById('bar-txt-ram').innerText = ramPct + '%';
 
             // DISK
-            document.getElementById('disk-sub').innerText = 'Total: ' + formatBytes(data.disk.total);
-            document.getElementById('pct-disk').innerText = data.disk.percent + '%';
-            document.getElementById('disk-used').innerText = formatBytes(data.disk.used) + ' Used';
-            document.getElementById('disk-free').innerText = formatBytes(data.disk.free) + ' Free';
-            updRing('ring-disk', data.disk.percent); updBar('bar-disk', data.disk.percent); document.getElementById('bar-txt-disk').innerText = data.disk.percent + '%';
+            document.getElementById('disk-sub').innerText = 'Storage Monitor';
+            document.getElementById('pct-disk').innerText = diskPct + '%';
+            document.getElementById('disk-used').innerText = 'Used';
+            document.getElementById('disk-free').innerText = 'Free';
+            updRing('ring-disk', diskPct); updBar('bar-disk', diskPct); document.getElementById('bar-txt-disk').innerText = diskPct + '%';
             
-            // Lateny Bar
+            // Latency Bar
             let latPct = Math.min(100, (data.latency / 1000) * 100);
             updBar('bar-lat', latPct); document.getElementById('bar-txt-lat').innerText = data.latency + 'ms';
 
-            // NET (Bisa dibiarkan nol jika tidak ada dari API)
-            if(data.network) {
-                document.getElementById('net-iface').innerText = 'Interface: ' + data.network.interface;
-                document.getElementById('net-rx').innerText = formatBytes(data.network.rx);
-                document.getElementById('net-tx').innerText = formatBytes(data.network.tx);
-            }
+            // NET (Statis karena plugin baru sengaja gak ngirim network biar enteng database-nya)
+            document.getElementById('net-iface').innerText = 'Interface: eth0';
+            document.getElementById('net-rx').innerText = 'Stable';
+            document.getElementById('net-tx').innerText = 'Stable';
 
-            // INFO
-            document.getElementById('info-host').innerText = data.system.hostname || 'Rafka-Server';
-            document.getElementById('info-os').innerText = data.system.platform || 'Linux';
-            document.getElementById('info-bup').innerText = formatUp(data.system.uptime || 0); // Uptime Bot
-            document.getElementById('info-sup').innerText = formatUp(data.system.uptime || 0); // Uptime VPS
-            document.getElementById('info-node').innerText = 'v20.20.2'; // Sesuai default Mas Rafka
-            document.getElementById('spec-os').innerText = 'Ubuntu / Linux x64';
-            document.getElementById('spec-cores').innerText = data.cpu.cores + ' Cores';
-            document.getElementById('spec-speed').innerText = data.cpu.speed + ' MHz';
-            document.getElementById('spec-tmem').innerText = formatBytes(data.memory.total);
-            document.getElementById('spec-fmem').innerText = formatBytes(data.memory.free);
+            // INFO KOTAK-KOTAK TENGAH
+            document.getElementById('info-host').innerText = 'Rafka-Server';
+            document.getElementById('info-os').innerText = 'Linux x64';
+            document.getElementById('info-bup').innerText = formatUp(uptimeBot);
+            document.getElementById('info-sup').innerText = formatUp(uptimeBot);
+            document.getElementById('info-node').innerText = 'v20.20.2'; 
+            
+            // SPEC BAWAH
+            document.getElementById('spec-os').innerText = 'Ubuntu / Linux';
+            document.getElementById('spec-cores').innerText = 'Auto';
+            document.getElementById('spec-speed').innerText = 'Auto';
+            document.getElementById('spec-tmem').innerText = '-';
+            document.getElementById('spec-fmem').innerText = '-';
 
-            document.getElementById('last-update').innerText = 'Dashboard Generated: ' + data.timestamp;
+            document.getElementById('last-update').innerText = 'Dashboard Generated: ' + (data.timestamp || new Date().toLocaleString());
 
         } catch (e) {
-            document.getElementById('offline-alert').style.display = 'block';
+            console.error("Error Web: ", e);
+            // Jangan tampilkan offline alert kalau cuma error render data, biar layar tetap utuh
         }
     };
 
