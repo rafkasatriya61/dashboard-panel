@@ -1,34 +1,37 @@
-import Redis from 'ioredis';
+// File: api/antena.js (Berada di Vercel / backend kamu)
 
-// Koneksi Langsung ke RedisLabs Mas Rafka
-const redis = new Redis(process.env.KV_REDIS_URL);
+let botData = { status: 'offline', timestamp: 'Menunggu bot menyala...' };
+let actionQueue = null; // Tempat nyimpen perintah saklar/klik dari Web
 
-export default async function handler(req, res) {
-    const passwordRahasia = process.env.API_SECRET_KEY;
-
+export default function handler(req, res) {
+    // 1. JIKA ADA POST REQUEST (Dari Bot atau dari Web)
     if (req.method === 'POST') {
-        if (req.headers.authorization !== passwordRahasia) {
-            return res.status(401).json({ error: 'Password Salah!' });
+        
+        // A. JIKA WEB NGIRIM PERINTAH KLIK/SAKLAR
+        if (req.body.action) {
+            actionQueue = req.body.action; // Simpan perintahnya di antrean
+            return res.status(200).json({ success: true, message: "Perintah masuk antrean." });
+        } 
+        
+        // B. JIKA BOT NGIRIM DATA STATUS TIAP 5 DETIK
+        else if (req.body.system && req.body.database) {
+            botData = req.body; // Simpan data terbaru bot
+            
+            // Cek apakah ada antrean perintah dari web?
+            let pendingAction = actionQueue;
+            actionQueue = null; // Hapus antrean setelah diberikan ke bot (Biar nggak looping terus)
+            
+            // Balas request bot dengan perintah yang antre
+            return res.status(200).json({ action: pendingAction });
         }
-        try {
-            // Simpan data sebagai string agar aman di RedisLabs
-            await redis.set('bot_status', JSON.stringify(req.body));
-            return res.status(200).json({ success: true });
-        } catch (e) {
-            return res.status(500).json({ error: 'Redis Error: ' + e.message });
-        }
+        
+        return res.status(400).json({ error: "Payload tidak dikenali" });
     } 
     
-    if (req.method === 'GET') {
-        try {
-            const data = await redis.get('bot_status');
-            if (!data) return res.status(200).json({ status: 'offline' });
-            return res.status(200).json(JSON.parse(data));
-        } catch (e) {
-            return res.status(500).json({ error: 'Redis Error: ' + e.message });
-        }
+    // 2. JIKA ADA GET REQUEST (Web minta data buat nampilin Dashboard)
+    else if (req.method === 'GET') {
+        return res.status(200).json(botData);
     }
-
-    return res.status(405).send('Use POST/GET')
-      ;
+    
+    return res.status(405).json({ error: "Method Not Allowed" });
 }
