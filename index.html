@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RafkaVL Botzz Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --bg-dark: #060c1c; --card-bg-1: #0e1830; --card-bg-2: #0a1020; --border: #1e3060; --text-main: #ffffff; --text-sub: #5a7aaa; --cpu: #2196f3; --ram: #00e676; --disk: #9c64ff; --net: #00cfff; --up: #ffcc00; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -12,13 +13,10 @@
         .container { max-width: 1400px; margin: 0 auto; }
         .card { background: linear-gradient(145deg, var(--card-bg-1) 0%, var(--card-bg-2) 100%); border: 1px solid var(--border); border-radius: 16px; padding: 20px; position: relative; }
         .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(0, 207, 255, 0.3); padding-bottom: 20px; margin-bottom: 24px; }
-        
-        /* TOMBOL HAMBURGER DITAMBAHKAN DI SINI */
         .title h1 { font-size: 28px; display: flex; align-items: center; gap: 10px; }
         .title h1 span.icon-diamond { color: var(--net); text-shadow: 0 0 10px var(--net); font-size: 32px; }
         .hamburger-btn { cursor: pointer; font-size: 28px; color: var(--text-main); margin-left: 15px; transition: 0.3s; }
         .hamburger-btn:hover { color: var(--net); text-shadow: 0 0 10px var(--net); }
-        
         .title p { color: var(--text-sub); font-size: 14px; margin-top: 4px; }
         .latency-box { text-align: right; }
         .latency-val { font-size: 36px; font-weight: 700; transition: color 0.5s; }
@@ -44,9 +42,7 @@
         .spec-item .val { font-weight: 700; color: #cde4ff; }
         .offline-alert { display: none; background: rgba(255, 68, 85, 0.1); border: 1px solid #ff4455; color: #ff4455; padding: 20px; text-align: center; border-radius: 12px; font-weight: bold; margin-bottom: 20px; }
 
-        /* =========================================
-           TAMBAHAN CSS UNTUK SIDEBAR (JENDELA)
-           ========================================= */
+        /* JENDELA SIDEBAR */
         #sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
         #sidebar-overlay.active { display: block; }
         #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: rgba(14, 24, 48, 0.95); backdrop-filter: blur(10px); border-right: 1px solid rgba(0, 207, 255, 0.3); z-index: 1000; transition: 0.3s ease; padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -56,7 +52,7 @@
         .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
         .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 10px; transition: 0.2s; font-weight: 600; font-size: 14px;}
         .sidebar-links a:hover, .sidebar-links a.active-link { background: rgba(0, 207, 255, 0.1); color: var(--net); }
-        .sidebar-links .logout { color: #ff4455; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; border-radius: 0; }
+        .sidebar-links .logout { color: #ff4455; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; border-radius: 0; cursor: pointer; }
         .sidebar-links .logout:hover { background: rgba(255, 68, 85, 0.1); color: #ff4455; }
     </style>
 </head>
@@ -73,7 +69,7 @@
         <a href="groups.html">👥 Manajemen Grup & Sewa</a>
         <a href="users.html">👤 User, Limit & Premium</a>
         <a href="settings.html">⚙️ Pengaturan Fitur Bot</a>
-        <a href="login.html" class="logout">🔒 Login Admin</a>
+        <a onclick="logout()" class="logout">🔒 Logout Admin</a>
     </div>
 </div>
 
@@ -105,8 +101,8 @@
             <div class="gauge-footer"><span id="disk-used" style="color: var(--disk);">-</span><span id="disk-free" style="color: var(--text-sub);">-</span></div>
         </div>
         <div class="card"><div class="gauge-title" style="text-align: center;">NETWORK</div><div class="gauge-sub" id="net-iface" style="text-align: center; margin-bottom: 30px;">-</div>
-            <div style="margin-bottom: 20px;"><div style="font-size: 13px; color: #8ab0d8;">RX (Download)</div><div id="net-rx" style="font-size: 26px; font-weight: 700; color: var(--net); text-shadow: 0 0 8px var(--net);">0 B</div></div>
-            <div style="border-top: 1px solid #1a2e50; padding-top: 20px;"><div style="font-size: 13px; color: #8ab0d8;">TX (Upload)</div><div id="net-tx" style="font-size: 26px; font-weight: 700; color: #cde4ff;">0 B</div></div>
+            <div style="margin-bottom: 20px;"><div style="font-size: 13px; color: #8ab0d8;">RX (Download)</div><div id="net-rx" style="font-size: 26px; font-weight: 700; color: var(--net); text-shadow: 0 0 8px var(--net);">Stable</div></div>
+            <div style="border-top: 1px solid #1a2e50; padding-top: 20px;"><div style="font-size: 13px; color: #8ab0d8;">TX (Upload)</div><div id="net-tx" style="font-size: 26px; font-weight: 700; color: #cde4ff;">Stable</div></div>
         </div>
     </div>
     
@@ -140,7 +136,16 @@
 </div>
 
 <script>
-    // --- FUNGSI UNTUK MEMBUKA/MENUTUP SIDEBAR ---
+    // 🛡️ KEAMANAN: CEK LOGIN
+    if (localStorage.getItem('rafkavl_token') !== 'AUTH_VALID_2026') {
+        window.location.href = "login.html";
+    }
+
+    function logout() {
+        localStorage.removeItem('rafkavl_token');
+        window.location.href = "login.html";
+    }
+
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
         document.getElementById('sidebar-overlay').classList.toggle('active');
@@ -153,7 +158,6 @@
 
     const fetchStatus = async () => {
         try {
-            // Nembak ke file antena.js buatan kita
             const res = await fetch('/api/antena');
             const data = await res.json();
             
@@ -163,56 +167,44 @@
             }
             document.getElementById('offline-alert').style.display = 'none';
 
-            // 1. ANIMASI LATENCY (Ini yang sukses jalan tadi)
+            let latPct = Math.min(100, (data.latency / 1000) * 100);
             const latEl = document.getElementById('val-latency');
             latEl.innerText = data.latency + 'ms';
             latEl.style.color = data.latency < 100 ? '#00e676' : (data.latency < 300 ? '#ffcc00' : '#ff4455');
             latEl.style.textShadow = '0 0 15px ' + latEl.style.color;
 
-            // 2. TANGKAP DATA DARI PLUGIN BARU KITA
-            // Di plugin baru, datanya ada di dalam objek "data.system"
             let cpuUsage = data.system?.cpu || 0;
             let ramPct = data.system?.ram_percent || 0;
             let diskPct = data.system?.disk_percent || 0;
             let uptimeBot = data.system?.uptime || 0;
 
-            // CPU
             document.getElementById('cpu-sub').innerText = 'Pterodactyl Node';
             document.getElementById('pct-cpu').innerText = cpuUsage + '%';
             document.getElementById('cpu-footer').innerText = 'Active Core';
             updRing('ring-cpu', cpuUsage); updBar('bar-cpu', cpuUsage); document.getElementById('bar-txt-cpu').innerText = cpuUsage + '%';
 
-            // RAM
             document.getElementById('ram-sub').innerText = 'Memory Monitor';
             document.getElementById('pct-ram').innerText = ramPct + '%';
             document.getElementById('ram-used').innerText = 'Used';
             document.getElementById('ram-free').innerText = 'Free';
             updRing('ring-ram', ramPct); updBar('bar-ram', ramPct); document.getElementById('bar-txt-ram').innerText = ramPct + '%';
 
-            // DISK
             document.getElementById('disk-sub').innerText = 'Storage Monitor';
             document.getElementById('pct-disk').innerText = diskPct + '%';
             document.getElementById('disk-used').innerText = 'Used';
             document.getElementById('disk-free').innerText = 'Free';
             updRing('ring-disk', diskPct); updBar('bar-disk', diskPct); document.getElementById('bar-txt-disk').innerText = diskPct + '%';
             
-            // Latency Bar
-            let latPct = Math.min(100, (data.latency / 1000) * 100);
             updBar('bar-lat', latPct); document.getElementById('bar-txt-lat').innerText = data.latency + 'ms';
 
-            // NET (Statis karena plugin baru sengaja gak ngirim network biar enteng database-nya)
             document.getElementById('net-iface').innerText = 'Interface: eth0';
-            document.getElementById('net-rx').innerText = 'Stable';
-            document.getElementById('net-tx').innerText = 'Stable';
 
-            // INFO KOTAK-KOTAK TENGAH
             document.getElementById('info-host').innerText = 'Rafka-Server';
             document.getElementById('info-os').innerText = 'Linux x64';
             document.getElementById('info-bup').innerText = formatUp(uptimeBot);
             document.getElementById('info-sup').innerText = formatUp(uptimeBot);
             document.getElementById('info-node').innerText = 'v20.20.2'; 
             
-            // SPEC BAWAH
             document.getElementById('spec-os').innerText = 'Ubuntu / Linux';
             document.getElementById('spec-cores').innerText = 'Auto';
             document.getElementById('spec-speed').innerText = 'Auto';
@@ -221,14 +213,11 @@
 
             document.getElementById('last-update').innerText = 'Dashboard Generated: ' + (data.timestamp || new Date().toLocaleString());
 
-        } catch (e) {
-            console.error("Error Web: ", e);
-            // Jangan tampilkan offline alert kalau cuma error render data, biar layar tetap utuh
-        }
+        } catch (e) { }
     };
 
     fetchStatus();
-    setInterval(fetchStatus, 3000); // Tarik data tiap 3 detik
+    setInterval(fetchStatus, 3000); 
 </script>
 </body>
 </html>
