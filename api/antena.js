@@ -1,26 +1,27 @@
 import { createClient } from '@vercel/kv';
 
-// KODE SAKTI: Otomatis nyari jalan ke Redis kamu lewat KV_REDIS_URL
-const kv = createClient({
-  url: process.env.KV_REDIS_URL, // Ini nembak kunci otomatis di screenshot kamu
-});
-
 export default async function handler(req, res) {
-    const passwordTersimpan = process.env.API_SECRET_KEY;
+    // 1. Hubungkan ke Redis pakai URL yang ada di screenshot kamu tadi
+    const kv = createClient({
+        url: process.env.KV_REDIS_URL,
+    });
+
+    const passwordRahasia = process.env.API_SECRET_KEY;
 
     // --- JALUR BOT (POST) ---
     if (req.method === 'POST') {
         const passwordDariBot = req.headers.authorization;
 
-        if (passwordDariBot !== passwordTersimpan) {
-            return res.status(401).json({ error: 'Password Salah!', lu_ngirim: passwordDariBot });
+        if (passwordDariBot !== passwordRahasia) {
+            return res.status(401).json({ error: 'Password Salah!' });
         }
 
         try {
-            await kv.set('bot_status', req.body);
+            // Kita pakai stringify biar datanya aman pas masuk Redis
+            await kv.set('bot_status', JSON.stringify(req.body));
             return res.status(200).json({ success: true });
         } catch (e) {
-            return res.status(500).json({ error: 'Database Error: ' + e.message });
+            return res.status(500).json({ error: 'Gagal Tulis: ' + e.message });
         }
     } 
     
@@ -28,11 +29,15 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
         try {
             const data = await kv.get('bot_status');
-            return res.status(200).json(data || { status: 'offline' });
+            if (!data) return res.status(200).json({ status: 'offline' });
+            
+            // Kalau datanya string, kita balikin jadi JSON lagi
+            const finalData = typeof data === 'string' ? JSON.parse(data) : data;
+            return res.status(200).json(finalData);
         } catch (e) {
-            return res.status(500).json({ error: 'Database Error: ' + e.message });
+            return res.status(500).json({ error: 'Gagal Baca: ' + e.message });
         }
     }
 
-    return res.status(405).send('Use POST or GET');
+    return res.status(405).send('Use POST/GET');
 }
