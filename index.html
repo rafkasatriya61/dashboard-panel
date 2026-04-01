@@ -52,8 +52,7 @@
         .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
         .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 10px; transition: 0.2s; font-weight: 600; font-size: 14px;}
         .sidebar-links a:hover, .sidebar-links a.active-link { background: rgba(0, 207, 255, 0.1); color: var(--net); }
-        .sidebar-links .logout { color: #ff4455; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; border-radius: 0; cursor: pointer; }
-        .sidebar-links .logout:hover { background: rgba(255, 68, 85, 0.1); color: #ff4455; }
+        .sidebar-links .auth-btn { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; border-radius: 0; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -69,7 +68,7 @@
         <a href="groups.html">👥 Manajemen Grup & Sewa</a>
         <a href="users.html">👤 User, Limit & Premium</a>
         <a href="settings.html">⚙️ Pengaturan Fitur Bot</a>
-        <a onclick="logout()" class="logout">🔒 Logout Admin</a>
+        <a id="auth-btn" class="auth-btn" style="color:var(--danger);">🔒 Loading...</a>
     </div>
 </div>
 
@@ -136,14 +135,18 @@
 </div>
 
 <script>
-    // 🛡️ KEAMANAN: CEK LOGIN
-    if (localStorage.getItem('rafkavl_token') !== 'AUTH_VALID_2026') {
-        window.location.href = "login.html";
-    }
+    // CEK STATUS LOGIN (Bisa Dilihat Semua Orang)
+    const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
+    const authBtn = document.getElementById('auth-btn');
 
-    function logout() {
-        localStorage.removeItem('rafkavl_token');
-        window.location.href = "login.html";
+    if (isAdmin) {
+        authBtn.innerHTML = '🔓 Logout Admin';
+        authBtn.style.color = 'var(--danger)';
+        authBtn.onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
+    } else {
+        authBtn.innerHTML = '🔒 Login Admin';
+        authBtn.style.color = 'var(--success)';
+        authBtn.onclick = () => { window.location.href = 'login.html'; };
     }
 
     function toggleSidebar() {
@@ -198,13 +201,11 @@
             updBar('bar-lat', latPct); document.getElementById('bar-txt-lat').innerText = data.latency + 'ms';
 
             document.getElementById('net-iface').innerText = 'Interface: eth0';
-
             document.getElementById('info-host').innerText = 'Rafka-Server';
             document.getElementById('info-os').innerText = 'Linux x64';
             document.getElementById('info-bup').innerText = formatUp(uptimeBot);
             document.getElementById('info-sup').innerText = formatUp(uptimeBot);
             document.getElementById('info-node').innerText = 'v20.20.2'; 
-            
             document.getElementById('spec-os').innerText = 'Ubuntu / Linux';
             document.getElementById('spec-cores').innerText = 'Auto';
             document.getElementById('spec-speed').innerText = 'Auto';
@@ -221,3 +222,4 @@
 </script>
 </body>
 </html>
+
