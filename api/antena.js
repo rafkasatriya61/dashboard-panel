@@ -3,6 +3,7 @@ import { kv } from '@vercel/kv';
 export default async function handler(req, res) {
     // 🟢 JIKA BOT MENGIRIM DATA (Metode POST)
     if (req.method === 'POST') {
+        // Cek Keamanan
         if (req.headers.authorization !== process.env.API_SECRET_KEY) {
             return res.status(401).json({ error: 'Password Salah!' });
         }
@@ -27,5 +28,4 @@ export default async function handler(req, res) {
     else {
         res.status(405).json({ error: 'Method Not Allowed' });
     }
-
 }
