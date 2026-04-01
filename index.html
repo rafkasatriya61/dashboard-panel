@@ -134,54 +134,95 @@
     <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #2a3d60;" id="last-update">Dashboard Generated: -</div>
 </div>
 <script>
-    const formatUp = (s) => { 
-        const d = Math.floor(s/86400), h = Math.floor((s%86400)/3600), m = Math.floor((s%3600)/60); 
-        return d ? `${d}d ${h}h ${m}m` : `${h}h ${m}m`; 
-    };
-    const updRing = (id, pct) => {
-        const ring = document.getElementById(id);
-        if(ring) ring.style.strokeDashoffset = 314 - (pct/100)*314;
-    };
+    const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
+    const authBtn = document.getElementById('auth-btn');
+
+    if (isAdmin) {
+        if(authBtn) {
+            authBtn.innerHTML = '🔓 Logout Admin';
+            authBtn.style.color = 'var(--danger)';
+            authBtn.onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
+        }
+    } else {
+        if(authBtn) {
+            authBtn.innerHTML = '🔒 Login Admin';
+            authBtn.style.color = 'var(--success)';
+            authBtn.onclick = () => { window.location.href = 'login.html'; };
+        }
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebar-overlay').classList.toggle('active');
+    }
+
+    const formatBytes = (b) => { if (b >= 1e9) return (b/1e9).toFixed(2) + " GB"; if (b >= 1e6) return (b/1e6).toFixed(2) + " MB"; return (b/1e3).toFixed(2) + " KB"; };
+    const formatUp = (s) => { const d = Math.floor(s/86400), h = Math.floor((s%86400)/3600), m = Math.floor((s%3600)/60); return d ? `${d}d ${h}h ${m}m` : `${h}h ${m}m`; };
+    const updRing = (id, pct) => { const e = document.getElementById(id); if(e) e.style.strokeDashoffset = 314 - (pct/100)*314; };
+    const updBar = (id, pct) => { const e = document.getElementById(id); if(e) e.style.width = pct + '%'; };
 
     const fetchStatus = async () => {
         try {
             const res = await fetch('/api/antena');
             const data = await res.json();
             
-            if (data.status === 'offline') return;
+            if (data.status === 'offline') {
+                document.getElementById('offline-alert').style.display = 'block';
+                return;
+            }
+            document.getElementById('offline-alert').style.display = 'none';
 
-            // --- UPDATE CPU & RAM ---
+            let latPct = Math.min(100, (data.latency / 1000) * 100);
+            const latEl = document.getElementById('val-latency');
+            if(latEl) {
+                latEl.innerText = data.latency + 'ms';
+                latEl.style.color = data.latency < 100 ? '#00e676' : (data.latency < 300 ? '#ffcc00' : '#ff4455');
+                latEl.style.textShadow = '0 0 15px ' + latEl.style.color;
+            }
+
             let cpu = data.system?.cpu || 0;
             let ram = data.system?.ram_percent || 0;
-            document.getElementById('pct-cpu').innerText = cpu + '%';
-            document.getElementById('pct-ram').innerText = ram + '%';
+            let disk = data.system?.disk_percent || 0;
+            let uptimeBot = data.system?.uptime || 0;
+
+            // 1. UPDATE LINGKARAN ATAS
+            if(document.getElementById('pct-cpu')) document.getElementById('pct-cpu').innerText = cpu + '%';
+            if(document.getElementById('pct-ram')) document.getElementById('pct-ram').innerText = ram + '%';
+            if(document.getElementById('pct-disk')) document.getElementById('pct-disk').innerText = disk + '%';
             updRing('ring-cpu', cpu);
             updRing('ring-ram', ram);
-
-            // --- FIX STORAGE (ANGKA & LINGKARAN) ---
-            let disk = data.system?.disk_percent || 0;
-            const diskText = document.getElementById('pct-disk');
-            if(diskText) diskText.innerText = disk + '%';
             updRing('ring-disk', disk);
 
-            // --- FIX NETWORK ---
-            if(data.system?.net_rx) document.getElementById('net-rx').innerText = data.system.net_rx;
-            if(data.system?.net_tx) document.getElementById('net-tx').innerText = data.system.net_tx;
+            // 2. 🔥 UPDATE GRAFIK BAR PANJANG DI BAWAH 🔥
+            updBar('bar-cpu', cpu); if(document.getElementById('bar-txt-cpu')) document.getElementById('bar-txt-cpu').innerText = cpu + '%';
+            updBar('bar-ram', ram); if(document.getElementById('bar-txt-ram')) document.getElementById('bar-txt-ram').innerText = ram + '%';
+            updBar('bar-disk', disk); if(document.getElementById('bar-txt-disk')) document.getElementById('bar-txt-disk').innerText = disk + '%';
+            updBar('bar-lat', latPct); if(document.getElementById('bar-txt-lat')) document.getElementById('bar-txt-lat').innerText = data.latency + 'ms';
 
-            // --- FIX UPTIME ---
-            let uptime = data.system?.uptime || 0;
-            document.getElementById('info-bup').innerText = formatUp(uptime);
-            document.getElementById('info-sup').innerText = formatUp(uptime);
+            // 3. UPDATE NETWORK
+            if(data.system?.net_rx && document.getElementById('net-rx')) document.getElementById('net-rx').innerText = data.system.net_rx;
+            if(data.system?.net_tx && document.getElementById('net-tx')) document.getElementById('net-tx').innerText = data.system.net_tx;
 
-            // --- FIX SPESIFIKASI KANAN BAWAH ---
-            if(data.system?.cpu_cores) document.getElementById('spec-cores').innerText = data.system.cpu_cores + ' Cores';
-            if(data.system?.cpu_speed) document.getElementById('spec-speed').innerText = data.system.cpu_speed + ' MHz';
-            
-            const formatBytes = (b) => (b/1e9).toFixed(2) + " GB";
-            if(data.system?.total_mem) document.getElementById('spec-tmem').innerText = formatBytes(data.system.total_mem);
-            if(data.system?.free_mem) document.getElementById('spec-fmem').innerText = formatBytes(data.system.free_mem);
+            // 4. UPDATE UPTIME
+            if(document.getElementById('info-bup')) document.getElementById('info-bup').innerText = formatUp(uptimeBot);
+            if(document.getElementById('info-sup')) document.getElementById('info-sup').innerText = formatUp(uptimeBot);
 
-        } catch (e) { console.log("Dashboard Sync Error"); }
+            // 5. 🔥 UPDATE SPESIFIKASI HOSTNAME & SYSTEM 🔥
+            if(data.system) {
+                if(data.system.hostname && document.getElementById('info-host')) document.getElementById('info-host').innerText = data.system.hostname;
+                if(data.system.platform && document.getElementById('info-os')) document.getElementById('info-os').innerText = data.system.platform.toUpperCase();
+                if(data.system.nodejs && document.getElementById('info-node')) document.getElementById('info-node').innerText = data.system.nodejs;
+                if(data.system.os_release && document.getElementById('spec-os')) document.getElementById('spec-os').innerText = data.system.platform + ' ' + data.system.os_release;
+                
+                if(data.system.cpu_cores && document.getElementById('spec-cores')) document.getElementById('spec-cores').innerText = data.system.cpu_cores + ' Cores';
+                if(data.system.cpu_speed && document.getElementById('spec-speed')) document.getElementById('spec-speed').innerText = data.system.cpu_speed + ' MHz';
+                if(data.system.total_mem && document.getElementById('spec-tmem')) document.getElementById('spec-tmem').innerText = formatBytes(data.system.total_mem);
+                if(data.system.free_mem && document.getElementById('spec-fmem')) document.getElementById('spec-fmem').innerText = formatBytes(data.system.free_mem);
+            }
+
+            if(document.getElementById('last-update')) document.getElementById('last-update').innerText = 'Dashboard Generated: ' + (data.timestamp || new Date().toLocaleString());
+
+        } catch (e) { }
     };
 
     setInterval(fetchStatus, 3000);
