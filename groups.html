@@ -27,7 +27,7 @@
         .menu-btn { cursor: pointer; font-size: 22px; margin-right: 10px; transition: 0.2s; }
         .menu-btn:hover { color: var(--net); }
 
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-x: auto; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-x: auto; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
         th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); letter-spacing: 0.5px; }
         td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; font-weight: 600; vertical-align: middle; }
@@ -53,7 +53,7 @@
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .info-box { background: var(--input-bg); padding: 12px 15px; border-radius: 8px; border: 1px solid #162445; }
         .info-box.full { grid-column: span 2; }
-        .info-label { font-size: 9px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px; }
+        .info-label { font-size: 9px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
         .info-value { font-size: 13px; color: #fff; font-weight: 700; border: none; background: transparent; width: 100%; outline: none; }
         input.info-value { border-bottom: 1px solid var(--border); padding-bottom: 2px; }
         input.info-value:focus { border-bottom-color: var(--net); }
@@ -71,13 +71,17 @@
         input:checked + .slider { background-color: var(--success); }
         input:checked + .slider:before { transform: translateX(16px); }
 
-        .admin-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-save { background: var(--net); color: #000; padding: 10px 20px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; font-size: 12px; flex: 1; transition: 0.2s;}
-        .btn-save:hover { box-shadow: 0 0 10px var(--net); }
-        .btn-leave { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px; flex: 1; transition: 0.2s;}
-        .btn-leave:hover { background: rgba(255, 68, 85, 0.1); }
+        .admin-actions { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-save { background: var(--net); color: #000; padding: 10px 15px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; font-size: 11px; transition: 0.2s;}
+        .btn-leave { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 11px; transition: 0.2s;}
+
+        .bc-box { display: flex; gap: 10px; margin-top: 10px; }
+        .bc-input { flex: 1; background: #0a1020; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 12px; outline: none; }
+        .bc-btn { background: var(--up); color: #000; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .bc-btn:hover { box-shadow: 0 0 10px var(--up); }
 
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+        .hide { display: none !important; }
     </style>
 </head>
 <body>
@@ -110,6 +114,14 @@
         </div>
     </div>
 
+    <div class="card hide" id="bc-all-card">
+        <div class="feature-title" style="margin-bottom: 10px; color: var(--up);">📢 Broadcast Global (Semua Grup)</div>
+        <div class="bc-box">
+            <input type="text" id="bc-all-text" class="bc-input" placeholder="Ketik pesan pengumuman untuk seluruh grup bot...">
+            <button class="bc-btn" onclick="broadcastAll()"><i class="fas fa-paper-plane"></i> Kirim</button>
+        </div>
+    </div>
+
     <div class="card">
         <table>
             <thead>
@@ -129,7 +141,6 @@
 </div>
 
 <script>
-    // CEK STATUS LOGIN (Tidak Ada Redirect Paksa)
     const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
     const authBtn = document.getElementById('auth-btn');
 
@@ -137,6 +148,7 @@
         authBtn.innerHTML = '🔓 Logout Admin';
         authBtn.style.color = 'var(--danger)';
         authBtn.onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
+        document.getElementById('bc-all-card').classList.remove('hide'); // Munculin broadcast all
     } else {
         authBtn.innerHTML = '🔒 Login Admin';
         authBtn.style.color = 'var(--success)';
@@ -167,8 +179,9 @@
     }
 
     async function loadData() {
-        if (expandedRows.size > 0 && isAdmin) {
-            document.getElementById('sync-status').innerText = "SYNC PAUSED (EDITING)";
+        // PERBAIKAN BUG AUTO-CLOSE: PAUSE SYNC UNTUK SEMUA USER JIKA ADA DROPDOWN TERBUKA
+        if (expandedRows.size > 0) {
+            document.getElementById('sync-status').innerText = "SYNC PAUSED (VIEWING)";
             document.getElementById('sync-status').style.color = "var(--warn)";
             return;
         }
@@ -238,8 +251,15 @@
 
                                         ${isAdmin ? `
                                         <div class="admin-actions">
-                                            <button class="btn-save" onclick="saveEdit(${index}, '${g.id}')"><i class="fas fa-save"></i> Simpan Nama</button>
-                                            <button class="btn-leave" onclick="leaveGroup('${g.id}')"><i class="fas fa-sign-out-alt"></i> Keluar Grup</button>
+                                            <button class="btn-save" onclick="saveEdit(${index}, '${g.id}')"><i class="fas fa-save"></i> Ubah Nama</button>
+                                            <button class="btn-leave" onclick="leaveGroup('${g.id}')"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                                        </div>
+                                        <div style="margin-top: 15px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
+                                            <div class="info-label">📢 Kirim Pesan ke Grup Ini</div>
+                                            <div class="bc-box">
+                                                <input type="text" id="bc-gc-${g.id}" class="bc-input" placeholder="Ketik pesan...">
+                                                <button class="bc-btn" onclick="broadcastGroup('${g.id}')"><i class="fas fa-paper-plane"></i></button>
+                                            </div>
                                         </div>
                                         ` : ''}
                                     </div>
@@ -275,41 +295,52 @@
                 <span class="feature-name">${label}</span>
                 <label class="switch">
                     <input type="checkbox" ${isChecked ? 'checked' : ''} 
-                    ${isAdmin ? `onchange="sendToggleCommand('${groupId}', '${featureKey}', this.checked)"` : 'disabled'}>
+                    ${isAdmin ? `onchange="apiAction({type: 'toggle_group_feature', target: '${groupId}', feature: '${featureKey}', value: this.checked})"` : 'disabled'}>
                     <span class="slider" style="${isAdmin ? '' : 'cursor: not-allowed; opacity: 0.6;'}"></span>
                 </label>
             </div>
         `;
     }
 
-    async function sendToggleCommand(targetId, feature, value) {
+    // --- PUSAT FUNGSI API (POST KE VERCEL LALU KE BOT) ---
+    async function apiAction(payloadData) {
         try {
             await fetch('/api/antena', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' },
-                body: JSON.stringify({
-                    action: { type: 'toggle_group_feature', target: targetId, feature: feature, value: value }
-                })
+                body: JSON.stringify({ action: payloadData })
             });
-            console.log(`Success Toggle ${feature} = ${value}`);
-        } catch(e) { console.log(e); }
+            alert("✅ Perintah berhasil dikirim ke bot!");
+        } catch(e) { alert("Gagal koneksi ke server Vercel."); }
     }
 
     function saveEdit(index, id) { 
-        alert(`Perintah "Ubah Nama" belum terhubung dengan API WA Bot.`); 
+        const newName = document.getElementById(`edit-name-${index}`).value;
+        if(newName.trim() !== '') {
+            apiAction({ type: 'change_group_name', target: id, value: newName });
+        }
     }
 
-    async function leaveGroup(id) { 
+    function leaveGroup(id) { 
         if(confirm("Yakin ingin mengeluarkan bot dari grup ini?")) {
-            try {
-                await fetch('/api/antena', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' },
-                    body: JSON.stringify({ action: { type: 'leave_gc', target: id } })
-                });
-                alert('Bot sedang keluar dari grup...');
-            } catch(e) {}
+            apiAction({ type: 'leave_gc', target: id });
         } 
+    }
+
+    function broadcastAll() {
+        const text = document.getElementById('bc-all-text').value;
+        if(text.trim() === '') return alert("Pesan tidak boleh kosong!");
+        if(confirm("Yakin kirim broadcast ke SEMUA GRUP?")) {
+            apiAction({ type: 'broadcast_all', text: text });
+            document.getElementById('bc-all-text').value = '';
+        }
+    }
+
+    function broadcastGroup(id) {
+        const text = document.getElementById(`bc-gc-${id}`).value;
+        if(text.trim() === '') return alert("Pesan tidak boleh kosong!");
+        apiAction({ type: 'broadcast_group', target: id, text: text });
+        document.getElementById(`bc-gc-${id}`).value = '';
     }
 
     loadData();
