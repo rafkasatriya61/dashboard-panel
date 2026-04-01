@@ -4,228 +4,223 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RafkaVL Botzz Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        :root { --bg-dark: #060c1c; --card-bg-1: #0e1830; --card-bg-2: #0a1020; --border: #1e3060; --text-main: #ffffff; --text-sub: #5a7aaa; --cpu: #2196f3; --ram: #00e676; --disk: #9c64ff; --net: #00cfff; --up: #ffcc00; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 30%, rgba(12, 25, 70, 0.85) 0%, rgba(2, 4, 14, 0) 70%); color: var(--text-main); min-height: 100vh; padding: 20px; overflow-x: hidden; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card { background: linear-gradient(145deg, var(--card-bg-1) 0%, var(--card-bg-2) 100%); border: 1px solid var(--border); border-radius: 16px; padding: 20px; position: relative; }
+        .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(0, 207, 255, 0.3); padding-bottom: 20px; margin-bottom: 24px; }
         
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #050b14; /* Warna background gelap persis SS */
-            color: #ffffff;
-            overflow-x: hidden;
-        }
+        /* TOMBOL HAMBURGER DITAMBAHKAN DI SINI */
+        .title h1 { font-size: 28px; display: flex; align-items: center; gap: 10px; }
+        .title h1 span.icon-diamond { color: var(--net); text-shadow: 0 0 10px var(--net); font-size: 32px; }
+        .hamburger-btn { cursor: pointer; font-size: 28px; color: var(--text-main); margin-left: 15px; transition: 0.3s; }
+        .hamburger-btn:hover { color: var(--net); text-shadow: 0 0 10px var(--net); }
+        
+        .title p { color: var(--text-sub); font-size: 14px; margin-top: 4px; }
+        .latency-box { text-align: right; }
+        .latency-val { font-size: 36px; font-weight: 700; transition: color 0.5s; }
+        .latency-lbl { color: var(--text-sub); font-size: 12px; letter-spacing: 2px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .grid-5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .gauge-container { display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .gauge-title { font-size: 18px; font-weight: 700; margin-top: 10px; }
+        .gauge-sub { color: var(--text-sub); font-size: 12px; margin-bottom: 15px; }
+        .svg-box { position: relative; width: 140px; height: 140px; }
+        .svg-box svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        .svg-bg { stroke: #0d1f40; stroke-width: 12; fill: none; }
+        .svg-value { stroke-width: 12; fill: none; stroke-linecap: round; stroke-dasharray: 314; stroke-dashoffset: 314; transition: stroke-dashoffset 1s ease-in-out, stroke 0.5s; }
+        .gauge-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; font-weight: 700; }
+        .gauge-footer { margin-top: 15px; font-size: 12px; font-weight: 600; display: flex; gap: 15px; }
+        .bar-group { margin-bottom: 20px; }
+        .bar-label { display: flex; justify-content: space-between; font-size: 13px; color: #8ab0d8; margin-bottom: 8px; }
+        .bar-track { background-color: #131e38; height: 12px; border-radius: 6px; overflow: hidden; }
+        .bar-fill { height: 100%; transition: width 1s ease-in-out; border-radius: 6px; }
+        .spec-item { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;}
+        .spec-item .lbl { color: var(--text-sub); }
+        .spec-item .val { font-weight: 700; color: #cde4ff; }
+        .offline-alert { display: none; background: rgba(255, 68, 85, 0.1); border: 1px solid #ff4455; color: #ff4455; padding: 20px; text-align: center; border-radius: 12px; font-weight: bold; margin-bottom: 20px; }
 
-        .card-bg {
-            background-color: #0b1325; /* Warna card */
-            border: 1px solid #1e293b;
-            border-radius: 12px;
-        }
-
-        /* --- CIRCULAR PROGRESS --- */
-        .circle-wrap { position: relative; width: 120px; height: 120px; margin: 0 auto 15px; }
-        .circle-wrap .circle .mask, .circle-wrap .circle .fill {
-            width: 120px; height: 120px; position: absolute; border-radius: 50%;
-        }
-        .circle-wrap .circle .mask { clip: rect(0px, 120px, 120px, 60px); }
-        .circle-wrap .inside-circle {
-            width: 96px; height: 96px; border-radius: 50%; background: #0b1325;
-            line-height: 96px; text-align: center; margin-top: 12px; margin-left: 12px;
-            position: absolute; z-index: 100; font-weight: 700; font-size: 24px;
-        }
-
-        /* Warna Lingkaran */
-        .mask-cpu .fill { background-color: #3b82f6; }
-        .mask-ram .fill { background-color: #22c55e; }
-        .mask-disk .fill { background-color: #a855f7; }
-
-        /* --- LINEAR PROGRESS --- */
-        .progress-bar { height: 6px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 5px; }
-        .progress-fill { height: 100%; transition: width 0.5s ease; }
-
-        /* --- SIDEBAR STYLE --- */
-        #sidebar-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.7); z-index: 999; 
-        }
+        /* =========================================
+           TAMBAHAN CSS UNTUK SIDEBAR (JENDELA)
+           ========================================= */
+        #sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
         #sidebar-overlay.active { display: block; }
-
-        #sidebar { 
-            position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; 
-            background: rgba(11, 19, 37, 0.95); backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(59, 130, 246, 0.3); 
-            z-index: 1000; transition: 0.3s ease; padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); 
-        }
+        #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: rgba(14, 24, 48, 0.95); backdrop-filter: blur(10px); border-right: 1px solid rgba(0, 207, 255, 0.3); z-index: 1000; transition: 0.3s ease; padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
         #sidebar.active { left: 0; }
-        .nav-link { 
-            display: block; padding: 12px 15px; color: #94a3b8; text-decoration: none; 
-            border-radius: 8px; margin-bottom: 10px; transition: 0.2s; font-weight: 600; 
-        }
-        .nav-link:hover, .nav-link.active-link { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-        .nav-logout { color: #ef4444; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .sidebar-header h2 { font-size: 18px; color: var(--net); display: flex; align-items: center; gap: 8px;}
+        .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 10px; transition: 0.2s; font-weight: 600; font-size: 14px;}
+        .sidebar-links a:hover, .sidebar-links a.active-link { background: rgba(0, 207, 255, 0.1); color: var(--net); }
+        .sidebar-links .logout { color: #ff4455; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; border-radius: 0; }
+        .sidebar-links .logout:hover { background: rgba(255, 68, 85, 0.1); color: #ff4455; }
     </style>
 </head>
-<body class="p-4 md:p-6 text-sm">
+<body>
 
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-    <div id="sidebar">
-        <div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-700">
-            <h2 class="text-blue-500 font-bold text-lg">👑 RafkaVL Menu</h2>
-            <button onclick="toggleSidebar()" class="text-white text-2xl">&times;</button>
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div id="sidebar">
+    <div class="sidebar-header">
+        <h2>👑 RafkaVL Menu</h2>
+        <button class="close-btn" onclick="toggleSidebar()">✖</button>
+    </div>
+    <div class="sidebar-links">
+        <a href="index.html" class="active-link">📊 Dashboard Status</a>
+        <a href="groups.html">👥 Manajemen Grup & Sewa</a>
+        <a href="users.html">👤 User, Limit & Premium</a>
+        <a href="settings.html">⚙️ Pengaturan Fitur Bot</a>
+        <a href="login.html" class="logout">🔒 Login Admin</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <div class="title">
+            <h1><span class="icon-diamond">◆</span> RafkaVL Botzz DASHBOARD <span class="hamburger-btn" onclick="toggleSidebar()">☰</span></h1>
+            <p>Made By Rafkasatriya61.</p>
         </div>
-        <div class="sidebar-links">
-            <a href="index.html" class="nav-link active-link"><i class="fas fa-chart-pie w-6"></i> Dashboard</a>
-            <a href="groups.html" class="nav-link"><i class="fas fa-users w-6"></i> Groups & Sewa</a>
-            <a href="users.html" class="nav-link"><i class="fas fa-user-shield w-6"></i> User & Premium</a>
-            <a href="settings.html" class="nav-link"><i class="fas fa-cog w-6"></i> Bot Settings</a>
-            <a href="login.html" class="nav-link nav-logout"><i class="fas fa-lock w-6"></i> Login Admin</a>
+        <div class="latency-box">
+            <div class="latency-val" id="val-latency" style="color: var(--up); text-shadow: 0 0 15px var(--up);">0ms</div>
+            <div class="latency-lbl">LATENCY</div>
         </div>
     </div>
+    
+    <div id="offline-alert" class="offline-alert">⚠️ Bot Sedang Offline / Menunggu data masuk...</div>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="flex justify-between items-start mb-6 border-b border-gray-800 pb-4">
+    <div class="grid-4">
+        <div class="card gauge-container"><div class="gauge-title">CPU USAGE</div><div class="gauge-sub" id="cpu-sub">-</div>
+            <div class="svg-box"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="svg-bg"></circle><circle cx="60" cy="60" r="50" class="svg-value" id="ring-cpu" style="stroke: var(--cpu); filter: drop-shadow(0 0 8px var(--cpu));"></circle></svg><div class="gauge-text" id="pct-cpu">0%</div></div>
+            <div class="gauge-footer" id="cpu-footer" style="color: var(--cpu);">-</div>
+        </div>
+        <div class="card gauge-container"><div class="gauge-title">MEMORY</div><div class="gauge-sub" id="ram-sub">-</div>
+            <div class="svg-box"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="svg-bg"></circle><circle cx="60" cy="60" r="50" class="svg-value" id="ring-ram" style="stroke: var(--ram); filter: drop-shadow(0 0 8px var(--ram));"></circle></svg><div class="gauge-text" id="pct-ram">0%</div></div>
+            <div class="gauge-footer"><span id="ram-used" style="color: var(--ram);">-</span><span id="ram-free" style="color: var(--text-sub);">-</span></div>
+        </div>
+        <div class="card gauge-container"><div class="gauge-title">STORAGE</div><div class="gauge-sub" id="disk-sub">-</div>
+            <div class="svg-box"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="svg-bg"></circle><circle cx="60" cy="60" r="50" class="svg-value" id="ring-disk" style="stroke: var(--disk); filter: drop-shadow(0 0 8px var(--disk));"></circle></svg><div class="gauge-text" id="pct-disk">0%</div></div>
+            <div class="gauge-footer"><span id="disk-used" style="color: var(--disk);">-</span><span id="disk-free" style="color: var(--text-sub);">-</span></div>
+        </div>
+        <div class="card"><div class="gauge-title" style="text-align: center;">NETWORK</div><div class="gauge-sub" id="net-iface" style="text-align: center; margin-bottom: 30px;">-</div>
+            <div style="margin-bottom: 20px;"><div style="font-size: 13px; color: #8ab0d8;">RX (Download)</div><div id="net-rx" style="font-size: 26px; font-weight: 700; color: var(--net); text-shadow: 0 0 8px var(--net);">0 B</div></div>
+            <div style="border-top: 1px solid #1a2e50; padding-top: 20px;"><div style="font-size: 13px; color: #8ab0d8;">TX (Upload)</div><div id="net-tx" style="font-size: 26px; font-weight: 700; color: #cde4ff;">0 B</div></div>
+        </div>
+    </div>
+    
+    <div class="grid-5">
+        <div class="card"><div style="font-size: 11px; color: var(--text-sub);">HOSTNAME</div><div id="info-host" style="font-weight: 700; font-size: 16px;">-</div></div>
+        <div class="card"><div style="font-size: 11px; color: var(--text-sub);">PLATFORM</div><div id="info-os" style="font-weight: 700; font-size: 16px;">-</div></div>
+        <div class="card"><div style="font-size: 11px; color: var(--text-sub);">BOT UPTIME</div><div id="info-bup" style="font-weight: 700; font-size: 16px;">-</div></div>
+        <div class="card"><div style="font-size: 11px; color: var(--text-sub);">SERVER UPTIME</div><div id="info-sup" style="font-weight: 700; font-size: 16px; color: var(--up)">-</div></div>
+        <div class="card"><div style="font-size: 11px; color: var(--text-sub);">NODE.JS</div><div id="info-node" style="font-weight: 700; font-size: 16px; color: var(--net)">-</div></div>
+    </div>
+    
+    <div class="card" style="padding: 30px;">
+        <h2 style="font-size: 22px; margin-bottom: 5px;">RafkaVL Botzz PERFORMANCE</h2><p style="color: var(--text-sub); font-size: 13px; margin-bottom: 30px;">Real-time Metrics Tracking</p>
+        <div class="grid-2">
             <div>
-                <div class="flex items-center gap-3">
-                    <span class="text-blue-500 text-xl">◆</span>
-                    <h1 class="text-xl md:text-2xl font-bold">RafkaVL Botzz DASHBOARD</h1>
-                    <i class="fas fa-bars text-2xl text-white cursor-pointer hover:text-blue-400 ml-2" onclick="toggleSidebar()"></i>
-                </div>
-                <p class="text-gray-500 text-xs mt-1 ml-6">Made By Rafkasatriya61.</p>
+                <div class="bar-group"><div class="bar-label"><span>CPU Load</span><span id="bar-txt-cpu">0%</span></div><div class="bar-track"><div id="bar-cpu" class="bar-fill" style="width: 0%; background: var(--cpu); box-shadow: 0 0 10px var(--cpu);"></div></div></div>
+                <div class="bar-group"><div class="bar-label"><span>Memory Usage</span><span id="bar-txt-ram">0%</span></div><div class="bar-track"><div id="bar-ram" class="bar-fill" style="width: 0%; background: var(--ram); box-shadow: 0 0 10px var(--ram);"></div></div></div>
+                <div class="bar-group"><div class="bar-label"><span>Disk Usage</span><span id="bar-txt-disk">0%</span></div><div class="bar-track"><div id="bar-disk" class="bar-fill" style="width: 0%; background: var(--disk); box-shadow: 0 0 10px var(--disk);"></div></div></div>
+                <div class="bar-group"><div class="bar-label"><span>Bot Response</span><span id="bar-txt-lat">0ms</span></div><div class="bar-track"><div id="bar-lat" class="bar-fill" style="width: 0%; background: var(--up); box-shadow: 0 0 10px var(--up);"></div></div></div>
             </div>
-            <div class="text-right">
-                <div id="latency" class="text-yellow-400 font-bold text-2xl">0ms</div>
-                <div class="text-gray-500 text-xs tracking-widest">LATENCY</div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            <div class="card-bg p-6 text-center">
-                <h3 class="font-bold mb-4">CPU USAGE</h3>
-                <div class="circle-wrap"><div class="circle mask-cpu mask"><div class="fill"></div></div><div class="inside-circle" id="cpu-circle-txt">0%</div></div>
-                <p class="text-blue-400 text-xs mt-4">Node.js Engine</p>
-            </div>
-            <div class="card-bg p-6 text-center">
-                <h3 class="font-bold mb-4">MEMORY</h3>
-                <div class="circle-wrap"><div class="circle mask-ram mask"><div class="fill"></div></div><div class="inside-circle" id="ram-circle-txt text-green-400">0%</div></div>
-                <p class="text-green-400 text-xs mt-4">RAM Monitor</p>
-            </div>
-            <div class="card-bg p-6 text-center">
-                <h3 class="font-bold mb-4">STORAGE</h3>
-                <div class="circle-wrap"><div class="circle mask-disk mask"><div class="fill"></div></div><div class="inside-circle" id="disk-circle-txt text-purple-400">0%</div></div>
-                <p class="text-purple-400 text-xs mt-4">Disk Usage</p>
-            </div>
-            <div class="grid grid-rows-2 gap-4">
-                <div class="card-bg p-4 flex flex-col justify-center">
-                    <p class="text-gray-400 text-xs mb-1 uppercase">Bot Uptime</p>
-                    <p id="uptime-txt" class="text-xl font-bold text-blue-400">0h 0m</p>
-                </div>
-                <div class="card-bg p-4 flex flex-col justify-center">
-                    <p class="text-gray-400 text-xs mb-1 uppercase">Bot Name</p>
-                    <p id="botname-txt" class="text-xl font-bold text-white">RafkaXr Bot</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-bg p-6">
-            <h2 class="font-bold text-lg mb-1">RafkaVL Botzz PERFORMANCE</h2>
-            <p class="text-gray-500 text-xs mb-6">Real-time Metrics Tracking</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <div class="mb-4">
-                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-400">CPU Load</span><span id="cpu-bar-txt">0%</span></div>
-                        <div class="progress-bar"><div id="cpu-bar" class="progress-fill bg-blue-500" style="width: 0%"></div></div>
-                    </div>
-                    <div class="mb-4">
-                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-400">Memory Usage</span><span id="ram-bar-txt">0%</span></div>
-                        <div class="progress-bar"><div id="ram-bar" class="progress-fill bg-green-500" style="width: 0%"></div></div>
-                    </div>
-                    <div class="mb-4">
-                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-400">Disk Usage</span><span id="disk-bar-txt">0%</span></div>
-                        <div class="progress-bar"><div id="disk-bar" class="progress-fill bg-purple-500" style="width: 0%"></div></div>
-                    </div>
-                </div>
-
-                <div class="text-gray-400 text-xs space-y-3">
-                    <div class="flex justify-between border-b border-gray-800 pb-2"><span>Platform</span><span class="text-white">Linux (x64)</span></div>
-                    <div class="flex justify-between border-b border-gray-800 pb-2"><span>Total Users</span><span id="total-users" class="text-white">0</span></div>
-                    <div class="flex justify-between border-b border-gray-800 pb-2"><span>Total Groups</span><span id="total-groups" class="text-white">0</span></div>
-                    <div class="flex justify-between border-b border-gray-800 pb-2"><span>Status</span><span class="text-green-400 font-bold">ONLINE</span></div>
-                </div>
+            <div>
+                <div class="spec-item"><span class="lbl">OS Release</span><span class="val" id="spec-os">-</span></div>
+                <div class="spec-item"><span class="lbl">CPU Cores</span><span class="val" id="spec-cores">-</span></div>
+                <div class="spec-item"><span class="lbl">CPU Speed</span><span class="val" id="spec-speed">-</span></div>
+                <div class="spec-item"><span class="lbl">Total Memory</span><span class="val" id="spec-tmem">-</span></div>
+                <div class="spec-item"><span class="lbl">Free Memory</span><span class="val" id="spec-fmem">-</span></div>
             </div>
         </div>
     </div>
+    <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #2a3d60;" id="last-update">Dashboard Generated: -</div>
+</div>
 
-    <script>
-        // 1. Fungsi Sidebar
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('sidebar-overlay').classList.toggle('active');
-        }
+<script>
+    // --- FUNGSI UNTUK MEMBUKA/MENUTUP SIDEBAR ---
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebar-overlay').classList.toggle('active');
+    }
 
-        // 2. Fungsi Format Waktu Uptime
-        function formatUptime(seconds) {
-            const d = Math.floor(seconds / (3600*24));
-            const h = Math.floor(seconds % (3600*24) / 3600);
-            const m = Math.floor(seconds % 3600 / 60);
-            if(d > 0) return `${d}d ${h}h ${m}m`;
-            return `${h}h ${m}m`;
-        }
+    const formatBytes = (b) => { if (b >= 1e9) return (b/1e9).toFixed(2) + " GB"; if (b >= 1e6) return (b/1e6).toFixed(2) + " MB"; return (b/1e3).toFixed(2) + " KB"; };
+    const formatUp = (s) => { const d = Math.floor(s/86400), h = Math.floor((s%86400)/3600), m = Math.floor((s%3600)/60); return d ? `${d}d ${h}h ${m}m` : `${h}h ${m}m`; };
+    const updRing = (id, pct) => document.getElementById(id).style.strokeDashoffset = 314 - (pct/100)*314;
+    const updBar = (id, pct) => document.getElementById(id).style.width = pct + '%';
 
-        // 3. Fungsi Narik Data dari Vercel
-        async function fetchDashboard() {
-            try {
-                // SESUAIKAN LINK INI KALAU BEDA
-                const res = await fetch('/api/antena'); 
-                const data = await res.json();
-
-                if(data.status === 'online') {
-                    // Latency
-                    const lat = document.getElementById('latency');
-                    lat.innerText = data.latency + 'ms';
-                    lat.className = data.latency > 200 ? 'text-red-500 font-bold text-2xl' : 'text-yellow-400 font-bold text-2xl';
-
-                    // Variables
-                    let cpu = data.system.cpu || 0;
-                    let ram = data.system.ram_percent || 0;
-                    let disk = data.system.disk_percent || 30; // fallback
-                    
-                    // Update CPU
-                    document.getElementById('cpu-circle-txt').innerText = cpu + '%';
-                    document.getElementById('cpu-bar-txt').innerText = cpu + '%';
-                    document.getElementById('cpu-bar').style.width = cpu + '%';
-                    
-                    // Update RAM
-                    document.getElementById('ram-circle-txt text-green-400').innerText = ram + '%';
-                    document.getElementById('ram-bar-txt').innerText = ram + '%';
-                    document.getElementById('ram-bar').style.width = ram + '%';
-
-                    // Update Disk
-                    document.getElementById('disk-circle-txt text-purple-400').innerText = disk + '%';
-                    document.getElementById('disk-bar-txt').innerText = disk + '%';
-                    document.getElementById('disk-bar').style.width = disk + '%';
-
-                    // Update Uptime & Bot Name
-                    document.getElementById('uptime-txt').innerText = formatUptime(data.system.uptime);
-                    if(data.database && data.database.config) {
-                        document.getElementById('botname-txt').innerText = data.database.config.botName || 'RafkaXr Bot';
-                    }
-
-                    // Update Total Users & Groups (Dari Payload Baru)
-                    if(data.database) {
-                        if(data.database.users) document.getElementById('total-users').innerText = data.database.users.length;
-                        if(data.database.chats) document.getElementById('total-groups').innerText = data.database.chats.length;
-                    }
-                }
-            } catch (err) {
-                console.log("Menunggu data dari bot...");
+    const fetchStatus = async () => {
+        try {
+            // Nembak ke file antena.js buatan kita
+            const res = await fetch('/api/antena');
+            const data = await res.json();
+            
+            if (data.status === 'offline') {
+                document.getElementById('offline-alert').style.display = 'block';
+                return;
             }
-        }
+            document.getElementById('offline-alert').style.display = 'none';
 
-        // Jalankan tiap 3 detik
-        setInterval(fetchDashboard, 3000);
-        fetchDashboard();
-    </script>
+            // Animasi Warna Latency
+            const latEl = document.getElementById('val-latency');
+            latEl.innerText = data.latency + 'ms';
+            latEl.style.color = data.latency < 100 ? '#00e676' : (data.latency < 300 ? '#ffcc00' : '#ff4455');
+            latEl.style.textShadow = '0 0 15px ' + latEl.style.color;
+
+            // CPU
+            document.getElementById('cpu-sub').innerText = data.cpu.cores + ' Cores @ ' + data.cpu.speed + ' MHz';
+            document.getElementById('pct-cpu').innerText = data.cpu.usage + '%';
+            document.getElementById('cpu-footer').innerText = data.cpu.model.substring(0, 30);
+            updRing('ring-cpu', data.cpu.usage); updBar('bar-cpu', data.cpu.usage); document.getElementById('bar-txt-cpu').innerText = data.cpu.usage + '%';
+
+            // RAM
+            document.getElementById('ram-sub').innerText = 'Total: ' + formatBytes(data.memory.total);
+            document.getElementById('pct-ram').innerText = data.memory.percent + '%';
+            document.getElementById('ram-used').innerText = formatBytes(data.memory.used) + ' Used';
+            document.getElementById('ram-free').innerText = formatBytes(data.memory.free) + ' Free';
+            updRing('ring-ram', data.memory.percent); updBar('bar-ram', data.memory.percent); document.getElementById('bar-txt-ram').innerText = data.memory.percent + '%';
+
+            // DISK
+            document.getElementById('disk-sub').innerText = 'Total: ' + formatBytes(data.disk.total);
+            document.getElementById('pct-disk').innerText = data.disk.percent + '%';
+            document.getElementById('disk-used').innerText = formatBytes(data.disk.used) + ' Used';
+            document.getElementById('disk-free').innerText = formatBytes(data.disk.free) + ' Free';
+            updRing('ring-disk', data.disk.percent); updBar('bar-disk', data.disk.percent); document.getElementById('bar-txt-disk').innerText = data.disk.percent + '%';
+            
+            // Lateny Bar
+            let latPct = Math.min(100, (data.latency / 1000) * 100);
+            updBar('bar-lat', latPct); document.getElementById('bar-txt-lat').innerText = data.latency + 'ms';
+
+            // NET (Bisa dibiarkan nol jika tidak ada dari API)
+            if(data.network) {
+                document.getElementById('net-iface').innerText = 'Interface: ' + data.network.interface;
+                document.getElementById('net-rx').innerText = formatBytes(data.network.rx);
+                document.getElementById('net-tx').innerText = formatBytes(data.network.tx);
+            }
+
+            // INFO
+            document.getElementById('info-host').innerText = data.system.hostname || 'Rafka-Server';
+            document.getElementById('info-os').innerText = data.system.platform || 'Linux';
+            document.getElementById('info-bup').innerText = formatUp(data.system.uptime || 0); // Uptime Bot
+            document.getElementById('info-sup').innerText = formatUp(data.system.uptime || 0); // Uptime VPS
+            document.getElementById('info-node').innerText = 'v20.20.2'; // Sesuai default Mas Rafka
+            document.getElementById('spec-os').innerText = 'Ubuntu / Linux x64';
+            document.getElementById('spec-cores').innerText = data.cpu.cores + ' Cores';
+            document.getElementById('spec-speed').innerText = data.cpu.speed + ' MHz';
+            document.getElementById('spec-tmem').innerText = formatBytes(data.memory.total);
+            document.getElementById('spec-fmem').innerText = formatBytes(data.memory.free);
+
+            document.getElementById('last-update').innerText = 'Dashboard Generated: ' + data.timestamp;
+
+        } catch (e) {
+            document.getElementById('offline-alert').style.display = 'block';
+        }
+    };
+
+    fetchStatus();
+    setInterval(fetchStatus, 3000); // Tarik data tiap 3 detik
+</script>
 </body>
 </html>
-
