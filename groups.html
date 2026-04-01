@@ -11,7 +11,7 @@
             --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; 
             --net: #00cfff; --success: #00e676; --danger: #ff4455; 
             --text-sub: #8ab0d8; --text-main: #ffffff; --warn: #ffcc00;
-            --modal-bg: #0b132b; --input-bg: #121f40;
+            --detail-bg: #0b132b; --input-bg: #121f40;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; overflow-x: hidden; }
@@ -26,52 +26,64 @@
         .container { max-width: 1400px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
         .header h1 { font-size: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
-        .header h1 span.icon { color: var(--net); }
         .menu-btn { cursor: pointer; font-size: 22px; margin-right: 10px; transition: 0.2s; }
         .menu-btn:hover { color: var(--net); }
 
-        /* TABEL STYLE (MIRIP JAGPRO) */
+        /* TABEL STYLE */
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
         th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); letter-spacing: 0.5px; }
         td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; font-weight: 600; vertical-align: middle; }
         
-        /* WARNA TEXT TABEL */
         .grup-name { color: var(--net); font-weight: 700; }
         .grup-id { color: var(--text-sub); font-family: monospace; font-size: 12px; font-weight: 400; }
         .sewa-hari { color: var(--warn); font-weight: 700; }
         
-        /* BADGE OUTLINE */
+        /* BADGE */
         .badge { padding: 4px 12px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; background: transparent; }
         .badge-aktif { color: var(--success); border: 1px solid var(--success); }
         .badge-banned { color: var(--danger); border: 1px solid var(--danger); }
+        .badge-prem { background: rgba(0, 207, 255, 0.1); color: var(--net); border: 1px solid var(--net); }
+        .badge-reg { background: rgba(138, 176, 216, 0.1); color: var(--text-sub); border: 1px solid var(--text-sub); }
         
-        /* BUTTON OUTLINE */
-        .btn-detail { background: transparent; color: var(--text-sub); border: 1px solid var(--border); padding: 5px 15px; border-radius: 4px; cursor: pointer; transition: 0.3s; font-size: 11px; font-weight: 600; }
-        .btn-detail:hover { border-color: var(--net); color: var(--net); }
+        /* TOMBOL ACCORDION (PANAH) */
+        .btn-toggle { background: rgba(0, 207, 255, 0.1); color: var(--net); border: 1px solid var(--net); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .btn-toggle:hover { background: var(--net); color: #000; box-shadow: 0 0 10px var(--net); }
+        .btn-toggle.open { background: var(--net); color: #000; transform: rotate(180deg); }
 
-        /* MODAL POP-UP (PERSIS SCREENSHOT MAS RAFKA) */
-        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; backdrop-filter: blur(3px); }
-        .modal-box { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 450px; background: var(--modal-bg); border-radius: 12px; z-index: 2001; padding: 25px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        /* DETAIL EXPANDED ROW (ACCORDION) */
+        .detail-row { display: none; background: var(--detail-bg); border-bottom: 1px solid var(--border); }
+        .detail-row.open { display: table-row; }
+        .detail-content { padding: 25px; border-left: 3px solid var(--net); display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h3 { font-size: 14px; font-weight: 700; }
-        .close-btn { background: #162445; color: #fff; border: none; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .close-btn:hover { background: var(--danger); }
-
-        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .info-box { background: var(--input-bg); padding: 12px 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; border: 1px solid transparent; }
+        /* KOTAK INFO */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .info-box { background: var(--input-bg); padding: 12px 15px; border-radius: 8px; border: 1px solid #162445; }
         .info-box.full { grid-column: span 2; }
         .info-label { font-size: 9px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px; }
         .info-value { font-size: 13px; color: #fff; font-weight: 700; border: none; background: transparent; width: 100%; outline: none; }
         input.info-value { border-bottom: 1px solid var(--border); padding-bottom: 2px; }
         input.info-value:focus { border-bottom-color: var(--net); }
-        
-        .admin-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; grid-column: span 2; }
-        .btn-save { background: var(--net); color: #000; padding: 10px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .btn-save:hover { box-shadow: 0 0 10px var(--net); }
-        .btn-leave { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px; transition: 0.2s; }
-        .btn-leave:hover { background: rgba(255, 68, 85, 0.1); }
+
+        /* SECTION SWITCH FITUR */
+        .feature-section { background: var(--input-bg); padding: 20px; border-radius: 12px; border: 1px solid #162445; }
+        .feature-title { font-size: 12px; color: var(--net); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .feature-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; }
+        .feature-name { font-size: 12px; font-weight: 600; color: #fff; }
+
+        /* SAKLAR TOGGLE (SWITCH) */
+        .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e3060; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        /* TOMBOL ADMIN */
+        .admin-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-save { background: var(--net); color: #000; padding: 10px 20px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; font-size: 12px; flex: 1; }
+        .btn-leave { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px; flex: 1; }
 
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
     </style>
@@ -79,16 +91,6 @@
 <body>
 
 <div id="overlay" onclick="toggleSidebar()"></div>
-<div id="modal-overlay" onclick="closeModal()"></div>
-
-<div id="modal-box" class="modal-box">
-    <div class="modal-header">
-        <h3 id="modal-title">Detail Grup: -</h3>
-        <button class="close-btn" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-grid" id="modal-content">
-        </div>
-</div>
 
 <div id="sidebar">
     <h2 style="color:var(--net); margin-bottom:30px; font-size: 18px; display: flex; justify-content: space-between;">
@@ -108,11 +110,11 @@
     <div class="header">
         <h1>
             <span class="menu-btn" onclick="toggleSidebar()">☰</span> 
-            <span class="icon">◆</span> GROUP MANAGEMENT
+            <span style="color: var(--net);">◆</span> GROUP MANAGEMENT
         </h1>
         <div style="text-align: right;">
             <div id="count-gc" style="font-size: 20px; font-weight: 700; color: var(--net);">0</div>
-            <div style="font-size: 9px; color: var(--text-sub); letter-spacing: 1px;">TOTAL GROUPS</div>
+            <div style="font-size: 9px; color: var(--text-sub); letter-spacing: 1px;" id="sync-status">SYNCING...</div>
         </div>
     </div>
 
@@ -121,10 +123,10 @@
             <thead>
                 <tr>
                     <th>Grup Name</th>
-                    <th>ID WhatsApp</th>
-                    <th>Status</th>
-                    <th>Masa Sewa</th>
-                    <th>Action</th>
+                    <th>Tipe Grup</th>
+                    <th>Status Bot</th>
+                    <th>Sisa Sewa</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody id="list-gc">
@@ -136,19 +138,41 @@
 
 <script>
     let cachedData = [];
-    let isAdmin = true; // Set true jika login sebagai admin
+    let isAdmin = true; // Mode Admin On
+    let expandedRows = new Set(); // Menyimpan index baris yang sedang dibuka (dropdown)
 
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
         document.getElementById('overlay').classList.toggle('active');
     }
 
-    function closeModal() {
-        document.getElementById('modal-box').style.display = 'none';
-        document.getElementById('modal-overlay').style.display = 'none';
+    // Fungsi klik panah bawah
+    function toggleDetail(index) {
+        const detailRow = document.getElementById(`detail-${index}`);
+        const btn = document.getElementById(`btn-toggle-${index}`);
+        
+        if (expandedRows.has(index)) {
+            expandedRows.delete(index);
+            detailRow.classList.remove('open');
+            btn.classList.remove('open');
+        } else {
+            expandedRows.add(index);
+            detailRow.classList.add('open');
+            btn.classList.add('open');
+        }
     }
 
     async function loadData() {
+        // PAUSE SYNC: Jika ada dropdown yang terbuka, jangan render ulang agar inputan user tidak hilang
+        if (expandedRows.size > 0) {
+            document.getElementById('sync-status').innerText = "SYNC PAUSED (EDITING)";
+            document.getElementById('sync-status').style.color = "var(--warn)";
+            return;
+        }
+
+        document.getElementById('sync-status').innerText = "AUTO SYNC ON";
+        document.getElementById('sync-status').style.color = "var(--success)";
+
         try {
             const res = await fetch('/api/antena');
             const data = await res.json();
@@ -156,82 +180,124 @@
             if (data.database && data.database.chats) {
                 cachedData = data.database.chats;
                 const tbody = document.getElementById('list-gc');
-                tbody.innerHTML = '';
+                let htmlContent = '';
+                
                 document.getElementById('count-gc').innerText = cachedData.length;
                 
                 cachedData.forEach((g, index) => {
                     const statusClass = g.status.toUpperCase() === 'AKTIF' ? 'badge-aktif' : 'badge-banned';
                     const sewaColor = (g.sisa_sewa === 'NOT SET' || g.sisa_sewa === 'EXPIRED') ? 'var(--danger)' : 'var(--warn)';
+                    const isPrem = g.isPremium ? 'PREMIUM' : 'REGULER';
+                    const premClass = g.isPremium ? 'badge-prem' : 'badge-reg';
+                    const s = g.settings || {}; // Setingan grup
 
-                    tbody.innerHTML += `
+                    // BARIS UTAMA (MAIN ROW)
+                    htmlContent += `
                         <tr>
-                            <td class="grup-name">${g.name}</td>
-                            <td class="grup-id">${g.full_id}</td>
+                            <td class="grup-name">${g.name}<br><span class="grup-id">${g.full_id}</span></td>
+                            <td><span class="badge ${premClass}">${isPrem}</span></td>
                             <td><span class="badge ${statusClass}">${g.status}</span></td>
                             <td class="sewa-hari" style="color: ${sewaColor};">${g.sisa_sewa}</td>
-                            <td><button class="btn-detail" onclick="showDetail(${index})">Detail</button></td>
+                            <td>
+                                <button id="btn-toggle-${index}" class="btn-toggle" onclick="toggleDetail(${index})">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+
+                    // BARIS DETAIL (ACCORDION / DROPDOWN)
+                    htmlContent += `
+                        <tr id="detail-${index}" class="detail-row">
+                            <td colspan="5">
+                                <div class="detail-content">
+                                    
+                                    <div>
+                                        <div class="info-grid">
+                                            <div class="info-box full">
+                                                <div class="info-label">NAMA GRUP</div>
+                                                ${isAdmin ? `<input type="text" class="info-value" value="${g.name}" id="edit-name-${index}">` : `<div class="info-value">${g.name}</div>`}
+                                            </div>
+                                            <div class="info-box">
+                                                <div class="info-label">SISA HARI</div>
+                                                <div class="info-value">${g.sisa_angka}</div>
+                                            </div>
+                                            <div class="info-box">
+                                                <div class="info-label">TANGGAL GABUNG</div>
+                                                <div class="info-value">${g.tgl_join}</div>
+                                            </div>
+                                            <div class="info-box">
+                                                <div class="info-label">CHAT HARI INI</div>
+                                                <div class="info-value" style="color: var(--net);">${g.chat_today}</div>
+                                            </div>
+                                            <div class="info-box">
+                                                <div class="info-label">TOTAL CHAT</div>
+                                                <div class="info-value" style="color: var(--net);">${g.chat_all}</div>
+                                            </div>
+                                        </div>
+
+                                        ${isAdmin ? `
+                                        <div class="admin-actions">
+                                            <button class="btn-save" onclick="saveEdit(${index}, '${g.id}')"><i class="fas fa-save"></i> Simpan Nama</button>
+                                            <button class="btn-leave" onclick="leaveGroup('${g.id}')"><i class="fas fa-sign-out-alt"></i> Keluar Grup</button>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+
+                                    <div class="feature-section">
+                                        <div class="feature-title">⚙️ Kontrol Fitur Bot di Grup</div>
+                                        <div class="feature-grid">
+                                            ${createSwitch(g.id, 'Welcome', 'welcome', s.welcome)}
+                                            ${createSwitch(g.id, 'Anti Link', 'antilink', s.antilink)}
+                                            ${createSwitch(g.id, 'Anti Link All', 'antilinkall', s.antilinkall)}
+                                            ${createSwitch(g.id, 'Anti Video', 'antivideo', s.antivideo)}
+                                            ${createSwitch(g.id, 'Anti Saluran', 'antisaluran', s.antisaluran)}
+                                            ${createSwitch(g.id, 'Anti Toxic', 'antitoxic', s.antitoxic)}
+                                            ${createSwitch(g.id, 'Anti Delete', 'antidelete', s.antidelete)}
+                                            ${createSwitch(g.id, 'Notif Gempa', 'notifgempa', s.notifgempa)}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </td>
                         </tr>
                     `;
                 });
+
+                tbody.innerHTML = htmlContent;
             }
         } catch (e) { console.log(e); }
     }
 
-    function showDetail(index) {
-        const g = cachedData[index];
-        document.getElementById('modal-title').innerText = "Detail Grup: " + g.name;
-        
-        let content = `
-            <div class="info-box full">
-                <div class="info-label">NAMA</div>
-                ${isAdmin ? `<input type="text" class="info-value" value="${g.name}" id="edit-name">` : `<div class="info-value">${g.name}</div>`}
-            </div>
-            
-            <div class="info-box">
-                <div class="info-label">STATUS</div>
-                <div class="info-value">${g.status}</div>
-            </div>
-            <div class="info-box">
-                <div class="info-label">SISA HARI</div>
-                <div class="info-value">${g.sisa_angka}</div>
-            </div>
-            
-            <div class="info-box">
-                <div class="info-label">TANGGAL GABUNG</div>
-                <div class="info-value">${g.tgl_join}</div>
-            </div>
-            <div class="info-box">
-                <div class="info-label">EXPIRED</div>
-                <div class="info-value">${g.tgl_exp}</div>
-            </div>
-
-            <div class="info-box">
-                <div class="info-label">CHAT HARI INI</div>
-                <div class="info-value" style="color: var(--net);">${g.chat_today}</div>
-            </div>
-            <div class="info-box">
-                <div class="info-label">TOTAL CHAT</div>
-                <div class="info-value" style="color: var(--net);">${g.chat_all}</div>
-            </div>
-            
-            <div class="info-box full" style="background: transparent; border: 1px solid var(--border);">
-                <div class="info-label">STATUS (Badge)</div>
-                <div><span class="badge ${g.status.toUpperCase() === 'AKTIF' ? 'badge-aktif' : 'badge-banned'}">${g.status}</span></div>
+    // Fungsi Render Toggle Switch
+    function createSwitch(groupId, label, featureKey, isChecked) {
+        return `
+            <div class="feature-item">
+                <span class="feature-name">${label}</span>
+                <label class="switch">
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="sendToggleCommand('${groupId}', '${featureKey}', this.checked)">
+                    <span class="slider"></span>
+                </label>
             </div>
         `;
+    }
 
-        if(isAdmin) {
-            content += `
-                <div class="admin-actions">
-                    <button class="btn-save" onclick="alert('Fitur simpan nama grup sedang dikembangkan!')">SIMPAN</button>
-                    <button class="btn-leave" onclick="if(confirm('Keluarkan bot dari grup ini?')) alert('Perintah dikirim!')">KELUARKAN BOT</button>
-                </div>
-            `;
-        }
+    // --- FUNGSI ACTION (KIRIM PERINTAH KE API) ---
+    function sendToggleCommand(targetId, feature, value) {
+        // Nanti ini dikirim via fetch POST ke /api/antena
+        console.log(`Command: Set ${feature} = ${value} for Group ${targetId}`);
+        alert(`Perintah dikirim: Fitur ${feature} diubah menjadi ${value ? 'ON' : 'OFF'}`);
+    }
 
-        document.getElementById('modal-content').innerHTML = content;
-        document.getElementById('modal-box').style.display = 'block';
-        document.getElementById('modal-overlay').style.display = 'block';
+    function saveEdit(index, id) { 
+        const newName = document.getElementById(`edit-name-${index}`).value;
+        alert(`Nama grup ID ${id} akan diubah menjadi: ${newName}`); 
+    }
+
+    function leaveGroup(id) { 
+        if(confirm("Yakin ingin mengeluarkan bot dari grup ini?")) {
+            alert(`Perintah "Leave Group" dikirim untuk ID: ${id}`);
+        } 
     }
 
     // Auto-refresh data tiap 5 detik
@@ -240,4 +306,3 @@
 </script>
 </body>
 </html>
-
