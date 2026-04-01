@@ -134,79 +134,58 @@
     <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #2a3d60;" id="last-update">Dashboard Generated: -</div>
 </div>
 <script>
-    // CEK STATUS LOGIN
-    const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
-    const authBtn = document.getElementById('auth-btn');
-
-    if (isAdmin) {
-        authBtn.innerHTML = '🔓 Logout Admin';
-        authBtn.style.color = 'var(--danger)';
-        authBtn.onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
-    } else {
-        authBtn.innerHTML = '🔒 Login Admin';
-        authBtn.style.color = 'var(--success)';
-        authBtn.onclick = () => { window.location.href = 'login.html'; };
-    }
-
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('sidebar-overlay').classList.toggle('active');
-    }
-
-    const formatBytes = (b) => { if (b >= 1e9) return (b/1e9).toFixed(2) + " GB"; if (b >= 1e6) return (b/1e6).toFixed(2) + " MB"; return (b/1e3).toFixed(2) + " KB"; };
-    const formatUp = (s) => { const d = Math.floor(s/86400), h = Math.floor((s%86400)/3600), m = Math.floor((s%3600)/60); return d ? `${d}d ${h}h ${m}m` : `${h}h ${m}m`; };
-    const updRing = (id, pct) => document.getElementById(id).style.strokeDashoffset = 314 - (pct/100)*314;
-    const updBar = (id, pct) => document.getElementById(id).style.width = pct + '%';
+    const formatUp = (s) => { 
+        const d = Math.floor(s/86400), h = Math.floor((s%86400)/3600), m = Math.floor((s%3600)/60); 
+        return d ? `${d}d ${h}h ${m}m` : `${h}h ${m}m`; 
+    };
+    const updRing = (id, pct) => {
+        const ring = document.getElementById(id);
+        if(ring) ring.style.strokeDashoffset = 314 - (pct/100)*314;
+    };
 
     const fetchStatus = async () => {
         try {
             const res = await fetch('/api/antena');
             const data = await res.json();
             
-            if (data.status === 'offline') {
-                document.getElementById('offline-alert').style.display = 'block';
-                return;
-            }
-            document.getElementById('offline-alert').style.display = 'none';
+            if (data.status === 'offline') return;
 
-            let latPct = Math.min(100, (data.latency / 1000) * 100);
-            const latEl = document.getElementById('val-latency');
-            latEl.innerText = data.latency + 'ms';
-            latEl.style.color = data.latency < 100 ? '#00e676' : (data.latency < 300 ? '#ffcc00' : '#ff4455');
-            latEl.style.textShadow = '0 0 15px ' + latEl.style.color;
+            // --- UPDATE CPU & RAM ---
+            let cpu = data.system?.cpu || 0;
+            let ram = data.system?.ram_percent || 0;
+            document.getElementById('pct-cpu').innerText = cpu + '%';
+            document.getElementById('pct-ram').innerText = ram + '%';
+            updRing('ring-cpu', cpu);
+            updRing('ring-ram', ram);
 
-            let cpuUsage = data.system?.cpu || 0;
-            let ramPct = data.system?.ram_percent || 0;
-            let uptimeBot = data.system?.uptime || 0;
+            // --- FIX STORAGE (ANGKA & LINGKARAN) ---
+            let disk = data.system?.disk_percent || 0;
+            const diskText = document.getElementById('pct-disk');
+            if(diskText) diskText.innerText = disk + '%';
+            updRing('ring-disk', disk);
 
-            document.getElementById('cpu-sub').innerText = 'Pterodactyl Node';
-            document.getElementById('pct-cpu').innerText = cpuUsage + '%';
-            updRing('ring-cpu', cpuUsage); updBar('bar-cpu', cpuUsage); document.getElementById('bar-txt-cpu').innerText = cpuUsage + '%';
+            // --- FIX NETWORK ---
+            if(data.system?.net_rx) document.getElementById('net-rx').innerText = data.system.net_rx;
+            if(data.system?.net_tx) document.getElementById('net-tx').innerText = data.system.net_tx;
 
-            document.getElementById('ram-sub').innerText = 'Memory Monitor';
-            document.getElementById('pct-ram').innerText = ramPct + '%';
-            updRing('ring-ram', ramPct); updBar('bar-ram', ramPct); document.getElementById('bar-txt-ram').innerText = ramPct + '%';
+            // --- FIX UPTIME ---
+            let uptime = data.system?.uptime || 0;
+            document.getElementById('info-bup').innerText = formatUp(uptime);
+            document.getElementById('info-sup').innerText = formatUp(uptime);
 
-            updBar('bar-lat', latPct); document.getElementById('bar-txt-lat').innerText = data.latency + 'ms';
+            // --- FIX SPESIFIKASI KANAN BAWAH ---
+            if(data.system?.cpu_cores) document.getElementById('spec-cores').innerText = data.system.cpu_cores + ' Cores';
+            if(data.system?.cpu_speed) document.getElementById('spec-speed').innerText = data.system.cpu_speed + ' MHz';
+            
+            const formatBytes = (b) => (b/1e9).toFixed(2) + " GB";
+            if(data.system?.total_mem) document.getElementById('spec-tmem').innerText = formatBytes(data.system.total_mem);
+            if(data.system?.free_mem) document.getElementById('spec-fmem').innerText = formatBytes(data.system.free_mem);
 
-            document.getElementById('info-bup').innerText = formatUp(uptimeBot);
-            document.getElementById('info-sup').innerText = formatUp(uptimeBot);
-
-            // 🔥 UPDATE DATA KOSONG MENJADI REAL DARI BACKEND 🔥
-            if(data.system) {
-                if(data.system.cpu_cores) document.getElementById('spec-cores').innerText = data.system.cpu_cores + ' Cores';
-                if(data.system.cpu_speed) document.getElementById('spec-speed').innerText = data.system.cpu_speed + ' MHz';
-                if(data.system.total_mem) document.getElementById('spec-tmem').innerText = formatBytes(data.system.total_mem);
-                if(data.system.free_mem) document.getElementById('spec-fmem').innerText = formatBytes(data.system.free_mem);
-            }
-
-            document.getElementById('last-update').innerText = 'Dashboard Generated: ' + (data.timestamp || new Date().toLocaleString());
-
-        } catch (e) { }
+        } catch (e) { console.log("Dashboard Sync Error"); }
     };
 
+    setInterval(fetchStatus, 3000);
     fetchStatus();
-    setInterval(fetchStatus, 3000); 
 </script>
 </body>
 </html>
