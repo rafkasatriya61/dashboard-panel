@@ -21,7 +21,7 @@
         .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
         .sidebar-links a:hover, .sidebar-links a.active { background: rgba(0, 207, 255, 0.1); color: var(--net-glow); }
 
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; display: none; /* Disembunyikan dulu sampai verifikasi admin */ }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
         .header h1 { font-size: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
         .menu-btn { cursor: pointer; font-size: 22px; margin-right: 10px; transition: 0.2s; }
@@ -29,14 +29,11 @@
         .section-title { font-size: 13px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; margin-top: 30px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
         .section-title i { color: var(--net-glow); }
 
-        /* GRID FITUR BOT */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
         .feature-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        .feature-card:hover { border-color: var(--net); box-shadow: 0 0 15px rgba(0, 102, 255, 0.2); }
         .fc-info h3 { font-size: 13px; color: #fff; margin-bottom: 3px; }
         .fc-info p { font-size: 9px; color: var(--text-sub); }
 
-        /* SAKLAR */
         .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e3060; transition: .4s; border-radius: 34px; }
@@ -44,7 +41,6 @@
         input:checked + .slider { background-color: var(--net); box-shadow: 0 0 10px var(--net); }
         input:checked + .slider:before { transform: translateX(18px); }
 
-        /* GRID SETTINGS.JS */
         .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; }
         .setting-box { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
         .sb-header { padding: 15px 20px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
@@ -64,6 +60,15 @@
 </head>
 <body>
 
+<div id="auth-lock" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#060c1c;z-index:9999;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;">
+    <div style="background:#0e1830;padding:40px;border-radius:16px;text-align:center;border:1px solid #ff4455;box-shadow:0 0 20px rgba(255,68,85,0.2);max-width:90%;">
+        <i class="fas fa-lock" style="font-size:50px;color:#ff4455;margin-bottom:20px;"></i>
+        <h2 style="color:#fff;margin-bottom:10px;">Akses Ditolak!</h2>
+        <p style="color:#8ab0d8;font-size:13px;margin-bottom:25px;">Silahkan login admin untuk melihat dan mengedit data rahasia pada halaman ini.</p>
+        <button onclick="window.location.href='login.html'" style="background:#ff4455;color:#fff;border:none;padding:12px 25px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:14px;transition:0.3s;">Login Admin</button>
+    </div>
+</div>
+
 <div id="overlay" onclick="toggleSidebar()"></div>
 
 <div id="sidebar">
@@ -80,13 +85,13 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container" id="main-content">
     <div class="header">
         <h1><span class="menu-btn" onclick="toggleSidebar()">☰</span> <span style="color: var(--net-glow);">◆</span> JAGPRO UI <span style="font-size:10px; background:var(--net); padding:2px 8px; border-radius:4px; margin-left:10px;">SETTINGS</span></h1>
         <div style="font-size: 10px; color: var(--text-sub);" id="sync-status">SYNCING DATA...</div>
     </div>
 
-    <div class="section-title"><i class="fas fa-toggle-on"></i> FITUR BOT (HANDLER.JS)</div>
+    <div class="section-title"><i class="fas fa-toggle-on"></i> FITUR BOT (GLOBAL OPTS)</div>
     <div class="features-grid" id="bot-toggles">
         <div style="color:var(--text-sub); font-size:12px;">Memuat fitur...</div>
     </div>
@@ -168,8 +173,13 @@
 </div>
 
 <script>
+    // 🛡️ KEAMANAN: CEK ADMIN
     const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
-    if (!isAdmin) window.location.href = "login.html";
+    if (!isAdmin) {
+        document.getElementById('auth-lock').style.display = 'flex'; // Tampilkan popup
+    } else {
+        document.getElementById('main-content').style.display = 'block'; // Tampilkan konten asli
+    }
 
     document.getElementById('auth-btn').onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
 
@@ -196,6 +206,8 @@
     const setVal = (id, val) => { let el = document.getElementById(id); if(el && !el.matches(':focus')) el.value = val || ''; };
 
     async function loadData() {
+        if (!isAdmin) return; // Kalau bukan admin gausah nge-fetch
+
         if (isEditing) {
             document.getElementById('sync-status').innerText = "SYNC PAUSED (EDITING)";
             document.getElementById('sync-status').style.color = "var(--warn)";
@@ -265,4 +277,3 @@
 </script>
 </body>
 </html>
-
