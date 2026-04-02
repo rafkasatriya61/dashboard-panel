@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan Bot - RafkaVL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; 
+            --net: #0066ff; --net-glow: #00cfff; --success: #00e676; --danger: #ff4455; 
+            --text-sub: #8ab0d8; --text-main: #ffffff;
+            --input-bg: #0a1329;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; overflow-x: hidden; }
+        
+        #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #0a1020; border-right: 1px solid var(--border); z-index: 1000; transition: 0.3s; padding: 20px; }
+        #sidebar.active { left: 0; }
+        .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+        .sidebar-links a:hover, .sidebar-links a.active { background: rgba(0, 207, 255, 0.1); color: var(--net-glow); }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { font-size: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
+        .menu-btn { cursor: pointer; font-size: 22px; margin-right: 10px; transition: 0.2s; }
+
+        .section-title { font-size: 14px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
+        .section-title i { color: var(--net-glow); }
+
+        /* GRID UNTUK FITUR BOT (TOGGLES) */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; margin-bottom: 40px; }
+        .feature-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .feature-card:hover { border-color: var(--net); box-shadow: 0 0 15px rgba(0, 102, 255, 0.2); }
+        .fc-info h3 { font-size: 14px; color: #fff; margin-bottom: 3px; }
+        .fc-info p { font-size: 10px; color: var(--text-sub); }
+
+        /* SAKLAR TOGGLE */
+        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e3060; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--net); box-shadow: 0 0 10px var(--net); }
+        input:checked + .slider:before { transform: translateX(18px); }
+
+        /* GRID UNTUK SETTINGS.JS (FORM KOTAK) */
+        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; }
+        .setting-box { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+        .sb-header { padding: 15px 20px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
+        .sb-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .sb-footer { padding: 15px 20px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--border); }
+        
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 10px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+        .input-group input { background: #060c1c; border: 1px solid var(--border); color: #fff; padding: 12px 15px; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; transition: 0.3s; font-family: monospace; }
+        .input-group input:focus { border-color: var(--net-glow); box-shadow: 0 0 10px rgba(0, 207, 255, 0.1); }
+        
+        .btn-save { width: 100%; background: var(--net); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; letter-spacing: 1px; }
+        .btn-save:hover { background: var(--net-glow); color: #000; box-shadow: 0 0 15px var(--net-glow); }
+
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+    </style>
+</head>
+<body>
+
+<div id="overlay" onclick="toggleSidebar()"></div>
+
+<div id="sidebar">
+    <h2 style="color:var(--net-glow); margin-bottom:30px; font-size: 18px; display: flex; justify-content: space-between;">
+        <span>👑 RafkaVL Menu</span>
+        <span onclick="toggleSidebar()" style="cursor:pointer; color:#fff;">×</span>
+    </h2>
+    <div class="sidebar-links">
+        <a href="index.html">📊 Dashboard Status</a>
+        <a href="groups.html">👥 Manajemen Grup & Sewa</a>
+        <a href="users.html">👤 User, Limit & Premium</a>
+        <a href="settings.html" class="active">⚙️ Pengaturan Fitur Bot</a>
+        <a id="auth-btn" style="color:var(--success); margin-top:30px; border-top: 1px solid var(--border); padding-top: 15px; cursor: pointer; display: block; font-weight: bold;">🔒 Loading...</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1><span class="menu-btn" onclick="toggleSidebar()">☰</span> <span style="color: var(--net-glow);">◆</span> SETTINGS BOT</h1>
+        <div style="font-size: 10px; color: var(--text-sub);" id="sync-status">SYNCING DATA...</div>
+    </div>
+
+    <div class="section-title"><i class="fas fa-toggle-on"></i> FITUR BOT GLOBAL</div>
+    <div class="features-grid" id="bot-toggles">
+        <div style="color:var(--text-sub); font-size:12px;">Memuat fitur...</div>
+    </div>
+
+    <div class="section-title"><i class="fas fa-sliders-h"></i> PENGATURAN UTAMA (Settings.js)</div>
+    <div class="settings-grid">
+        
+        <div class="setting-box">
+            <div class="sb-header"><i class="far fa-id-card"></i> IDENTITAS BOT</div>
+            <div class="sb-body">
+                <div class="input-group"><label>Nama Bot</label><input type="text" id="val-namebot" placeholder="Memuat..."></div>
+                <div class="input-group"><label>Nama Owner</label><input type="text" id="val-nameowner" placeholder="Memuat..."></div>
+                <div class="input-group"><label>Nomor Owner Utama</label><input type="text" id="val-nomorown" placeholder="Contoh: 62851..."></div>
+                <div class="input-group"><label>Versi Bot</label><input type="text" id="val-version" placeholder="Contoh: Season 5.0"></div>
+                <div class="input-group">
+                    <label>List Semua Owner (Pisahkan dengan koma)</label>
+                    <input type="text" id="val-owner" placeholder="6281..., 6282...">
+                    <span style="font-size:9px; color:var(--danger); margin-top:-3px;">*Tambah/hapus nomor owner, bot otomatis menyesuaikan format.</span>
+                </div>
+            </div>
+            <div class="sb-footer">
+                <button class="btn-save" onclick="saveGroup(['namebot', 'nameowner', 'nomorown', 'version', 'owner'])"><i class="fas fa-save"></i> SIMPAN IDENTITAS</button>
+            </div>
+        </div>
+
+        <div class="setting-box">
+            <div class="sb-header"><i class="fas fa-broadcast-tower"></i> SALURAN & GRUP</div>
+            <div class="sb-body">
+                <div class="input-group"><label>Saluran Utama (JID)</label><input type="text" id="val-saluran" placeholder="12036...newsletter"></div>
+                <div class="input-group">
+                    <label>Link Grup Bot (Pisahkan dengan koma)</label>
+                    <input type="text" id="val-linkgc" placeholder="https://chat.whatsapp.com/...">
+                </div>
+            </div>
+            <div class="sb-footer" style="margin-top: auto;">
+                <button class="btn-save" onclick="saveGroup(['saluran', 'linkgc'])"><i class="fas fa-save"></i> SIMPAN SALURAN</button>
+            </div>
+        </div>
+
+        <div class="setting-box">
+            <div class="sb-header"><i class="fas fa-wallet"></i> PAYMENT & STORE</div>
+            <div class="sb-body">
+                <div class="input-group"><label>Pakasir API</label><input type="text" id="val-pakasirApi" placeholder="..."></div>
+                <div class="input-group"><label>Pakasir KEY</label><input type="text" id="val-pakasirKey" placeholder="..."></div>
+            </div>
+            <div class="sb-footer" style="margin-top: auto;">
+                <button class="btn-save" onclick="saveGroup(['pakasirApi', 'pakasirKey'])"><i class="fas fa-save"></i> SIMPAN PAYMENT</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
+    if (!isAdmin) window.location.href = "login.html"; // Tendang non-admin
+
+    document.getElementById('auth-btn').innerHTML = '🔓 Logout Admin';
+    document.getElementById('auth-btn').style.color = 'var(--danger)';
+    document.getElementById('auth-btn').onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+
+    // KAMUS FITUR BOT (Sesuai Dashboard)
+    const toggleConfig = [
+        { id: 'autoreadgc', title: 'Auto Read GC', desc: 'Baca pesan otomatis di Grup' },
+        { id: 'autoreadpc', title: 'Auto Read PC', desc: 'Baca pesan otomatis di Private' },
+        { id: 'reactsw', title: 'Auto React SW', desc: 'Reaction otomatis Story WA' },
+        { id: 'pconly', title: 'PC Only', desc: 'Bot hanya merespon di Private Chat' },
+        { id: 'gconly', title: 'GC Only', desc: 'Bot hanya merespon di Group Chat' },
+        { id: 'anticulik', title: 'Anti Culik', desc: 'Tolak undangan grup tak dikenal' },
+        { id: 'autosholat', title: 'Auto Sholat', desc: 'Pengingat waktu sholat global' },
+        { id: 'automakan', title: 'Auto Makan', desc: 'Pengingat waktu makan global' },
+        { id: 'autopuasa', title: 'Auto Puasa', desc: 'Pengingat sahur & buka puasa' }
+    ];
+
+    let isEditing = false; // Deteksi agar form ga ke-refresh saat lagi ngetik
+
+    // Event listener biar pas diklik, inputan ga ke-refresh oleh fetch
+    document.querySelectorAll('.input-field, input[type="text"]').forEach(input => {
+        input.addEventListener('focus', () => isEditing = true);
+        input.addEventListener('blur', () => { setTimeout(() => isEditing = false, 1000); }); // Delay dikit
+    });
+
+    async function loadData() {
+        if (isEditing) return; // Jangan fetch kalau admin lagi ngetik!
+
+        try {
+            const res = await fetch('/api/antena?t=' + Date.now());
+            const data = await res.json();
+            
+            if (data.database && data.database.bot_features) {
+                let htmlToggles = '';
+                const bf = data.database.bot_features;
+                toggleConfig.forEach(feat => {
+                    htmlToggles += `
+                    <div class="feature-card">
+                        <div class="fc-info"><h3>${feat.title}</h3><p>${feat.desc}</p></div>
+                        <label class="switch">
+                            <input type="checkbox" ${bf[feat.id] ? 'checked' : ''} onchange="toggleBotFeature('${feat.id}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>`;
+                });
+                document.getElementById('bot-toggles').innerHTML = htmlToggles;
+            }
+
+            if (data.database && data.database.bot_config) {
+                const conf = data.database.bot_config;
+                if(!document.getElementById('val-namebot').matches(':focus')) document.getElementById('val-namebot').value = conf.namebot;
+                if(!document.getElementById('val-nameowner').matches(':focus')) document.getElementById('val-nameowner').value = conf.nameowner;
+                if(!document.getElementById('val-nomorown').matches(':focus')) document.getElementById('val-nomorown').value = conf.nomorown;
+                if(!document.getElementById('val-version').matches(':focus')) document.getElementById('val-version').value = conf.version;
+                if(!document.getElementById('val-owner').matches(':focus')) document.getElementById('val-owner').value = conf.owner;
+                if(!document.getElementById('val-saluran').matches(':focus')) document.getElementById('val-saluran').value = conf.saluran;
+                if(!document.getElementById('val-linkgc').matches(':focus')) document.getElementById('val-linkgc').value = conf.linkgc;
+                if(!document.getElementById('val-pakasirApi').matches(':focus')) document.getElementById('val-pakasirApi').value = conf.pakasirApi;
+                if(!document.getElementById('val-pakasirKey').matches(':focus')) document.getElementById('val-pakasirKey').value = conf.pakasirKey;
+                
+                document.getElementById('sync-status').innerText = "DATA TERHUBUNG • " + data.timestamp;
+                document.getElementById('sync-status').style.color = "var(--success)";
+            }
+        } catch (e) { }
+    }
+
+    async function apiAction(payloadData) {
+        try {
+            await fetch('/api/antena', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' }, body: JSON.stringify({ action: payloadData }) });
+        } catch(e) { alert("Gagal koneksi ke API!"); }
+    }
+
+    function toggleBotFeature(id, isChecked) {
+        apiAction({ type: 'toggle_bot_feature', feature: id, value: isChecked });
+        alert(`Perintah dikirim: Fitur ${id} -> ${isChecked ? 'ON' : 'OFF'}`);
+    }
+
+    // Fungsi canggih untuk save banyak kotak sekaligus
+    async function saveGroup(keysArray) {
+        for (let key of keysArray) {
+            let val = document.getElementById(`val-${key}`).value;
+            // Kirim 1 per 1 dengan delay kecil biar bot ga spam read
+            apiAction({ type: 'update_config', key: `global.${key}`, value: val });
+            await new Promise(r => setTimeout(r, 500)); 
+        }
+        alert("✅ Pengaturan berhasil dikirim ke bot!\nBot akan memproses perubahan di settings.js.");
+        isEditing = false;
+    }
+
+    loadData();
+    setInterval(loadData, 5000); 
+</script>
+</body>
+</html>
+
