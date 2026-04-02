@@ -22,9 +22,17 @@
         .sidebar-links a:hover, .sidebar-links a.active { background: rgba(0, 207, 255, 0.1); color: var(--net-glow); }
 
         .container { max-width: 1400px; margin: 0 auto; display: none; /* Disembunyikan dulu sampai verifikasi admin */ }
+        
+        /* HEADER & RESTART BUTTON */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
-        .header h1 { font-size: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
-        .menu-btn { cursor: pointer; font-size: 22px; margin-right: 10px; transition: 0.2s; }
+        .header-title { display: flex; align-items: center; gap: 10px; }
+        .header h1 { font-size: 20px; text-transform: uppercase; margin: 0; }
+        .menu-btn { cursor: pointer; font-size: 22px; transition: 0.2s; }
+        
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .sync-status { font-size: 10px; color: var(--text-sub); letter-spacing: 1px; font-weight: 600; }
+        .btn-restart { background: var(--danger); color: #fff; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.3s; box-shadow: 0 0 10px rgba(255, 68, 85, 0.2); }
+        .btn-restart:hover { background: #ff1a1a; box-shadow: 0 0 20px var(--danger); transform: scale(1.05); }
 
         .section-title { font-size: 13px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; margin-top: 30px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
         .section-title i { color: var(--net-glow); }
@@ -87,8 +95,15 @@
 
 <div class="container" id="main-content">
     <div class="header">
-        <h1><span class="menu-btn" onclick="toggleSidebar()">☰</span> <span style="color: var(--net-glow);">◆</span> JAGPRO UI <span style="font-size:10px; background:var(--net); padding:2px 8px; border-radius:4px; margin-left:10px;">SETTINGS</span></h1>
-        <div style="font-size: 10px; color: var(--text-sub);" id="sync-status">SYNCING DATA...</div>
+        <div class="header-title">
+            <span class="menu-btn" onclick="toggleSidebar()">☰</span> 
+            <span style="color: var(--net-glow);">◆</span> 
+            <h1>RAFKAVL BOTZZ <span style="font-size:10px; background:var(--net); padding:3px 8px; border-radius:4px; margin-left:8px; vertical-align: middle;">SETTINGS</span></h1>
+        </div>
+        <div class="header-right">
+            <div class="sync-status" id="sync-status">SYNCING DATA...</div>
+            <button class="btn-restart" onclick="restartBot()"><i class="fas fa-power-off"></i> RESTART BOT</button>
+        </div>
     </div>
 
     <div class="section-title"><i class="fas fa-toggle-on"></i> FITUR BOT (GLOBAL OPTS)</div>
@@ -176,9 +191,9 @@
     // 🛡️ KEAMANAN: CEK ADMIN
     const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
     if (!isAdmin) {
-        document.getElementById('auth-lock').style.display = 'flex'; // Tampilkan popup
+        document.getElementById('auth-lock').style.display = 'flex'; 
     } else {
-        document.getElementById('main-content').style.display = 'block'; // Tampilkan konten asli
+        document.getElementById('main-content').style.display = 'block'; 
     }
 
     document.getElementById('auth-btn').onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
@@ -270,6 +285,13 @@
         }
         alert("✅ Pengaturan berhasil dikirim ke bot!");
         isEditing = false;
+    }
+
+    function restartBot() {
+        if (confirm("⚠️ Yakin ingin me-restart bot sekarang? Bot akan offline sejenak.")) {
+            apiAction({ type: 'restart_bot' });
+            alert("🔄 Sinyal restart dikirim ke server. Silahkan tunggu bot online kembali.");
+        }
     }
 
     loadData();
