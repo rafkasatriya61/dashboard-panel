@@ -139,7 +139,6 @@
         </table>
     </div>
 </div>
-
 <script>
     const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
     const authBtn = document.getElementById('auth-btn');
@@ -175,10 +174,12 @@
     const pad2 = (n) => String(n).padStart(2, '0');
 
     async function loadData() {
-        if (expandedRows.size > 0 && isAdmin) {
-            document.getElementById('sync-status').innerText = "SYNC PAUSED (EDITING)";
+        // 🔥 FIX BUG AUTO-CLOSE: Hapus syarat "&& isAdmin" 🔥
+        // Sekarang, siapapun yang buka dropdown (Admin/User), auto-refresh bakal berhenti sementara
+        if (expandedRows.size > 0) {
+            document.getElementById('sync-status').innerText = "SYNC PAUSED (VIEWING)";
             document.getElementById('sync-status').style.color = "var(--warn)";
-            return;
+            return; // Stop refresh data biar gak nutup
         }
 
         document.getElementById('sync-status').innerText = "AUTO SYNC ON";
