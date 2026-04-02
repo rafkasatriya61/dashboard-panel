@@ -48,7 +48,7 @@
 
         .detail-row { display: none; background: var(--detail-bg); border-bottom: 1px solid var(--border); }
         .detail-row.open { display: table-row; }
-        .detail-content { padding: 25px; border-left: 3px solid var(--net); display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .detail-content { padding: 25px; border-left: 3px solid var(--net); display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
         
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .info-box { background: var(--input-bg); padding: 12px 15px; border-radius: 8px; border: 1px solid #162445; }
@@ -57,28 +57,31 @@
         .info-value { font-size: 13px; color: #fff; font-weight: 700; border: none; background: transparent; width: 100%; outline: none; }
         input.info-value { border-bottom: 1px solid var(--border); padding-bottom: 2px; }
         input.info-value:focus { border-bottom-color: var(--net); }
+        input[type="time"] { color: var(--net); background: transparent; border: 1px solid var(--border); padding: 5px 10px; border-radius: 4px; font-family: monospace; outline: none; }
 
         .feature-section { background: var(--input-bg); padding: 20px; border-radius: 12px; border: 1px solid #162445; position: relative;}
-        .feature-title { font-size: 12px; color: var(--net); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-        .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .feature-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; }
-        .feature-name { font-size: 12px; font-weight: 600; color: #fff; }
+        .feature-title { font-size: 12px; color: var(--net); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; justify-content: space-between; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+        .feature-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 8px; }
+        .feature-name { font-size: 11px; font-weight: 600; color: #fff; }
 
-        .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+        .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e3060; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(16px); }
+        input:checked + .slider:before { transform: translateX(14px); }
 
         .admin-actions { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-save { background: var(--net); color: #000; padding: 10px 15px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; font-size: 11px; transition: 0.2s;}
-        .btn-leave { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 11px; transition: 0.2s;}
+        .btn-save { background: var(--net); color: #000; padding: 10px 15px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; font-size: 11px; flex: 1; transition: 0.2s;}
+        .btn-leave { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 11px; flex: 1; transition: 0.2s;}
 
         .bc-box { display: flex; gap: 10px; margin-top: 10px; }
         .bc-input { flex: 1; background: #0a1020; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 12px; outline: none; }
         .bc-btn { background: var(--up); color: #000; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .bc-btn:hover { box-shadow: 0 0 10px var(--up); }
+        
+        .gcauto-box { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
+        .gcauto-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .hide { display: none !important; }
@@ -104,10 +107,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>
-            <span class="menu-btn" onclick="toggleSidebar()">☰</span> 
-            <span style="color: var(--net);">◆</span> GROUP MANAGEMENT
-        </h1>
+        <h1><span class="menu-btn" onclick="toggleSidebar()">☰</span> <span style="color: var(--net);">◆</span> GROUP MANAGEMENT</h1>
         <div style="text-align: right;">
             <div id="count-gc" style="font-size: 20px; font-weight: 700; color: var(--net);">0</div>
             <div style="font-size: 9px; color: var(--text-sub); letter-spacing: 1px;" id="sync-status">SYNCING...</div>
@@ -115,7 +115,7 @@
     </div>
 
     <div class="card hide" id="bc-all-card">
-        <div class="feature-title" style="margin-bottom: 10px; color: var(--up);">📢 Broadcast Global (Semua Grup)</div>
+        <div class="feature-title" style="margin-bottom: 10px; color: var(--up); border: none;">📢 Broadcast Global (Semua Grup)</div>
         <div class="bc-box">
             <input type="text" id="bc-all-text" class="bc-input" placeholder="Ketik pesan pengumuman untuk seluruh grup bot...">
             <button class="bc-btn" onclick="broadcastAll()"><i class="fas fa-paper-plane"></i> Kirim</button>
@@ -145,13 +145,11 @@
     const authBtn = document.getElementById('auth-btn');
 
     if (isAdmin) {
-        authBtn.innerHTML = '🔓 Logout Admin';
-        authBtn.style.color = 'var(--danger)';
+        authBtn.innerHTML = '🔓 Logout Admin'; authBtn.style.color = 'var(--danger)';
         authBtn.onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
-        document.getElementById('bc-all-card').classList.remove('hide'); // Munculin broadcast all
+        document.getElementById('bc-all-card').classList.remove('hide');
     } else {
-        authBtn.innerHTML = '🔒 Login Admin';
-        authBtn.style.color = 'var(--success)';
+        authBtn.innerHTML = '🔒 Login Admin'; authBtn.style.color = 'var(--success)';
         authBtn.onclick = () => { window.location.href = 'login.html'; };
     }
 
@@ -168,20 +166,17 @@
         const btn = document.getElementById(`btn-toggle-${index}`);
         
         if (expandedRows.has(index)) {
-            expandedRows.delete(index);
-            detailRow.classList.remove('open');
-            btn.classList.remove('open');
+            expandedRows.delete(index); detailRow.classList.remove('open'); btn.classList.remove('open');
         } else {
-            expandedRows.add(index);
-            detailRow.classList.add('open');
-            btn.classList.add('open');
+            expandedRows.add(index); detailRow.classList.add('open'); btn.classList.add('open');
         }
     }
 
+    const pad2 = (n) => String(n).padStart(2, '0');
+
     async function loadData() {
-        // PERBAIKAN BUG AUTO-CLOSE: PAUSE SYNC UNTUK SEMUA USER JIKA ADA DROPDOWN TERBUKA
-        if (expandedRows.size > 0) {
-            document.getElementById('sync-status').innerText = "SYNC PAUSED (VIEWING)";
+        if (expandedRows.size > 0 && isAdmin) {
+            document.getElementById('sync-status').innerText = "SYNC PAUSED (EDITING)";
             document.getElementById('sync-status').style.color = "var(--warn)";
             return;
         }
@@ -190,7 +185,7 @@
         document.getElementById('sync-status').style.color = "var(--success)";
 
         try {
-            const res = await fetch('/api/antena');
+            const res = await fetch('/api/antena?t=' + Date.now());
             const data = await res.json();
             
             if (data.database && data.database.chats) {
@@ -206,6 +201,10 @@
                     const isPrem = g.isPremium ? 'PREMIUM' : 'REGULER';
                     const premClass = g.isPremium ? 'badge-prem' : 'badge-reg';
                     const s = g.settings || {}; 
+                    const sec = g.security || {};
+
+                    let openTimeStr = (sec.openHour != null && sec.openMinute != null) ? `${pad2(sec.openHour)}:${pad2(sec.openMinute)}` : '';
+                    let closeTimeStr = (sec.closeHour != null && sec.closeMinute != null) ? `${pad2(sec.closeHour)}:${pad2(sec.closeMinute)}` : '';
 
                     htmlContent += `
                         <tr>
@@ -213,11 +212,7 @@
                             <td><span class="badge ${premClass}">${isPrem}</span></td>
                             <td><span class="badge ${statusClass}">${g.status}</span></td>
                             <td class="sewa-hari" style="color: ${sewaColor};">${g.sisa_sewa}</td>
-                            <td>
-                                <button id="btn-toggle-${index}" class="btn-toggle" onclick="toggleDetail(${index})">
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                            </td>
+                            <td><button id="btn-toggle-${index}" class="btn-toggle" onclick="toggleDetail(${index})"><i class="fas fa-chevron-down"></i></button></td>
                         </tr>
                     `;
 
@@ -231,22 +226,10 @@
                                                 <div class="info-label">NAMA GRUP</div>
                                                 ${isAdmin ? `<input type="text" class="info-value" value="${g.name}" id="edit-name-${index}">` : `<div class="info-value">${g.name}</div>`}
                                             </div>
-                                            <div class="info-box">
-                                                <div class="info-label">SISA HARI</div>
-                                                <div class="info-value">${g.sisa_angka}</div>
-                                            </div>
-                                            <div class="info-box">
-                                                <div class="info-label">TANGGAL GABUNG</div>
-                                                <div class="info-value">${g.tgl_join}</div>
-                                            </div>
-                                            <div class="info-box">
-                                                <div class="info-label">CHAT HARI INI</div>
-                                                <div class="info-value" style="color: var(--net);">${g.chat_today}</div>
-                                            </div>
-                                            <div class="info-box">
-                                                <div class="info-label">TOTAL CHAT</div>
-                                                <div class="info-value" style="color: var(--net);">${g.chat_all}</div>
-                                            </div>
+                                            <div class="info-box"><div class="info-label">SISA HARI</div><div class="info-value">${g.sisa_angka}</div></div>
+                                            <div class="info-box"><div class="info-label">TGL GABUNG</div><div class="info-value">${g.tgl_join}</div></div>
+                                            <div class="info-box"><div class="info-label">CHAT HARI INI</div><div class="info-value" style="color: var(--net);">${g.chat_today}</div></div>
+                                            <div class="info-box"><div class="info-label">TOTAL CHAT</div><div class="info-value" style="color: var(--net);">${g.chat_all}</div></div>
                                         </div>
 
                                         ${isAdmin ? `
@@ -265,18 +248,50 @@
                                     </div>
 
                                     <div class="feature-section">
-                                        <div class="feature-title">⚙️ Kontrol Fitur Bot di Grup</div>
+                                        <div class="feature-title">⚙️ Kontrol Keamanan & Fitur Grup</div>
                                         <div class="feature-grid">
                                             ${createSwitch(g.id, 'Welcome', 'welcome', s.welcome)}
+                                            ${createSwitch(g.id, 'Bye', 'bye', s.bye)}
                                             ${createSwitch(g.id, 'Anti Link', 'antilink', s.antilink)}
                                             ${createSwitch(g.id, 'Anti Link All', 'antilinkall', s.antilinkall)}
                                             ${createSwitch(g.id, 'Anti Video', 'antivideo', s.antivideo)}
+                                            ${createSwitch(g.id, 'Anti Foto', 'antipoto', s.antipoto)}
+                                            ${createSwitch(g.id, 'Anti Sticker', 'antisticker', s.antisticker)}
+                                            ${createSwitch(g.id, 'Anti NSFW', 'antinsfw', s.antinsfw)}
                                             ${createSwitch(g.id, 'Anti Saluran', 'antisaluran', s.antisaluran)}
+                                            ${createSwitch(g.id, 'Anti Nomor Luar', 'antinomorluar', s.antinomorluar)}
+                                            ${createSwitch(g.id, 'Anti Upsw', 'antiupsw', s.antiupsw)}
                                             ${createSwitch(g.id, 'Anti Toxic', 'antitoxic', s.antitoxic)}
                                             ${createSwitch(g.id, 'Anti Delete', 'antidelete', s.antidelete)}
+                                            ${createSwitch(g.id, 'Anti Edit Chat', 'antieditchat', s.antieditchat)}
+                                            ${createSwitch(g.id, 'Anti Promo', 'antipromo', s.antipromo)}
+                                            ${createSwitch(g.id, 'Anti Spam Chat', 'antispamchat', s.antispamchat)}
+                                            ${createSwitch(g.id, 'Anti Hidetag', 'antihidetag', s.antihidetag)}
+                                            ${createSwitch(g.id, 'Anti ALL', 'antiall', s.antiall)}
+                                            ${createSwitch(g.id, 'Auto Levelup', 'autolevelup', s.autolevelup)}
+                                            ${createSwitch(g.id, 'Auto Sticker', 'autosticker', s.autosticker)}
                                             ${createSwitch(g.id, 'Notif Gempa', 'notifgempa', s.notifgempa)}
                                         </div>
-                                        ${!isAdmin ? `<div style="position: absolute; bottom: 10px; right: 20px; font-size: 10px; color: var(--danger); font-style: italic;">*Login Admin untuk mengubah fitur</div>` : ''}
+
+                                        <div class="gcauto-box">
+                                            <div class="feature-title" style="border:none; margin-bottom:5px; color:#fff;">⏰ Jadwal Buka/Tutup Grup
+                                                <label class="switch">
+                                                    <input type="checkbox" id="gcauto-active-${g.id}" ${sec.isActive ? 'checked' : ''} ${isAdmin ? '' : 'disabled'}>
+                                                    <span class="slider" style="${isAdmin ? '' : 'cursor: not-allowed; opacity: 0.6;'}"></span>
+                                                </label>
+                                            </div>
+                                            <div class="gcauto-row">
+                                                <span style="font-size: 11px; color: var(--text-sub);">Jam Buka:</span>
+                                                <input type="time" id="gcauto-open-${g.id}" value="${openTimeStr}" ${isAdmin ? '' : 'disabled'}>
+                                            </div>
+                                            <div class="gcauto-row">
+                                                <span style="font-size: 11px; color: var(--text-sub);">Jam Tutup:</span>
+                                                <input type="time" id="gcauto-close-${g.id}" value="${closeTimeStr}" ${isAdmin ? '' : 'disabled'}>
+                                            </div>
+                                            ${isAdmin ? `<button class="btn-detail" style="width:100%; margin-top:5px; padding:8px;" onclick="saveGcAuto('${g.id}')"><i class="fas fa-clock"></i> Simpan Jadwal</button>` : ''}
+                                        </div>
+
+                                        ${!isAdmin ? `<div style="position: absolute; top: 15px; right: 20px; font-size: 10px; color: var(--danger); font-style: italic;">*Login Admin untuk mengubah setingan</div>` : ''}
                                     </div>
                                 </div>
                             </td>
@@ -302,46 +317,33 @@
         `;
     }
 
-    // --- PUSAT FUNGSI API (POST KE VERCEL LALU KE BOT) ---
     async function apiAction(payloadData) {
         try {
-            await fetch('/api/antena', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' },
-                body: JSON.stringify({ action: payloadData })
-            });
+            await fetch('/api/antena', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' }, body: JSON.stringify({ action: payloadData }) });
             alert("✅ Perintah berhasil dikirim ke bot!");
-        } catch(e) { alert("Gagal koneksi ke server Vercel."); }
+        } catch(e) { alert("Gagal koneksi ke server."); }
     }
 
     function saveEdit(index, id) { 
         const newName = document.getElementById(`edit-name-${index}`).value;
-        if(newName.trim() !== '') {
-            apiAction({ type: 'change_group_name', target: id, value: newName });
+        if(newName.trim() !== '') apiAction({ type: 'change_group_name', target: id, value: newName });
+    }
+
+    function saveGcAuto(id) {
+        const isActive = document.getElementById(`gcauto-active-${id}`).checked;
+        const openTime = document.getElementById(`gcauto-open-${id}`).value;
+        const closeTime = document.getElementById(`gcauto-close-${id}`).value;
+        
+        if (isActive && (!openTime || !closeTime)) {
+            return alert("Pilih Jam Buka dan Jam Tutup terlebih dahulu!");
         }
+        
+        apiAction({ type: 'update_gcauto', target: id, isActive: isActive, openTime: openTime, closeTime: closeTime });
     }
 
-    function leaveGroup(id) { 
-        if(confirm("Yakin ingin mengeluarkan bot dari grup ini?")) {
-            apiAction({ type: 'leave_gc', target: id });
-        } 
-    }
-
-    function broadcastAll() {
-        const text = document.getElementById('bc-all-text').value;
-        if(text.trim() === '') return alert("Pesan tidak boleh kosong!");
-        if(confirm("Yakin kirim broadcast ke SEMUA GRUP?")) {
-            apiAction({ type: 'broadcast_all', text: text });
-            document.getElementById('bc-all-text').value = '';
-        }
-    }
-
-    function broadcastGroup(id) {
-        const text = document.getElementById(`bc-gc-${id}`).value;
-        if(text.trim() === '') return alert("Pesan tidak boleh kosong!");
-        apiAction({ type: 'broadcast_group', target: id, text: text });
-        document.getElementById(`bc-gc-${id}`).value = '';
-    }
+    function leaveGroup(id) { if(confirm("Yakin ingin mengeluarkan bot dari grup ini?")) apiAction({ type: 'leave_gc', target: id }); }
+    function broadcastAll() { const text = document.getElementById('bc-all-text').value; if(text.trim() === '') return alert("Pesan tidak boleh kosong!"); if(confirm("Yakin kirim broadcast ke SEMUA GRUP?")) { apiAction({ type: 'broadcast_all', text: text }); document.getElementById('bc-all-text').value = ''; } }
+    function broadcastGroup(id) { const text = document.getElementById(`bc-gc-${id}`).value; if(text.trim() === '') return alert("Pesan tidak boleh kosong!"); apiAction({ type: 'broadcast_group', target: id, text: text }); document.getElementById(`bc-gc-${id}`).value = ''; }
 
     loadData();
     setInterval(loadData, 5000); 
