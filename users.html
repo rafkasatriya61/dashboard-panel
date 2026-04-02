@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users & Premium - RafkaVL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; --net: #0066ff; --net-glow: #00cfff; --success: #00e676; --danger: #ff4455; --warn: #ffcc00; --text-sub: #8ab0d8; --text-main: #ffffff; --input-bg: #0a1329; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; overflow-x: hidden; }
+        
+        #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #0a1020; border-right: 1px solid var(--border); z-index: 1000; transition: 0.3s; padding: 20px; }
+        #sidebar.active { left: 0; }
+        .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+        .sidebar-links a:hover, .sidebar-links a.active { background: rgba(0, 207, 255, 0.1); color: var(--net-glow); }
+
+        .container { max-width: 1400px; margin: 0 auto; display: none; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { font-size: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
+        .menu-btn { cursor: pointer; font-size: 22px; transition: 0.2s; }
+        
+        .stats-boxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-box { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px; }
+        .stat-icon { font-size: 30px; color: var(--net-glow); background: rgba(0, 207, 255, 0.1); padding: 15px; border-radius: 12px; }
+        .stat-info h3 { font-size: 24px; color: #fff; margin-bottom: 2px; }
+        .stat-info p { font-size: 11px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
+
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-x: auto; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); letter-spacing: 0.5px; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; font-weight: 600; vertical-align: middle; }
+        
+        .user-name { color: var(--net-glow); font-weight: 700; font-size: 14px; }
+        .user-id { color: var(--text-sub); font-family: monospace; font-size: 12px; font-weight: 400; }
+        .money-text { color: var(--success); font-family: monospace; font-size: 13px; }
+        .bank-text { color: var(--warn); font-family: monospace; font-size: 13px; }
+        
+        .badge { padding: 4px 12px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-prem { background: rgba(0, 207, 255, 0.1); color: var(--net-glow); border: 1px solid var(--net-glow); }
+        .badge-reg { background: rgba(138, 176, 216, 0.1); color: var(--text-sub); border: 1px solid var(--text-sub); }
+        .badge-rank { background: var(--net); color: #fff; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
+        
+        /* Tombol Aksi */
+        .btn-act { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; margin-right: 5px; color: #fff; transition: 0.3s; }
+        .btn-edit { background: var(--warn); color: #000; }
+        .btn-del { background: var(--danger); }
+        .btn-act:hover { transform: scale(1.1); }
+
+        /* Modal Pop-up */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--net); width: 400px; max-width: 90%; }
+        .modal-content h2 { margin-bottom: 20px; color: var(--net-glow); font-size: 18px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-sub); margin-bottom: 5px; text-transform: uppercase; }
+        .form-group input[type="number"] { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 6px; outline: none; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 20px;}
+        .modal-btns { display: flex; justify-content: flex-end; gap: 10px; }
+
+        #auth-lock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #060c1c; z-index: 9999; display: none; align-items: center; justify-content: center; text-align: center; }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+    </style>
+</head>
+<body>
+
+<div id="auth-lock">
+    <div style="background: #0e1830; padding: 40px; border-radius: 16px; border: 1px solid #ff4455;">
+        <i class="fas fa-lock" style="font-size:40px; color:#ff4455; margin-bottom:15px;"></i>
+        <h2>Akses Ditolak!</h2>
+        <p style="color:#8ab0d8; margin: 10px 0 20px;">Hanya Admin yang boleh melihat data User.</p>
+        <button onclick="window.location.href='login.html'" style="background: var(--net); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 700; cursor: pointer;">Login Admin</button>
+    </div>
+</div>
+
+<div id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <h2><i class="fas fa-user-edit"></i> Edit Data User</h2>
+        <div style="color: var(--text-sub); font-size: 12px; margin-bottom: 15px;" id="modal-user-info"></div>
+        <input type="hidden" id="edit-jid">
+        <div class="form-group"><label>Money (Uang)</label><input type="number" id="edit-money"></div>
+        <div class="form-group"><label>Bank (Tabungan)</label><input type="number" id="edit-bank"></div>
+        <div class="form-group"><label>Limit Harian</label><input type="number" id="edit-limit"></div>
+        <div class="form-group"><label>XP (Experience)</label><input type="number" id="edit-exp"></div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="edit-prem" style="width: 18px; height: 18px;">
+            <label style="margin: 0; color: #fff; font-size: 13px;">Jadikan User Premium</label>
+        </div>
+        <div class="modal-btns">
+            <button class="btn-act btn-del" onclick="closeModal()" style="padding: 10px 15px;">Batal</button>
+            <button class="btn-act" style="background: var(--net); padding: 10px 15px;" onclick="saveUserEdit()">Simpan Data</button>
+        </div>
+    </div>
+</div>
+
+<div id="sidebar">
+    <h2 style="color:var(--net-glow); margin-bottom:30px; font-size: 18px; display: flex; justify-content: space-between;">
+        <span>👑 RafkaVL Menu</span>
+        <span onclick="toggleSidebar()" style="cursor:pointer; color:#fff;">×</span>
+    </h2>
+    <div class="sidebar-links">
+        <a href="index.html">📊 Dashboard Status</a>
+        <a href="groups.html">👥 Manajemen Grup & Sewa</a>
+        <a href="users.html" class="active">👤 User, Limit & Premium</a>
+        <a href="settings.html">⚙️ Pengaturan Fitur Bot</a>
+        <a id="auth-btn" style="color:var(--danger); margin-top:30px; border-top: 1px solid var(--border); padding-top: 15px; cursor: pointer; display: block; font-weight: bold;">🔒 Logout Admin</a>
+    </div>
+</div>
+
+<div class="container" id="main-content">
+    <div class="header">
+        <h1><span class="menu-btn" onclick="toggleSidebar()">☰</span> <span style="color: var(--net-glow);">◆</span> USER MANAGEMENT</h1>
+        <div style="font-size: 10px; color: var(--text-sub);" id="sync-status">SINKRONISASI DATABASE...</div>
+    </div>
+
+    <div class="stats-boxes">
+        <div class="stat-box"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-info"><h3 id="tot-users">0</h3><p>Total User Terdaftar</p></div></div>
+        <div class="stat-box"><div class="stat-icon" style="color: var(--warn); background: rgba(255, 204, 0, 0.1);"><i class="fas fa-crown"></i></div><div class="stat-info"><h3 id="tot-prem">0</h3><p>User Premium</p></div></div>
+    </div>
+
+    <div class="card">
+        <div style="font-size: 14px; color: var(--net-glow); font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;"><i class="fas fa-trophy"></i> TOP SULTAN LEADERBOARD</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50px; text-align: center;">Rank</th>
+                    <th>Nama / Nomor WA</th>
+                    <th>Status Akun</th>
+                    <th>Level & Limit</th>
+                    <th>Uang (Money)</th>
+                    <th>Aksi Admin</th>
+                </tr>
+            </thead>
+            <tbody id="list-users">
+                <tr><td colspan="6" style="text-align:center; padding:40px; color: var(--text-sub);">Menarik data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
+    if (!isAdmin) document.getElementById('auth-lock').style.display = 'flex'; 
+    else document.getElementById('main-content').style.display = 'block'; 
+
+    document.getElementById('auth-btn').onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+
+    const formatRupiah = (n) => 'Rp ' + (Number(n) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    
+    let isModalOpen = false; // Kunci refresh saat modal edit terbuka
+
+    async function apiAction(action) {
+        await fetch('/api/antena', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' }, body: JSON.stringify({ action }) });
+    }
+
+    async function loadUsers() {
+        if (!isAdmin || isModalOpen) return;
+        try {
+            const res = await fetch('/api/antena?t=' + Date.now());
+            const data = await res.json();
+            
+            if (data.status === 'offline') { document.getElementById('sync-status').innerText = "BOT OFFLINE 🔴"; return; }
+
+            if (data.database && data.database.users) {
+                const users = data.database.users;
+                let htmlContent = ''; let totalPrem = 0;
+                document.getElementById('tot-users').innerText = users.length;
+
+                users.forEach((u, index) => {
+                    if(u.premium) totalPrem++;
+                    let rankClass = 'badge-rank';
+                    if(index === 0) rankClass += ' rank-1'; else if(index === 1) rankClass += ' rank-2'; else if(index === 2) rankClass += ' rank-3';
+
+                    const premClass = u.premium ? 'badge-prem' : 'badge-reg';
+                    const premText = u.premium ? 'PREMIUM' : 'REGULER';
+
+                    htmlContent += `
+                        <tr>
+                            <td style="text-align: center;"><span class="${rankClass}">${index + 1}</span></td>
+                            <td><div class="user-name">${u.name}</div><div class="user-id"><i class="fab fa-whatsapp"></i> +${u.id}</div></td>
+                            <td><span class="badge ${premClass}">${premText}</span></td>
+                            <td><div><i class="fas fa-star" style="color:var(--net); font-size:10px;"></i> Lvl ${u.level} | XP: ${u.exp}</div><div style="font-size:11px; color:var(--text-sub);">Limit: ${u.limit}</div></td>
+                            <td>
+                                <div class="money-text"><i class="fas fa-wallet"></i> ${formatRupiah(u.money)}</div>
+                                <div class="bank-text"><i class="fas fa-university"></i> ${formatRupiah(u.bank)}</div>
+                            </td>
+                            <td>
+                                <button class="btn-act btn-edit" onclick="openModal('${u.id}', '${u.name.replace(/'/g, "\\'")}', ${u.money}, ${u.bank}, ${u.limit}, ${u.exp}, ${u.premium})"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="btn-act btn-del" onclick="deleteUser('${u.id}', '${u.name.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('tot-prem').innerText = totalPrem;
+                document.getElementById('list-users').innerHTML = htmlContent;
+                document.getElementById('sync-status').innerText = "LIVE SYNC 🟢";
+            }
+        } catch (e) { }
+    }
+
+    // MODAL CONTROL
+    function openModal(id, name, money, bank, limit, exp, prem) {
+        isModalOpen = true; // Pause sinkronisasi
+        document.getElementById('modal-user-info').innerText = `Target: ${name} (+${id})`;
+        document.getElementById('edit-jid').value = id;
+        document.getElementById('edit-money').value = money;
+        document.getElementById('edit-bank').value = bank;
+        document.getElementById('edit-limit').value = limit;
+        document.getElementById('edit-exp').value = exp;
+        document.getElementById('edit-prem').checked = prem;
+        document.getElementById('editModal').style.display = 'flex';
+    }
+    
+    function closeModal() {
+        document.getElementById('editModal').style.display = 'none';
+        isModalOpen = false; // Lanjutkan sinkronisasi
+    }
+
+    // SIMPAN EDIT
+    function saveUserEdit() {
+        const id = document.getElementById('edit-jid').value;
+        const data = {
+            money: document.getElementById('edit-money').value,
+            bank: document.getElementById('edit-bank').value,
+            limit: document.getElementById('edit-limit').value,
+            exp: document.getElementById('edit-exp').value,
+            premium: document.getElementById('edit-prem').checked
+        };
+        apiAction({ type: 'update_user', target: id, data: data });
+        alert(`✅ Data User +${id} berhasil diupdate!`);
+        closeModal();
+    }
+
+    // HAPUS USER
+    function deleteUser(id, name) {
+        if(confirm(`⚠️ WARNING! Anda yakin ingin menghapus akun ${name} (+${id}) dari database? Semua harta dan levelnya akan hangus!`)) {
+            apiAction({ type: 'delete_user', target: id });
+            alert(`🗑️ Akun ${name} telah dihapus!`);
+        }
+    }
+
+    setInterval(loadUsers, 5000); 
+    loadUsers();
+</script>
+</body>
+</html>
+
