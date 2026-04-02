@@ -3,213 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pengaturan Bot - RafkaVL</title>
+    <title>Settings Bot - RafkaVL</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { 
-            --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; 
-            --net: #0066ff; --net-glow: #00cfff; --success: #00e676; --danger: #ff4455; 
-            --text-sub: #8ab0d8; --text-main: #ffffff;
-            --input-bg: #0a1329;
-        }
+        :root { --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; --net: #0066ff; --net-glow: #00cfff; --success: #00e676; --danger: #ff4455; --text-sub: #8ab0d8; --text-main: #ffffff; --input-bg: #0a1329; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; overflow-x: hidden; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; }
         
-        #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #0a1020; border-right: 1px solid var(--border); z-index: 1000; transition: 0.3s; padding: 20px; }
-        #sidebar.active { left: 0; }
-        .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
-        .sidebar-links a:hover, .sidebar-links a.active { background: rgba(0, 207, 255, 0.1); color: var(--net-glow); }
-
-        .container { max-width: 1400px; margin: 0 auto; display: none; /* Disembunyikan dulu sampai verifikasi admin */ }
-        
-        /* HEADER & RESTART BUTTON */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
-        .header-title { display: flex; align-items: center; gap: 10px; }
-        .header h1 { font-size: 20px; text-transform: uppercase; margin: 0; }
-        .menu-btn { cursor: pointer; font-size: 22px; transition: 0.2s; }
-        
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        .sync-status { font-size: 10px; color: var(--text-sub); letter-spacing: 1px; font-weight: 600; }
-        .btn-restart { background: var(--danger); color: #fff; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.3s; box-shadow: 0 0 10px rgba(255, 68, 85, 0.2); }
+        .header h1 { font-size: 20px; text-transform: uppercase; }
+        .btn-restart { background: var(--danger); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; box-shadow: 0 0 10px rgba(255, 68, 85, 0.2); }
         .btn-restart:hover { background: #ff1a1a; box-shadow: 0 0 20px var(--danger); transform: scale(1.05); }
 
-        .section-title { font-size: 13px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; margin-top: 30px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
-        .section-title i { color: var(--net-glow); }
-
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .feature-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        .fc-info h3 { font-size: 13px; color: #fff; margin-bottom: 3px; }
+        .section-title { font-size: 13px; color: var(--net-glow); text-transform: uppercase; letter-spacing: 1px; margin: 30px 0 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
+        .feature-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .fc-info h3 { font-size: 13px; margin-bottom: 2px; }
         .fc-info p { font-size: 9px; color: var(--text-sub); }
 
-        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .switch { position: relative; display: inline-block; width: 38px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e3060; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--net); box-shadow: 0 0 10px var(--net); }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--net); }
         input:checked + .slider:before { transform: translateX(18px); }
 
-        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; }
-        .setting-box { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-        .sb-header { padding: 15px 20px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
-        .sb-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 15px; }
-        .sb-footer { padding: 15px 20px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--border); }
-        
+        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .setting-box { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .sb-header { padding: 15px; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 700; color: var(--text-sub); }
+        .sb-body { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
         .input-group { display: flex; flex-direction: column; gap: 5px; }
-        .input-group label { font-size: 10px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
-        .input-group input { background: #060c1c; border: 1px solid var(--border); color: #fff; padding: 12px 15px; border-radius: 8px; font-size: 12px; font-weight: 600; outline: none; transition: 0.3s; font-family: monospace; }
-        .input-group input:focus { border-color: var(--net-glow); box-shadow: 0 0 10px rgba(0, 207, 255, 0.1); }
-        
-        .btn-save { width: 100%; background: var(--net); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; letter-spacing: 1px; }
+        .input-group label { font-size: 10px; color: var(--text-sub); font-weight: 700; }
+        .input-group input { background: #060c1c; border: 1px solid var(--border); color: #fff; padding: 10px 15px; border-radius: 8px; font-size: 12px; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: var(--net-glow); }
+        .btn-save { background: var(--net); color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .btn-save:hover { background: var(--net-glow); color: #000; box-shadow: 0 0 15px var(--net-glow); }
 
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+        #auth-lock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #060c1c; z-index: 9999; display: none; align-items: center; justify-content: center; text-align: center; }
+        .lock-card { background: #0e1830; padding: 40px; border-radius: 16px; border: 1px solid #ff4455; }
     </style>
 </head>
 <body>
 
-<div id="auth-lock" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#060c1c;z-index:9999;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;">
-    <div style="background:#0e1830;padding:40px;border-radius:16px;text-align:center;border:1px solid #ff4455;box-shadow:0 0 20px rgba(255,68,85,0.2);max-width:90%;">
-        <i class="fas fa-lock" style="font-size:50px;color:#ff4455;margin-bottom:20px;"></i>
-        <h2 style="color:#fff;margin-bottom:10px;">Akses Ditolak!</h2>
-        <p style="color:#8ab0d8;font-size:13px;margin-bottom:25px;">Silahkan login admin untuk melihat dan mengedit data rahasia pada halaman ini.</p>
-        <button onclick="window.location.href='login.html'" style="background:#ff4455;color:#fff;border:none;padding:12px 25px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:14px;transition:0.3s;">Login Admin</button>
-    </div>
-</div>
-
-<div id="overlay" onclick="toggleSidebar()"></div>
-
-<div id="sidebar">
-    <h2 style="color:var(--net-glow); margin-bottom:30px; font-size: 18px; display: flex; justify-content: space-between;">
-        <span>👑 RafkaVL Menu</span>
-        <span onclick="toggleSidebar()" style="cursor:pointer; color:#fff;">×</span>
-    </h2>
-    <div class="sidebar-links">
-        <a href="index.html">📊 Dashboard Status</a>
-        <a href="groups.html">👥 Manajemen Grup & Sewa</a>
-        <a href="users.html">👤 User, Limit & Premium</a>
-        <a href="settings.html" class="active">⚙️ Pengaturan Fitur Bot</a>
-        <a id="auth-btn" style="color:var(--danger); margin-top:30px; border-top: 1px solid var(--border); padding-top: 15px; cursor: pointer; display: block; font-weight: bold;">🔒 Logout Admin</a>
+<div id="auth-lock">
+    <div class="lock-card">
+        <i class="fas fa-lock" style="font-size:40px; color:#ff4455; margin-bottom:15px;"></i>
+        <h2>Akses Terbatas!</h2>
+        <p style="color:#8ab0d8; margin: 10px 0 20px;">Hanya Admin yang boleh melihat setingan bot.</p>
+        <button onclick="window.location.href='login.html'" class="btn-save" style="padding:10px 20px;">Login Admin</button>
     </div>
 </div>
 
 <div class="container" id="main-content">
     <div class="header">
-        <div class="header-title">
-            <span class="menu-btn" onclick="toggleSidebar()">☰</span> 
-            <span style="color: var(--net-glow);">◆</span> 
-            <h1>RAFKAVL BOTZZ <span style="font-size:10px; background:var(--net); padding:3px 8px; border-radius:4px; margin-left:8px; vertical-align: middle;">SETTINGS</span></h1>
-        </div>
-        <div class="header-right">
-            <div class="sync-status" id="sync-status">SYNCING DATA...</div>
+        <h1><i class="fas fa-cogs" style="color:var(--net-glow);"></i> RAFKAVL SETTINGS</h1>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <span id="sync-status" style="font-size:10px; color:var(--text-sub);">Menunggu Bot...</span>
             <button class="btn-restart" onclick="restartBot()"><i class="fas fa-power-off"></i> RESTART BOT</button>
         </div>
     </div>
 
-    <div class="section-title"><i class="fas fa-toggle-on"></i> FITUR BOT (GLOBAL OPTS)</div>
-    <div class="features-grid" id="bot-toggles">
-        <div style="color:var(--text-sub); font-size:12px;">Memuat fitur...</div>
-    </div>
+    <div class="section-title"><i class="fas fa-toggle-on"></i> FITUR BOT GLOBAL</div>
+    <div class="features-grid" id="bot-features"><div style="color:var(--text-sub); font-size:12px;">Memuat fitur dari bot...</div></div>
 
     <div class="section-title"><i class="fas fa-sliders-h"></i> PENGATURAN UTAMA (SETTINGS.JS)</div>
     <div class="settings-grid">
+        <div class="setting-box"><div class="sb-header">IDENTITAS BOT</div><div class="sb-body">
+            <div class="input-group"><label>Nama Bot</label><input type="text" id="val-namebot"></div>
+            <div class="input-group"><label>Nama Owner</label><input type="text" id="val-nameowner"></div>
+            <div class="input-group"><label>Nomor Owner Utama</label><input type="text" id="val-nomorown"></div>
+            <div class="input-group"><label>Versi Bot</label><input type="text" id="val-version"></div>
+            <div class="input-group"><label>List Owner (,)</label><input type="text" id="val-owner"></div>
+            <button class="btn-save" onclick="saveGroup(['namebot','nameowner','nomorown','version','owner'])">SIMPAN IDENTITAS</button>
+        </div></div>
+
+        <div class="setting-box"><div class="sb-header">SALURAN & GRUP</div><div class="sb-body">
+            <div class="input-group"><label>Saluran Utama (JID)</label><input type="text" id="val-saluran"></div>
+            <div class="input-group"><label>Source URL</label><input type="text" id="val-sourceurl"></div>
+            <div class="input-group"><label>Thumbnail Bot URL</label><input type="text" id="val-thumb"></div>
+            <div class="input-group"><label>Icon Bot URL</label><input type="text" id="val-icon"></div>
+            <div class="input-group"><label>Link Grup Bot (,)</label><input type="text" id="val-linkgc"></div>
+            <button class="btn-save" onclick="saveGroup(['saluran','sourceurl','thumb','icon','linkgc'])">SIMPAN SALURAN</button>
+        </div></div>
+
+        <div class="setting-box"><div class="sb-header">API KEYS</div><div class="sb-body">
+            <div class="input-group"><label>Jagpro Key</label><input type="text" id="val-jagprokey"></div>
+            <div class="input-group"><label>Apixterm Key</label><input type="text" id="val-apixtermkey"></div>
+            <div class="input-group"><label>Alyachan Key</label><input type="text" id="val-alyachankey"></div>
+            <div class="input-group"><label>Botcahx Key (BTC)</label><input type="text" id="val-btc"></div>
+            <button class="btn-save" onclick="saveGroup(['jagprokey','apixtermkey','alyachankey','btc'])">SIMPAN API KEYS</button>
+        </div></div>
+
+        <div class="setting-box"><div class="sb-header">PAYMENT & STORE</div><div class="sb-body">
+            <div class="input-group"><label>Nama Toko</label><input type="text" id="val-namestore"></div>
+            <div class="input-group"><label>Dana</label><input type="text" id="val-dana"></div>
+            <div class="input-group"><label>Gopay</label><input type="text" id="val-gopay"></div>
+            <div class="input-group"><label>OVO</label><input type="text" id="val-ovo"></div>
+            <div class="input-group"><label>Pakasir API</label><input type="text" id="val-pakasirApi"></div>
+            <div class="input-group"><label>Pakasir KEY</label><input type="text" id="val-pakasirKey"></div>
+            <button class="btn-save" onclick="saveGroup(['namestore','dana','gopay','ovo','pakasirApi','pakasirKey'])">SIMPAN PAYMENT</button>
+        </div></div>
         
-        <div class="setting-box">
-            <div class="sb-header">IDENTITAS BOT</div>
-            <div class="sb-body">
-                <div class="input-group"><label>Nama Bot</label><input type="text" id="val-namebot"></div>
-                <div class="input-group"><label>Nama Owner</label><input type="text" id="val-nameowner"></div>
-                <div class="input-group"><label>Nomor Owner Utama</label><input type="text" id="val-nomorown"></div>
-                <div class="input-group"><label>Versi Bot</label><input type="text" id="val-version"></div>
-                <div class="input-group"><label>List Semua Owner (,)</label><input type="text" id="val-owner"></div>
-            </div>
-            <div class="sb-footer"><button class="btn-save" onclick="saveGroup(['namebot', 'nameowner', 'nomorown', 'version', 'owner'])"><i class="fas fa-save"></i> SIMPAN IDENTITAS</button></div>
-        </div>
-
-        <div class="setting-box">
-            <div class="sb-header">SALURAN & GRUP</div>
-            <div class="sb-body">
-                <div class="input-group"><label>Saluran Utama (JID)</label><input type="text" id="val-saluran"></div>
-                <div class="input-group"><label>Source URL</label><input type="text" id="val-sourceurl"></div>
-                <div class="input-group"><label>Thumbnail Bot URL</label><input type="text" id="val-thumb"></div>
-                <div class="input-group"><label>Icon Bot URL</label><input type="text" id="val-icon"></div>
-                <div class="input-group"><label>Link Grup Bot (,)</label><input type="text" id="val-linkgc"></div>
-            </div>
-            <div class="sb-footer" style="margin-top:auto;"><button class="btn-save" onclick="saveGroup(['saluran', 'sourceurl', 'thumb', 'icon', 'linkgc'])"><i class="fas fa-save"></i> SIMPAN SALURAN</button></div>
-        </div>
-
-        <div class="setting-box">
-            <div class="sb-header">API KEYS</div>
-            <div class="sb-body">
-                <div class="input-group"><label>Jagpro Key</label><input type="text" id="val-jagprokey"></div>
-                <div class="input-group"><label>Apixterm Key</label><input type="text" id="val-apixtermkey"></div>
-                <div class="input-group"><label>Botcahx Key (BTC)</label><input type="text" id="val-btc"></div>
-                <div class="input-group"><label>Alyachan Key</label><input type="text" id="val-alyachankey"></div>
-            </div>
-            <div class="sb-footer" style="margin-top:auto;"><button class="btn-save" onclick="saveGroup(['jagprokey', 'apixtermkey', 'btc', 'alyachankey'])"><i class="fas fa-save"></i> SIMPAN API</button></div>
-        </div>
-
-        <div class="setting-box">
-            <div class="sb-header">PAYMENT & STORE</div>
-            <div class="sb-body">
-                <div class="input-group"><label>Nama Toko</label><input type="text" id="val-namestore"></div>
-                <div class="input-group"><label>Dana</label><input type="text" id="val-dana"></div>
-                <div class="input-group"><label>Gopay</label><input type="text" id="val-gopay"></div>
-                <div class="input-group"><label>OVO</label><input type="text" id="val-ovo"></div>
-                <div class="input-group"><label>Pakasir API</label><input type="text" id="val-pakasirApi"></div>
-                <div class="input-group"><label>Pakasir KEY</label><input type="text" id="val-pakasirKey"></div>
-            </div>
-            <div class="sb-footer" style="margin-top:auto;"><button class="btn-save" onclick="saveGroup(['namestore', 'dana', 'gopay', 'ovo', 'pakasirApi', 'pakasirKey'])"><i class="fas fa-save"></i> SIMPAN PAYMENT</button></div>
-        </div>
-
-        <div class="setting-box">
-            <div class="sb-header">STICKER & RESPON</div>
-            <div class="sb-body">
-                <div class="input-group"><label>Pack Name Sticker</label><input type="text" id="val-packname"></div>
-                <div class="input-group"><label>Author Sticker</label><input type="text" id="val-author"></div>
-                <div class="input-group"><label>Max Warn</label><input type="text" id="val-maxwarn"></div>
-                <div class="input-group"><label>Multiplier XP</label><input type="text" id="val-multiplier"></div>
-            </div>
-            <div class="sb-footer" style="margin-top:auto;"><button class="btn-save" onclick="saveGroup(['packname', 'author', 'maxwarn', 'multiplier'])"><i class="fas fa-save"></i> SIMPAN STICKER</button></div>
-        </div>
-
-        <div class="setting-box">
-            <div class="sb-header">PANEL SERVER V1</div>
-            <div class="sb-body">
-                <div class="input-group"><label>Domain Panel</label><input type="text" id="val-domain"></div>
-                <div class="input-group"><label>API KEY (PTLA)</label><input type="text" id="val-apikey"></div>
-                <div class="input-group"><label>CLIENT KEY (PTLC)</label><input type="text" id="val-capikey"></div>
-                <div class="input-group"><label>EGG ID</label><input type="text" id="val-egg"></div>
-            </div>
-            <div class="sb-footer" style="margin-top:auto;"><button class="btn-save" onclick="saveGroup(['domain', 'apikey', 'capikey', 'egg'])"><i class="fas fa-save"></i> SIMPAN PANEL</button></div>
-        </div>
-
+        <div class="setting-box"><div class="sb-header">PANEL SERVER & LAINNYA</div><div class="sb-body">
+            <div class="input-group"><label>Domain Panel</label><input type="text" id="val-domain"></div>
+            <div class="input-group"><label>API KEY (PTLA)</label><input type="text" id="val-apikey"></div>
+            <div class="input-group"><label>CLIENT KEY (PTLC)</label><input type="text" id="val-capikey"></div>
+            <div class="input-group"><label>EGG ID</label><input type="text" id="val-egg"></div>
+            <button class="btn-save" onclick="saveGroup(['domain','apikey','capikey','egg'])">SIMPAN PANEL</button>
+        </div></div>
     </div>
 </div>
 
 <script>
-    // 🛡️ KEAMANAN: CEK ADMIN
     const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
-    if (!isAdmin) {
-        document.getElementById('auth-lock').style.display = 'flex'; 
-    } else {
-        document.getElementById('main-content').style.display = 'block'; 
-    }
+    if (!isAdmin) document.getElementById('auth-lock').style.display = 'flex';
+    else document.getElementById('main-content').style.display = 'block';
 
-    document.getElementById('auth-btn').onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
-
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
-
-    const toggleConfig = [
-        { id: 'autoreadgc', title: 'Auto Read Msg', desc: 'Baca pesan otomatis grup' },
-        { id: 'autoreadpc', title: 'Auto Read PC', desc: 'Baca pesan otomatis private' },
-        { id: 'reactsw', title: 'Auto React SW', desc: 'Reaction otomatis status WA' },
-        { id: 'pconly', title: 'PC Only', desc: 'Bot hanya merespon di Private' },
-        { id: 'gconly', title: 'GC Only', desc: 'Bot hanya merespon di Grup' },
-        { id: 'anticulik', title: 'Anti Culik', desc: 'Tolak invite grup tak dikenal' },
-        { id: 'autosholat', title: 'Auto Sholat', desc: 'Pengingat sholat global' },
-        { id: 'automakan', title: 'Auto Makan', desc: 'Pengingat makan global' },
-        { id: 'autopuasa', title: 'Auto Puasa', desc: 'Pengingat sahur & buka' }
+    const featConfig = [
+        { id: 'autoreadgc', t: 'Auto Read Msg', d: 'Baca chat otomatis' },
+        { id: 'reactsw', t: 'Auto React SW', d: 'Reaction status' },
+        { id: 'gconly', t: 'GC Only', d: 'Khusus grup' },
+        { id: 'anticulik', t: 'Anti Culik', d: 'Tolak invite grup' },
+        { id: 'autosholat', t: 'Auto Sholat', d: 'Pengingat ibadah' }
     ];
 
     let isEditing = false;
@@ -218,84 +134,65 @@
         input.addEventListener('blur', () => { setTimeout(() => isEditing = false, 1500); });
     });
 
-    const setVal = (id, val) => { let el = document.getElementById(id); if(el && !el.matches(':focus')) el.value = val || ''; };
-
     async function loadData() {
-        if (!isAdmin) return; // Kalau bukan admin gausah nge-fetch
-
-        if (isEditing) {
-            document.getElementById('sync-status').innerText = "SYNC PAUSED (EDITING)";
-            document.getElementById('sync-status').style.color = "var(--warn)";
-            return;
-        }
+        if (!isAdmin) return;
+        if (isEditing) return;
 
         try {
             const res = await fetch('/api/antena?t=' + Date.now());
             const data = await res.json();
             
-            if (data.database && data.database.bot_features) {
-                let htmlToggles = '';
-                const bf = data.database.bot_features;
-                toggleConfig.forEach(feat => {
-                    htmlToggles += `
-                    <div class="feature-card">
-                        <div class="fc-info"><h3>${feat.title}</h3><p>${feat.desc}</p></div>
-                        <label class="switch">
-                            <input type="checkbox" ${bf[feat.id] ? 'checked' : ''} onchange="toggleBotFeature('${feat.id}', this.checked)">
-                            <span class="slider"></span>
-                        </label>
-                    </div>`;
-                });
-                document.getElementById('bot-toggles').innerHTML = htmlToggles;
+            if(data.status === 'offline') {
+                document.getElementById('sync-status').innerText = "BOT OFFLINE 🔴";
+                document.getElementById('sync-status').style.color = "var(--danger)";
+                return;
             }
 
             if (data.database && data.database.bot_config) {
-                const c = data.database.bot_config;
-                setVal('val-namebot', c.namebot); setVal('val-nameowner', c.nameowner); setVal('val-nomorown', c.nomorown);
-                setVal('val-version', c.version); setVal('val-owner', c.owner); setVal('val-saluran', c.saluran);
-                setVal('val-sourceurl', c.sourceurl); setVal('val-thumb', c.thumb); setVal('val-icon', c.icon);
-                setVal('val-linkgc', c.linkgc); setVal('val-jagprokey', c.jagprokey); setVal('val-apixtermkey', c.apixtermkey);
-                setVal('val-alyachankey', c.alyachankey); setVal('val-btc', c.btc); setVal('val-namestore', c.namestore);
-                setVal('val-dana', c.dana); setVal('val-gopay', c.gopay); setVal('val-ovo', c.ovo);
-                setVal('val-pakasirApi', c.pakasirApi); setVal('val-pakasirKey', c.pakasirKey); setVal('val-packname', c.packname);
-                setVal('val-author', c.author); setVal('val-maxwarn', c.maxwarn); setVal('val-multiplier', c.multiplier);
-                setVal('val-domain', c.domain); setVal('val-apikey', c.apikey); setVal('val-capikey', c.capikey); setVal('val-egg', c.egg);
-                
-                document.getElementById('sync-status').innerText = "LIVE SYNC • " + data.timestamp;
+                const config = data.database.bot_config;
+                const feats = data.database.bot_features;
+
+                // Toggles
+                let htmlFeats = '';
+                featConfig.forEach(f => {
+                    htmlFeats += `<div class="feature-card"><div class="fc-info"><h3>${f.t}</h3><p>${f.d}</p></div>
+                    <label class="switch"><input type="checkbox" ${feats[f.id] ? 'checked' : ''} onchange="toggleFeat('${f.id}', this.checked)"><span class="slider"></span></label></div>`;
+                });
+                document.getElementById('bot-features').innerHTML = htmlFeats;
+
+                // Inputs
+                Object.keys(config).forEach(key => {
+                    let el = document.getElementById('val-' + key);
+                    if (el && !el.matches(':focus')) el.value = config[key];
+                });
+
+                document.getElementById('sync-status').innerText = "DATA TERHUBUNG 🟢";
                 document.getElementById('sync-status').style.color = "var(--success)";
             }
-        } catch (e) { }
+        } catch (e) {}
     }
 
-    async function apiAction(payloadData) {
-        try {
-            await fetch('/api/antena', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' }, body: JSON.stringify({ action: payloadData }) });
-        } catch(e) { alert("Gagal koneksi!"); }
+    async function apiAction(action) {
+        await fetch('/api/antena', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' }, body: JSON.stringify({ action }) });
     }
 
-    function toggleBotFeature(id, isChecked) {
-        apiAction({ type: 'toggle_bot_feature', feature: id, value: isChecked });
-    }
-
-    async function saveGroup(keysArray) {
-        for (let key of keysArray) {
-            let val = document.getElementById(`val-${key}`).value;
-            apiAction({ type: 'update_config', key: `global.${key}`, value: val });
-            await new Promise(r => setTimeout(r, 300)); 
-        }
-        alert("✅ Pengaturan berhasil dikirim ke bot!");
+    function toggleFeat(id, val) { apiAction({ type: 'toggle_bot_feature', feature: id, value: val }); }
+    
+    function saveGroup(keys) {
+        keys.forEach(k => apiAction({ type: 'update_config', key: 'global.' + k, value: document.getElementById('val-' + k).value }));
+        alert("✅ Perintah Simpan Dikirim!");
         isEditing = false;
     }
 
     function restartBot() {
         if (confirm("⚠️ Yakin ingin me-restart bot sekarang? Bot akan offline sejenak.")) {
             apiAction({ type: 'restart_bot' });
-            alert("🔄 Sinyal restart dikirim ke server. Silahkan tunggu bot online kembali.");
+            alert("🔄 Perintah Restart dikirim! Silahkan pantau bot di WhatsApp.");
         }
     }
 
+    setInterval(loadData, 5000);
     loadData();
-    setInterval(loadData, 5000); 
 </script>
 </body>
 </html>
