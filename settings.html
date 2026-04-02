@@ -12,8 +12,8 @@
         body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; }
         
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
-        .btn-restart { background: var(--danger); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-restart:hover { background: #ff1a1a; box-shadow: 0 0 20px var(--danger); }
+        .btn-restart { background: var(--danger); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; box-shadow: 0 0 10px rgba(255, 68, 85, 0.2); }
+        .btn-restart:hover { background: #ff1a1a; box-shadow: 0 0 20px var(--danger); transform: scale(1.05); }
 
         .section-title { font-size: 13px; color: var(--net-glow); text-transform: uppercase; letter-spacing: 1px; margin: 30px 0 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
@@ -213,14 +213,27 @@
     ];
 
     let isEditing = false;
-    document.querySelectorAll('input').forEach(i => { i.onfocus = () => isEditing = true; i.onblur = () => isEditing = false; });
+    let isSaving = false; // 🔥 PENGUNCI BARU BIAR WEB SABAR NUNGGU BOT 🔥
+
+    document.querySelectorAll('input').forEach(i => { 
+        i.onfocus = () => isEditing = true; 
+        i.onblur = () => { setTimeout(() => isEditing = false, 1500); }; 
+    });
 
     async function loadData() {
-        if (!isAdmin || isEditing) return;
+        if (!isAdmin || isEditing || isSaving) return; 
+
         try {
             const res = await fetch('/api/antena?t=' + Date.now());
             const data = await res.json();
-            if(!data.database) return;
+            
+            if(data.status === 'offline') {
+                document.getElementById('sync-status').innerText = "BOT OFFLINE 🔴";
+                document.getElementById('sync-status').style.color = "var(--danger)";
+                return;
+            }
+
+            if (!data.database) return;
             
             const config = data.database.bot_config;
             const feats = data.database.bot_features;
@@ -238,6 +251,7 @@
             });
 
             document.getElementById('sync-status').innerText = "LIVE SYNC 🟢";
+            document.getElementById('sync-status').style.color = "var(--success)";
         } catch (e) {}
     }
 
@@ -245,15 +259,28 @@
         await fetch('/api/antena', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' }, body: JSON.stringify({ action }) });
     }
 
-    function saveGroup(keys) {
-        keys.forEach(k => apiAction({ type: 'update_config', key: 'global.' + k, value: document.getElementById('val-' + k).value }));
-        alert("✅ Perintah Simpan Dikirim!");
+    async function saveGroup(keys) {
+        isSaving = true; // Kunci layar!
+        document.getElementById('sync-status').innerText = "MENGIRIM KE BOT... ⏳";
+        document.getElementById('sync-status').style.color = "var(--warn)";
+
+        for (let k of keys) {
+            await apiAction({ type: 'update_config', key: 'global.' + k, value: document.getElementById('val-' + k).value });
+            await new Promise(r => setTimeout(r, 200)); 
+        }
+        
+        alert("✅ Data dikirim! Web akan menunggu bot memperbarui settings.js (est. 8-10 detik).");
+        
+        setTimeout(() => {
+            isSaving = false;
+            loadData(); // Tarik data terbaru setelah bot selesai kerja
+        }, 8000); 
     }
 
     function restartBot() {
         if (confirm("⚠️ Konfirmasi Restart: Bot akan melakukan broadcast ke seluruh grup sebelum mati. Lanjutkan?")) {
             apiAction({ type: 'restart_bot' });
-            alert("🔄 Sinyal Restart & Broadcast dikirim!");
+            alert("🔄 Sinyal Restart & Broadcast dikirim! Pantau bot di WA.");
         }
     }
 
