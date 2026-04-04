@@ -5,26 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Group Management - RafkaVL</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root { --bg-dark: #060c1c; --card-bg: rgba(14, 24, 48, 0.85); --border: rgba(30, 48, 96, 0.8); --net: #0066ff; --net-glow: #00cfff; --success: #00e676; --danger: #ff4455; --warn: #ffcc00; --text-sub: #8ab0d8; --text-main: #ffffff; --input-bg: rgba(10, 19, 41, 0.8); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; overflow-x: hidden; }
+        .container { max-width: 1400px; margin: 0 auto; display: block; }
+        
+        #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: rgba(10, 16, 32, 0.95); backdrop-filter: blur(10px); border-right: 1px solid var(--border); z-index: 1000; transition: 0.3s; padding: 20px; }
+        #sidebar.active { left: 0; }
+        .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; font-size: 14px; transition: 0.2s;}
+        .sidebar-links a:hover, .sidebar-links a.active { background: rgba(0, 207, 255, 0.15); color: var(--net-glow); }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; }
+        #overlay.active { display: block; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { font-size: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
+        .menu-btn { cursor: pointer; font-size: 22px; transition: 0.2s; margin-right:10px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; backdrop-filter: blur(8px); padding: 20px; overflow-x: auto; margin-bottom: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { text-align: left; padding: 15px; color: var(--text-sub); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); letter-spacing: 0.5px; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; font-weight: 600; vertical-align: middle; }
+        .badge { padding: 4px 12px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-prem { background: rgba(0, 207, 255, 0.1); color: var(--net-glow); border: 1px solid var(--net-glow); }
+        .badge-reg { background: rgba(138, 176, 216, 0.1); color: var(--text-sub); border: 1px solid var(--text-sub); }
+        
         .grup-name { color: var(--net-glow); font-weight: 700; } .grup-id { color: var(--text-sub); font-family: monospace; font-size: 12px; font-weight: 400; } .sewa-hari { color: var(--warn); font-weight: 700; }
         .badge-aktif { color: var(--success); border: 1px solid var(--success); } .badge-banned { color: var(--danger); border: 1px solid var(--danger); }
+        .btn-toggle { background: rgba(0, 207, 255, 0.1); color: var(--net-glow); border: 1px solid var(--net-glow); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-toggle.open { background: var(--net-glow); color: #000; transform: rotate(180deg); }
         .detail-row { display: none; background: rgba(11, 19, 43, 0.7); border-bottom: 1px solid var(--border); backdrop-filter: blur(5px);} .detail-row.open { display: table-row; }
         .detail-content { padding: 25px; border-left: 3px solid var(--net-glow); display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } .info-box { background: var(--input-bg); padding: 12px 15px; border-radius: 8px; border: 1px solid #162445; } .info-box.full { grid-column: span 2; }
+        .info-label { font-size: 9px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
         .info-value { font-size: 13px; color: #fff; font-weight: 700; border: none; background: transparent; width: 100%; outline: none; } input.info-value { border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+        
         .feature-section { background: var(--input-bg); padding: 20px; border-radius: 12px; border: 1px solid #162445; }
         .feature-title { font-size: 12px; color: var(--net-glow); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; justify-content: space-between; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
         .feature-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 8px; } .feature-name { font-size: 11px; font-weight: 600; color: #fff; }
-        .admin-actions { display: flex; gap: 10px; margin-top: 15px; } .btn-leave { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 11px; flex: 1; transition: 0.2s;}
+        .switch { position: relative; display: inline-block; width: 38px; height: 20px; } .switch input { opacity: 0; width: 0; height: 0; } .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e3060; transition: .4s; border-radius: 34px; } .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; } input:checked + .slider { background-color: var(--net-glow); } input:checked + .slider:before { transform: translateX(18px); } input:disabled + .slider { cursor: not-allowed; opacity: 0.5; }
+        
+        .admin-actions { display: flex; gap: 10px; margin-top: 15px; } .btn-save { background: var(--net-glow); color: #000; padding: 10px 15px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; font-size: 11px; flex: 1; transition: 0.2s;} .btn-leave { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 11px; flex: 1; transition: 0.2s;}
         .bc-box { display: flex; gap: 10px; margin-top: 10px; } .bc-input { flex: 1; background: #0a1020; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 12px; outline: none; } .bc-btn { background: #00cfff; color: #000; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
         .gcauto-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
+        .hide { display: none !important; }
     </style>
 </head>
 <body>
 
-<script src="menu.js"></script>
+<div id="overlay" onclick="toggleSidebar()"></div>
+<div id="sidebar">
+    <h2 style="color:var(--net-glow); margin-bottom:30px; font-size: 18px; display: flex; justify-content: space-between;">
+        <span>👑 RafkaVL Menu</span>
+        <span onclick="toggleSidebar()" style="cursor:pointer; color:#fff;">×</span>
+    </h2>
+    <div class="sidebar-links">
+        <a href="index.html">📊 Dashboard Status</a>
+        <a href="groups.html" class="active">👥 Manajemen Grup & Sewa</a>
+        <a href="users.html">👤 User, Limit & Premium</a>
+        <a href="settings.html">⚙️ Pengaturan Fitur Bot</a>
+        <a id="auth-btn" style="margin-top:30px; border-top: 1px solid var(--border); padding-top: 15px; cursor: pointer; display: block; font-weight: bold;">Loading...</a>
+    </div>
+</div>
 
-<div class="container" style="display: block;">
+<div class="container" id="main-content">
     <div class="header">
         <h1><span class="menu-btn" onclick="toggleSidebar()">☰</span> <span style="color: var(--net-glow);">◆</span> GROUP MANAGEMENT</h1>
         <div style="text-align: right;">
@@ -51,9 +98,13 @@
 </div>
 
 <script>
-    const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
-    if (isAdmin) { document.getElementById('bc-all-card').classList.remove('hide'); }
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
     
+    const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
+    const authBtn = document.getElementById('auth-btn');
+    if (isAdmin) { authBtn.innerHTML = '🔓 Logout Admin'; authBtn.style.color = 'var(--danger)'; authBtn.onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); }; document.getElementById('bc-all-card').classList.remove('hide'); } 
+    else { authBtn.innerHTML = '🔒 Login Admin'; authBtn.style.color = 'var(--success)'; authBtn.onclick = () => { window.location.href = 'login.html'; }; }
+
     let cachedData = []; let expandedRows = new Set(); 
     function toggleDetail(index) { const row = document.getElementById(`detail-${index}`); const btn = document.getElementById(`btn-toggle-${index}`); if (expandedRows.has(index)) { expandedRows.delete(index); row.classList.remove('open'); btn.classList.remove('open'); } else { expandedRows.add(index); row.classList.add('open'); btn.classList.add('open'); } }
     const pad2 = (n) => String(n).padStart(2, '0');
@@ -69,8 +120,7 @@
                 const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
                 
                 cachedData.forEach((g, index) => {
-                    const statusClass = g.status.toUpperCase() === 'AKTIF' ? 'badge-aktif' : 'badge-banned';
-                    const sewaColor = (g.sisa_sewa === 'NOT SET' || g.sisa_sewa === 'EXPIRED') ? 'var(--danger)' : 'var(--warn)';
+                    const statusClass = g.status.toUpperCase() === 'AKTIF' ? 'badge-aktif' : 'badge-banned'; const sewaColor = (g.sisa_sewa === 'NOT SET' || g.sisa_sewa === 'EXPIRED') ? 'var(--danger)' : 'var(--warn)';
                     const premClass = g.isPremium ? 'badge-prem' : 'badge-reg'; const s = g.settings || {}; const sec = g.security || {};
 
                     let gcAutoHtml = `<div class="gcauto-box"><div class="feature-title" style="border:none; margin-bottom:10px; color:#fff;">⏰ Jadwal Buka/Tutup (Per Hari)<label class="switch"><input type="checkbox" id="gcauto-active-${g.id}" ${sec.isActive ? 'checked' : ''} ${isAdmin ? '' : 'disabled'}><span class="slider" style="${isAdmin ? '' : 'cursor: not-allowed; opacity: 0.6;'}"></span></label></div><div style="display:grid; gap:8px;">`;
@@ -90,7 +140,7 @@
                                 ${isAdmin ? `<div class="admin-actions"><button class="btn-save" onclick="saveEdit(${index}, '${g.id}')"><i class="fas fa-save"></i> Ubah Nama</button><button class="btn-leave" onclick="leaveGroup('${g.id}')"><i class="fas fa-sign-out-alt"></i> Keluar</button></div><div style="margin-top: 15px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px;"><div class="info-label">📢 Kirim Pesan ke Grup Ini</div><div class="bc-box"><input type="text" id="bc-gc-${g.id}" class="bc-input" placeholder="Ketik pesan..."><button class="bc-btn" onclick="broadcastGroup('${g.id}')"><i class="fas fa-paper-plane"></i></button></div></div>` : ''}
                             </div>
                             <div class="feature-section"><div class="feature-title">⚙️ Kontrol Keamanan & Fitur Grup</div>
-                                <div class="features-grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));">
+                                <div class="features-grid">
                                     ${createSwitch(g.id, 'Welcome', 'welcome', s.welcome)} ${createSwitch(g.id, 'Bye', 'bye', s.bye)} ${createSwitch(g.id, 'Anti Link', 'antilink', s.antilink)} ${createSwitch(g.id, 'Anti Link All', 'antilinkall', s.antilinkall)} ${createSwitch(g.id, 'Anti Video', 'antivideo', s.antivideo)} ${createSwitch(g.id, 'Anti Foto', 'antipoto', s.antipoto)} ${createSwitch(g.id, 'Anti Sticker', 'antisticker', s.antisticker)} ${createSwitch(g.id, 'Anti NSFW', 'antinsfw', s.antinsfw)} ${createSwitch(g.id, 'Anti Saluran', 'antisaluran', s.antisaluran)} ${createSwitch(g.id, 'Anti Nomor Luar', 'antinomorluar', s.antinomorluar)} ${createSwitch(g.id, 'Anti Upsw', 'antiupsw', s.antiupsw)} ${createSwitch(g.id, 'Anti Toxic', 'antitoxic', s.antitoxic)} ${createSwitch(g.id, 'Anti Delete', 'antidelete', s.antidelete)} ${createSwitch(g.id, 'Anti Edit Chat', 'antieditchat', s.antieditchat)} ${createSwitch(g.id, 'Anti Promo', 'antipromo', s.antipromo)} ${createSwitch(g.id, 'Anti Spam Chat', 'antispamchat', s.antispamchat)} ${createSwitch(g.id, 'Anti Hidetag', 'antihidetag', s.antihidetag)} ${createSwitch(g.id, 'Anti ALL', 'antiall', s.antiall)} ${createSwitch(g.id, 'Auto Levelup', 'autolevelup', s.autolevelup)} ${createSwitch(g.id, 'Auto Sticker', 'autosticker', s.autosticker)} ${createSwitch(g.id, 'Notif Gempa', 'notifgempa', s.notifgempa)}
                                 </div>
                                 ${gcAutoHtml}
@@ -115,3 +165,4 @@
 </script>
 </body>
 </html>
+
