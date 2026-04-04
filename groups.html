@@ -6,14 +6,14 @@
     <title>Group Management - RafkaVL</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .grup-name { color: var(--net); font-weight: 700; } .grup-id { color: var(--text-sub); font-family: monospace; font-size: 12px; font-weight: 400; } .sewa-hari { color: var(--warn); font-weight: 700; }
+        .grup-name { color: var(--net-glow); font-weight: 700; } .grup-id { color: var(--text-sub); font-family: monospace; font-size: 12px; font-weight: 400; } .sewa-hari { color: var(--warn); font-weight: 700; }
         .badge-aktif { color: var(--success); border: 1px solid var(--success); } .badge-banned { color: var(--danger); border: 1px solid var(--danger); }
         .detail-row { display: none; background: rgba(11, 19, 43, 0.7); border-bottom: 1px solid var(--border); backdrop-filter: blur(5px);} .detail-row.open { display: table-row; }
-        .detail-content { padding: 25px; border-left: 3px solid var(--net); display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+        .detail-content { padding: 25px; border-left: 3px solid var(--net-glow); display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } .info-box { background: var(--input-bg); padding: 12px 15px; border-radius: 8px; border: 1px solid #162445; } .info-box.full { grid-column: span 2; }
         .info-value { font-size: 13px; color: #fff; font-weight: 700; border: none; background: transparent; width: 100%; outline: none; } input.info-value { border-bottom: 1px solid var(--border); padding-bottom: 2px; }
         .feature-section { background: var(--input-bg); padding: 20px; border-radius: 12px; border: 1px solid #162445; }
-        .feature-title { font-size: 12px; color: var(--net); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; justify-content: space-between; }
+        .feature-title { font-size: 12px; color: var(--net-glow); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; justify-content: space-between; }
         .feature-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 8px; } .feature-name { font-size: 11px; font-weight: 600; color: #fff; }
         .admin-actions { display: flex; gap: 10px; margin-top: 15px; } .btn-leave { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 11px; flex: 1; transition: 0.2s;}
         .bc-box { display: flex; gap: 10px; margin-top: 10px; } .bc-input { flex: 1; background: #0a1020; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 12px; outline: none; } .bc-btn { background: #00cfff; color: #000; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
@@ -26,9 +26,9 @@
 
 <div class="container" style="display: block;">
     <div class="header">
-        <h1><span class="menu-btn" onclick="toggleSidebar()">☰</span> <span style="color: var(--net);">◆</span> GROUP MANAGEMENT</h1>
+        <h1><span class="menu-btn" onclick="toggleSidebar()">☰</span> <span style="color: var(--net-glow);">◆</span> GROUP MANAGEMENT</h1>
         <div style="text-align: right;">
-            <div id="count-gc" style="font-size: 20px; font-weight: 700; color: var(--net);">0</div>
+            <div id="count-gc" style="font-size: 20px; font-weight: 700; color: var(--net-glow);">0</div>
             <div style="font-size: 9px; color: var(--text-sub); letter-spacing: 1px;" id="sync-status">SYNCING...</div>
         </div>
     </div>
