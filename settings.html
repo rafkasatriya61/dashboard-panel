@@ -3,70 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RafkaVL - Settings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; --net: #0066ff; --net-glow: #00cfff; --success: #00e676; --danger: #ff4455; --text-sub: #8ab0d8; --text-main: #ffffff; --input-bg: #0a1329; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; }
-        
-        #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #0a1020; border-right: 1px solid var(--border); z-index: 1000; transition: 0.3s; padding: 20px; }
-        #sidebar.active { left: 0; }
-        .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
-        .sidebar-links a:hover, .sidebar-links a.active { background: rgba(0, 207, 255, 0.1); color: var(--net-glow); }
-
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
-        .btn-restart { background: var(--danger); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-restart:hover { background: #ff1a1a; box-shadow: 0 0 20px var(--danger); }
-        .menu-btn { cursor: pointer; font-size: 22px; transition: 0.2s; margin-right:10px; }
-
-        .section-title { font-size: 13px; color: var(--net-glow); text-transform: uppercase; letter-spacing: 1px; margin: 30px 0 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
-        .feature-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .fc-info h3 { font-size: 12px; }
-
-        .switch { position: relative; display: inline-block; width: 38px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e3060; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--net); }
-        input:checked + .slider:before { transform: translateX(18px); }
-        input:disabled + .slider { cursor: not-allowed; opacity: 0.5; }
-
-        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
-        .setting-box { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        .sb-header { padding: 15px; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 700; color: var(--text-sub); }
-        .sb-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-        .input-group label { font-size: 10px; color: var(--text-sub); font-weight: 700; display: block; margin-bottom: 5px; text-transform: uppercase; }
-        .input-group input { width: 100%; background: #060c1c; border: 1px solid var(--border); color: #fff; padding: 10px 15px; border-radius: 8px; font-size: 11px; outline: none; transition: 0.3s; font-family: monospace; }
-        .input-group input:disabled, .input-group input[readonly] { cursor: not-allowed; color: var(--text-sub); }
-        .btn-save { width: 100%; background: var(--net); color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-
-        .lock-badge { font-size: 8px; background: rgba(255,68,85,0.2); color: var(--danger); padding: 2px 6px; border-radius: 4px; margin-left: 5px; vertical-align: middle; }
-
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
-    </style>
+    <title>Settings - RafkaVL</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="overlay" onclick="toggleSidebar()"></div>
+<script src="menu.js"></script>
 
-<div id="sidebar">
-    <h2 style="color:var(--net-glow); margin-bottom:30px; font-size: 18px; display: flex; justify-content: space-between;">
-        <span>👑 RafkaVL Menu</span>
-        <span onclick="toggleSidebar()" style="cursor:pointer; color:#fff;">×</span>
-    </h2>
-    <div class="sidebar-links">
-        <a href="index.html">📊 Dashboard Status</a>
-        <a href="groups.html">👥 Manajemen Grup & Sewa</a>
-        <a href="users.html">👤 User, Limit & Premium</a>
-        <a href="settings.html" class="active">⚙️ Pengaturan Fitur Bot</a>
-        <a id="auth-btn" style="margin-top:30px; border-top: 1px solid var(--border); padding-top: 15px; cursor: pointer; display: block; font-weight: bold;">Loading...</a>
-    </div>
-</div>
-
-<div class="container" id="main-content">
+<div class="container" id="main-content" style="display: block;">
     <div class="header">
         <h1 style="display:flex; align-items:center;"><span class="menu-btn" onclick="toggleSidebar()">☰</span> <i class="fas fa-cogs" style="color:var(--net-glow); margin-right:10px;"></i> PENGATURAN BOT</h1>
         <div style="display:flex; align-items:center; gap:15px;">
@@ -83,7 +27,6 @@
     <div class="features-grid" id="bot-features"></div>
 
     <div class="section-title">PENGATURAN UTAMA (SETTINGS.JS)</div>
-    
     <div class="settings-grid">
         <div class="setting-box"><div class="sb-header">IDENTITAS BOT</div><div class="sb-body">
             <div class="input-group"><label>Nama Bot</label><input type="text" id="val-namebot"></div>
@@ -153,8 +96,8 @@
             <div class="input-group"><label>Author Sticker</label><input type="text" id="val-author"></div>
             <div class="input-group"><label>Max Warn</label><input type="text" id="val-maxwarn"></div>
             <div class="input-group"><label>Multiplier XP</label><input type="text" id="val-multiplier"></div>
-            <div class="input-group"><label>Port Dashboard (Pterodactyl)</label><input type="text" id="val-portDashboard"></div>
-            <button class="btn-save" onclick="saveGroup(['packname','author','maxwarn','multiplier','portDashboard'])">SIMPAN STICKER & LAINNYA</button>
+            <div class="input-group"><label>Port Dashboard</label><input type="text" id="val-portDashboard"></div>
+            <button class="btn-save" onclick="saveGroup(['packname','author','maxwarn','multiplier','portDashboard'])">SIMPAN STICKER</button>
         </div></div>
 
         <div class="setting-box"><div class="sb-header">PANEL SERVER V1</div><div class="sb-body">
@@ -168,135 +111,71 @@
             </div>
             <button class="btn-save" onclick="saveGroup(['domain','apikey','capikey','egg','nestid','loc'])">SIMPAN V1</button>
         </div></div>
+
+        <div class="setting-box"><div class="sb-header">PANEL SERVER V2</div><div class="sb-body">
+            <div class="input-group"><label>Domain V2 <span class="lock-target"></span></label><input type="text" id="val-domainV2"></div>
+            <div class="input-group"><label>API Key V2 <span class="lock-target"></span></label><input type="text" id="val-apikeyV2"></div>
+            <div class="input-group"><label>Client Key V2 <span class="lock-target"></span></label><input type="text" id="val-capikeyV2"></div>
+            <div style="display:flex; gap:10px;">
+                <div class="input-group" style="flex:1"><label>Egg V2 <span class="lock-target"></span></label><input type="text" id="val-eggV2"></div>
+                <div class="input-group" style="flex:1"><label>Nest V2 <span class="lock-target"></span></label><input type="text" id="val-nestidV2"></div>
+                <div class="input-group" style="flex:1"><label>Loc V2 <span class="lock-target"></span></label><input type="text" id="val-locV2"></div>
+            </div>
+            <button class="btn-save" onclick="saveGroup(['domainV2','apikeyV2','capikeyV2','eggV2','nestidV2','locV2'])">SIMPAN V2</button>
+        </div></div>
     </div>
 </div>
 
 <script>
     const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
-    const authBtn = document.getElementById('auth-btn');
-
-    if (isAdmin) {
-        authBtn.innerHTML = '🔓 Logout Admin'; authBtn.style.color = 'var(--danger)';
-        authBtn.onclick = () => { localStorage.removeItem('rafkavl_token'); window.location.reload(); };
-    } else {
-        authBtn.innerHTML = '🔒 Login Admin'; authBtn.style.color = 'var(--success)';
-        authBtn.onclick = () => { window.location.href = 'login.html'; };
-        
-        // HIDE ALL ADMIN CONTROLS FOR REGULAR USERS
-        document.getElementById('user-warning').style.display = 'block';
-        document.getElementById('btn-restart-master').style.display = 'none';
+    
+    if (!isAdmin) {
+        document.getElementById('user-warning').style.display = 'block'; document.getElementById('btn-restart-master').style.display = 'none';
         document.querySelectorAll('.btn-save').forEach(btn => btn.style.display = 'none');
         document.querySelectorAll('.lock-target').forEach(span => { span.innerHTML = '<i class="fas fa-lock lock-badge"></i>'; });
     }
 
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    const featConfig = [ { id: 'autoreadgc', t: 'Auto Read Msg' }, { id: 'autoreadpc', t: 'Auto Read PC' }, { id: 'reactsw', t: 'Auto React SW' }, { id: 'gconly', t: 'GC Only' }, { id: 'pconly', t: 'PC Only' }, { id: 'anticulik', t: 'Anti Culik' }, { id: 'antispam', t: 'Anti Spam' }, { id: 'register', t: 'Wajib Daftar' }, { id: 'autosholat', t: 'Auto Sholat' }, { id: 'automakan', t: 'Auto Makan' } ];
 
-    const featConfig = [
-        { id: 'autoreadgc', t: 'Auto Read Msg' }, { id: 'autoreadpc', t: 'Auto Read PC' },
-        { id: 'reactsw', t: 'Auto React SW' }, { id: 'gconly', t: 'GC Only' },
-        { id: 'pconly', t: 'PC Only' }, { id: 'anticulik', t: 'Anti Culik' },
-        { id: 'antispam', t: 'Anti Spam' }, { id: 'register', t: 'Wajib Daftar' },
-        { id: 'autosholat', t: 'Auto Sholat' }, { id: 'automakan', t: 'Auto Makan' }
-    ];
+    const sensitiveKeys = [ 'nomorown', 'owner', 'rowner', 'LIDowner', 'saluran', 'salurandaftar', 'saluranPlayCH', 'chtesti', 'sourceurl', 'linkgc', 'urlQRIS', 'jagprokey', 'jagproplus', 'apixtermkey', 'btc', 'aksesKey', 'alyachankey', 'ocrapi', 'suno', 'elevenLabsApiKey', 'tokengithub', 'geminiApi', 'pakasirApi', 'pakasirKey', 'domain', 'apikey', 'capikey', 'egg', 'nestid', 'loc', 'domainV2', 'apikeyV2', 'capikeyV2', 'eggV2', 'nestidV2', 'locV2' ];
 
-    // DAFTAR INPUT YANG HARUS DISENSOR JIKA BUKAN ADMIN
-    const sensitiveKeys = [
-        'nomorown', 'owner', 'rowner', 'LIDowner', 
-        'saluran', 'salurandaftar', 'saluranPlayCH', 'chtesti', 'sourceurl', 'linkgc', 'urlQRIS',
-        'jagprokey', 'jagproplus', 'apixtermkey', 'btc', 'aksesKey', 'alyachankey', 'ocrapi', 'suno', 'elevenLabsApiKey', 'tokengithub', 'geminiApi',
-        'pakasirApi', 'pakasirKey',
-        'domain', 'apikey', 'capikey', 'egg', 'nestid', 'loc'
-    ];
+    let isEditing = false; let isSaving = false; 
 
-    let isEditing = false;
-    let isSaving = false; 
-
-    document.querySelectorAll('input').forEach(i => { 
-        i.onfocus = () => isEditing = true; 
-        i.onblur = () => { setTimeout(() => isEditing = false, 1500); }; 
-    });
+    document.querySelectorAll('input').forEach(i => { i.onfocus = () => isEditing = true; i.onblur = () => { setTimeout(() => isEditing = false, 1500); }; });
 
     async function loadData() {
         if (isEditing || isSaving) return; 
-
         try {
-            const res = await fetch('/api/antena?t=' + Date.now());
-            const data = await res.json();
-            
-            if(data.status === 'offline') {
-                document.getElementById('sync-status').innerText = "BOT OFFLINE 🔴";
-                return;
-            }
-
+            const res = await fetch('/api/antena?t=' + Date.now()); const data = await res.json();
+            if(data.status === 'offline') { document.getElementById('sync-status').innerText = "BOT OFFLINE 🔴"; return; }
             if (!data.database) return;
             
-            const config = data.database.bot_config;
-            const feats = data.database.bot_features;
+            const config = data.database.bot_config; const feats = data.database.bot_features;
 
-            // RENDER FITUR TOGGLE
-            let htmlFeats = '';
-            featConfig.forEach(f => {
-                htmlFeats += `<div class="feature-card"><div class="fc-info"><h3>${f.t}</h3></div>
-                <label class="switch"><input type="checkbox" ${feats[f.id] ? 'checked' : ''} ${!isAdmin ? 'disabled' : `onchange="apiAction({type:'toggle_bot_feature',feature:'${f.id}',value:this.checked})"`}><span class="slider"></span></label></div>`;
-            });
-            document.getElementById('bot-features').innerHTML = htmlFeats;
+            let htmlFeats = ''; featConfig.forEach(f => { htmlFeats += `<div class="feature-card"><div class="fc-info"><h3>${f.t}</h3></div><label class="switch"><input type="checkbox" ${feats[f.id] ? 'checked' : ''} ${!isAdmin ? 'disabled' : `onchange="apiAction({type:'toggle_bot_feature',feature:'${f.id}',value:this.checked})"`}><span class="slider"></span></label></div>`; }); document.getElementById('bot-features').innerHTML = htmlFeats;
 
-            // RENDER DATA & SENSOR
             Object.keys(config).forEach(key => {
                 let el = document.getElementById('val-' + key);
                 if (el && !el.matches(':focus')) {
-                    if (!isAdmin) {
-                        el.readOnly = true; // Kunci biar ga bisa diedit
-                        if (sensitiveKeys.includes(key)) {
-                            el.type = 'password';
-                            el.value = config[key] ? 'pancipresto' : ''; // Dummy value biar jadi titik-titik
-                        } else {
-                            el.value = config[key];
-                        }
-                    } else {
-                        el.value = config[key]; // Kalau admin, tampilkan asli
-                    }
+                    if (!isAdmin) { el.readOnly = true; if (sensitiveKeys.includes(key)) { el.type = 'password'; el.value = config[key] ? 'pancipresto' : ''; } else { el.value = config[key]; }
+                    } else { el.value = config[key]; }
                 }
             });
-
             document.getElementById('sync-status').innerText = "LIVE SYNC 🟢";
-            document.getElementById('sync-status').style.color = "var(--success)";
         } catch (e) {}
     }
 
-    async function apiAction(action) {
-        await fetch('/api/antena', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' }, body: JSON.stringify({ action }) });
-    }
+    async function apiAction(action) { await fetch('/api/antena', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' }, body: JSON.stringify({ action }) }); }
 
     async function saveGroup(keys) {
-        if(!isAdmin) return; // Mencegah eksekusi nakal lewat console
-        isSaving = true; 
-        document.getElementById('sync-status').innerText = "MENGIRIM KE BOT... ⏳";
-        document.getElementById('sync-status').style.color = "var(--warn)";
-
-        for (let k of keys) {
-            await apiAction({ type: 'update_config', key: 'global.' + k, value: document.getElementById('val-' + k).value });
-            await new Promise(r => setTimeout(r, 200)); 
-        }
-        
-        alert("✅ Data dikirim! Web akan menunggu bot memperbarui settings.js (est. 8-10 detik).");
-        
-        setTimeout(() => {
-            isSaving = false;
-            loadData(); 
-        }, 8000); 
+        if(!isAdmin) return; isSaving = true; document.getElementById('sync-status').innerText = "MENGIRIM KE BOT... ⏳";
+        for (let k of keys) { await apiAction({ type: 'update_config', key: 'global.' + k, value: document.getElementById('val-' + k).value }); await new Promise(r => setTimeout(r, 200)); }
+        alert("✅ Data dikirim! Web akan menunggu bot memperbarui settings.js."); setTimeout(() => { isSaving = false; loadData(); }, 8000); 
     }
 
-    function restartBot() {
-        if(!isAdmin) return;
-        if (confirm("⚠️ Konfirmasi Restart: Bot akan melakukan broadcast ke seluruh grup sebelum mati. Lanjutkan?")) {
-            apiAction({ type: 'restart_bot' });
-            alert("🔄 Sinyal Restart & Broadcast dikirim! Pantau bot di WA.");
-        }
-    }
+    function restartBot() { if(!isAdmin) return; if (confirm("⚠️ Konfirmasi Restart: Bot akan broadcast lalu mati. Lanjutkan?")) { apiAction({ type: 'restart_bot' }); alert("🔄 Sinyal Restart dikirim!"); } }
 
-    setInterval(loadData, 5000);
-    loadData();
+    setInterval(loadData, 5000); loadData();
 </script>
 </body>
 </html>
