@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - RafkaVL</title>
+    <title>Dashboard Utama - RafkaVL</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Desain khusus kotak System Information (nggak perlu dipindah ke style.css karena cuma dipakai di halaman ini aja) */
-        .sys-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        /* Desain khusus halaman Dashboard (Biar kelihatan padat & mewah) */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .sys-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 10px; }
         .sys-card { background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid var(--border); backdrop-filter: blur(8px); }
         .sys-card h3 { font-size: 14px; color: var(--net-glow); margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
         .sys-item { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 5px; }
@@ -19,51 +20,71 @@
 
 <script src="menu.js"></script>
 
-<div class="container" style="display: block;">
+<div class="container" style="display: block;" id="main-content">
     <div class="header">
-        <h1><span class="menu-btn" onclick="toggleSidebar()">☰</span> <i class="fas fa-chart-line" style="color:var(--net-glow); margin-right:10px;"></i> DASHBOARD STATUS</h1>
+        <h1><span class="menu-btn" onclick="toggleSidebar()">☰</span> <i class="fas fa-chart-line" style="color:var(--net-glow); margin-right:10px;"></i> DASHBOARD UTAMA</h1>
         <div style="font-size: 10px; color: var(--text-sub);" id="sync-status">SINKRONISASI...</div>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+    <div class="section-title"><i class="fas fa-server"></i> Server Resources</div>
+    <div class="dashboard-grid">
         <div class="stat-box">
             <div class="stat-icon"><i class="fas fa-microchip"></i></div>
-            <div class="stat-info"><h3 id="cpu-usage">0%</h3><p>CPU Usage</p></div>
+            <div class="stat-info"><h3 id="cpu-usage">0%</h3><p>CPU Load</p></div>
         </div>
         <div class="stat-box">
             <div class="stat-icon" style="color: var(--warn); background: rgba(255, 204, 0, 0.1);"><i class="fas fa-memory"></i></div>
             <div class="stat-info"><h3 id="ram-usage">0%</h3><p>RAM Usage</p></div>
         </div>
         <div class="stat-box">
-            <div class="stat-icon" style="color: var(--success); background: rgba(0, 230, 118, 0.1);"><i class="fas fa-clock"></i></div>
-            <div class="stat-info"><h3 id="uptime">0h 0m</h3><p>Uptime Server</p></div>
+            <div class="stat-icon" style="color: var(--danger); background: rgba(255, 68, 85, 0.1);"><i class="fas fa-hdd"></i></div>
+            <div class="stat-info"><h3 id="disk-usage">0%</h3><p>Disk Usage</p></div>
         </div>
         <div class="stat-box">
-            <div class="stat-icon" style="color: var(--danger); background: rgba(255, 68, 85, 0.1);"><i class="fas fa-network-wired"></i></div>
+            <div class="stat-icon" style="color: var(--success); background: rgba(0, 230, 118, 0.1);"><i class="fas fa-network-wired"></i></div>
             <div class="stat-info"><h3 id="ping">0 ms</h3><p>Latency (Ping)</p></div>
+        </div>
+    </div>
+
+    <div class="section-title"><i class="fas fa-database"></i> Database Summary</div>
+    <div class="dashboard-grid">
+        <div class="stat-box">
+            <div class="stat-icon" style="color: #9c27b0; background: rgba(156, 39, 176, 0.1);"><i class="fas fa-users"></i></div>
+            <div class="stat-info"><h3 id="total-users">0</h3><p>Total User</p></div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon" style="color: #ff9800; background: rgba(255, 152, 0, 0.1);"><i class="fas fa-comments"></i></div>
+            <div class="stat-info"><h3 id="total-groups">0</h3><p>Total Grup</p></div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon" style="color: #00bcd4; background: rgba(0, 188, 212, 0.1);"><i class="fas fa-crown"></i></div>
+            <div class="stat-info"><h3 id="total-premium">0</h3><p>User Premium</p></div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon" style="color: #e91e63; background: rgba(233, 30, 99, 0.1);"><i class="fas fa-clock"></i></div>
+            <div class="stat-info"><h3 id="uptime">0h 0m</h3><p>Bot Uptime</p></div>
         </div>
     </div>
 
     <div class="sys-grid">
         <div class="sys-card">
-            <h3><i class="fas fa-server"></i> System Information</h3>
+            <h3><i class="fas fa-info-circle"></i> System Info</h3>
             <div class="sys-item"><span class="sys-label">Hostname</span><span class="sys-value" id="sys-host">-</span></div>
             <div class="sys-item"><span class="sys-label">Platform</span><span class="sys-value" id="sys-plat">-</span></div>
             <div class="sys-item"><span class="sys-label">OS Release</span><span class="sys-value" id="sys-os">-</span></div>
             <div class="sys-item"><span class="sys-label">Node.js Version</span><span class="sys-value" id="sys-node">-</span></div>
         </div>
         <div class="sys-card">
-            <h3><i class="fas fa-database"></i> Storage & Network</h3>
+            <h3><i class="fas fa-wifi"></i> Network & Memory</h3>
             <div class="sys-item"><span class="sys-label">Total RAM</span><span class="sys-value" id="sys-ram-tot">-</span></div>
             <div class="sys-item"><span class="sys-label">Used RAM</span><span class="sys-value" id="sys-ram-used">-</span></div>
-            <div class="sys-item"><span class="sys-label">Network RX (Masuk)</span><span class="sys-value" id="sys-rx" style="color:var(--success);">-</span></div>
-            <div class="sys-item"><span class="sys-label">Network TX (Keluar)</span><span class="sys-value" id="sys-tx" style="color:var(--danger);">-</span></div>
+            <div class="sys-item"><span class="sys-label">Net IN (RX)</span><span class="sys-value" id="sys-rx" style="color:var(--success);">-</span></div>
+            <div class="sys-item"><span class="sys-label">Net OUT (TX)</span><span class="sys-value" id="sys-tx" style="color:var(--danger);">-</span></div>
         </div>
     </div>
 </div>
 
 <script>
-    // FUNGSI KONVERSI ANGKA RAM & UPTIME
     function formatBytes(bytes) {
         if(bytes === 0) return '0 Bytes';
         const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'], i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -87,16 +108,23 @@
                 return;
             }
 
-            if (data.system) {
+            if (data.system && data.database) {
                 const sys = data.system;
+                const db = data.database;
                 
-                // UPDATE KOTAK ATAS
+                // UPDATE KOTAK ATAS (SERVER)
                 document.getElementById('cpu-usage').innerText = sys.cpu + '%';
                 document.getElementById('ram-usage').innerText = sys.ram_percent + '%';
-                document.getElementById('uptime').innerText = formatUptime(sys.uptime);
+                document.getElementById('disk-usage').innerText = sys.disk_percent + '%';
                 document.getElementById('ping').innerText = sys.latency + ' ms';
 
-                // UPDATE INFORMASI SERVER
+                // UPDATE KOTAK TENGAH (DATABASE)
+                document.getElementById('total-groups').innerText = db.chats ? db.chats.length : 0;
+                document.getElementById('total-users').innerText = db.users ? db.users.length : 0;
+                document.getElementById('total-premium').innerText = db.users ? db.users.filter(u => u.premium).length : 0;
+                document.getElementById('uptime').innerText = formatUptime(sys.uptime);
+
+                // UPDATE INFORMASI SERVER (DETAIL)
                 document.getElementById('sys-host').innerText = sys.hostname;
                 document.getElementById('sys-plat').innerText = sys.platform;
                 document.getElementById('sys-os').innerText = sys.os_release;
