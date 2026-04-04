@@ -199,7 +199,6 @@
         </div>
     </div>
 </div>
-
 <script>
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
     
@@ -231,15 +230,24 @@
 
     async function loadDashboard() {
         try {
-            const res = await fetch('/api/antena?t=' + Date.now()); const data = await res.json();
+            const startPing = Date.now(); // 🔥 Mula ngitung Ping langsung dari Web
+            const res = await fetch('/api/antena?t=' + Date.now()); 
+            const data = await res.json();
+            const realPing = Date.now() - startPing; // 🔥 Hasil Ping jaringan yang realistis (Bukan 0ms lagi)
+            
+            if (data.status === 'offline') { 
+                document.getElementById('sync-status').innerText = "BOT OFFLINE 🔴"; 
+                document.getElementById('sync-status').style.color = "var(--danger)";
+                return; 
+            }
+
             if (data.system && data.database) {
                 const sys = data.system; const db = data.database;
                 
-                // 🔥 FIX UNDEFINED PING 🔥
-                const safePing = sys.latency || 0;
-                document.getElementById('ping').innerText = safePing + 'ms';
-                document.getElementById('bar-ping-val').innerText = safePing + 'ms';
-                let pingPercent = Math.min(100, (safePing / 500) * 100);
+                // 🔥 MASUKIN PING ASLI KE HTML 🔥
+                document.getElementById('ping').innerText = realPing + 'ms';
+                document.getElementById('bar-ping-val').innerText = realPing + 'ms';
+                let pingPercent = Math.min(100, (realPing / 500) * 100); // Max 500ms biar barnya proporsional
                 document.getElementById('bar-ping').style.width = pingPercent + '%';
 
                 updateCircle('cpu-circle', sys.cpu); document.getElementById('cpu-text').innerText = sys.cpu + '%';
@@ -270,6 +278,9 @@
                 document.getElementById('det-ram-free').innerText = formatBytes(sys.total_ram - sys.used_ram);
                 document.getElementById('det-users').innerText = db.users ? db.users.length : 0;
                 document.getElementById('det-groups').innerText = db.chats ? db.chats.length : 0;
+
+                document.getElementById('sync-status').innerText = "LIVE SYNC 🟢"; 
+                document.getElementById('sync-status').style.color = "var(--success)";
             }
         } catch (e) {}
     }
