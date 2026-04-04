@@ -7,12 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { 
-            --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; 
-            --net: #00cfff; --success: #00e676; --danger: #ff4455; 
-            --text-sub: #8ab0d8; --text-main: #ffffff; --warn: #ffcc00;
-            --detail-bg: #0b132b; --input-bg: #121f40;
-        }
+        :root { --bg-dark: #060c1c; --card-bg: #0e1830; --border: #1e3060; --net: #00cfff; --success: #00e676; --danger: #ff4455; --text-sub: #8ab0d8; --text-main: #ffffff; --warn: #ffcc00; --detail-bg: #0b132b; --input-bg: #121f40; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; overflow-x: hidden; }
         
@@ -57,7 +52,6 @@
         .info-value { font-size: 13px; color: #fff; font-weight: 700; border: none; background: transparent; width: 100%; outline: none; }
         input.info-value { border-bottom: 1px solid var(--border); padding-bottom: 2px; }
         input.info-value:focus { border-bottom-color: var(--net); }
-        input[type="time"] { color: var(--net); background: transparent; border: 1px solid var(--border); padding: 5px 10px; border-radius: 4px; font-family: monospace; outline: none; }
 
         .feature-section { background: var(--input-bg); padding: 20px; border-radius: 12px; border: 1px solid #162445; position: relative;}
         .feature-title { font-size: 12px; color: var(--net); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; justify-content: space-between; }
@@ -78,10 +72,9 @@
 
         .bc-box { display: flex; gap: 10px; margin-top: 10px; }
         .bc-input { flex: 1; background: #0a1020; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 12px; outline: none; }
-        .bc-btn { background: var(--up); color: #000; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .bc-btn { background: #00cfff; color: #000; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
         
         .gcauto-box { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
-        .gcauto-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .hide { display: none !important; }
@@ -115,7 +108,7 @@
     </div>
 
     <div class="card hide" id="bc-all-card">
-        <div class="feature-title" style="margin-bottom: 10px; color: var(--up); border: none;">📢 Broadcast Global (Semua Grup)</div>
+        <div class="feature-title" style="margin-bottom: 10px; color: #00cfff; border: none;">📢 Broadcast Global (Semua Grup)</div>
         <div class="bc-box">
             <input type="text" id="bc-all-text" class="bc-input" placeholder="Ketik pesan pengumuman untuk seluruh grup bot...">
             <button class="bc-btn" onclick="broadcastAll()"><i class="fas fa-paper-plane"></i> Kirim</button>
@@ -139,6 +132,7 @@
         </table>
     </div>
 </div>
+
 <script>
     const isAdmin = localStorage.getItem('rafkavl_token') === 'AUTH_VALID_2026';
     const authBtn = document.getElementById('auth-btn');
@@ -155,35 +149,16 @@
     let cachedData = [];
     let expandedRows = new Set(); 
 
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('overlay').classList.toggle('active');
-    }
-
-    function toggleDetail(index) {
-        const detailRow = document.getElementById(`detail-${index}`);
-        const btn = document.getElementById(`btn-toggle-${index}`);
-        
-        if (expandedRows.has(index)) {
-            expandedRows.delete(index); detailRow.classList.remove('open'); btn.classList.remove('open');
-        } else {
-            expandedRows.add(index); detailRow.classList.add('open'); btn.classList.add('open');
-        }
-    }
-
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    function toggleDetail(index) { const row = document.getElementById(`detail-${index}`); const btn = document.getElementById(`btn-toggle-${index}`); if (expandedRows.has(index)) { expandedRows.delete(index); row.classList.remove('open'); btn.classList.remove('open'); } else { expandedRows.add(index); row.classList.add('open'); btn.classList.add('open'); } }
     const pad2 = (n) => String(n).padStart(2, '0');
 
     async function loadData() {
-        // 🔥 FIX BUG AUTO-CLOSE: Hapus syarat "&& isAdmin" 🔥
-        // Sekarang, siapapun yang buka dropdown (Admin/User), auto-refresh bakal berhenti sementara
         if (expandedRows.size > 0) {
-            document.getElementById('sync-status').innerText = "SYNC PAUSED (VIEWING)";
-            document.getElementById('sync-status').style.color = "var(--warn)";
-            return; // Stop refresh data biar gak nutup
+            document.getElementById('sync-status').innerText = "SYNC PAUSED (VIEWING)"; document.getElementById('sync-status').style.color = "var(--warn)";
+            return;
         }
-
-        document.getElementById('sync-status').innerText = "AUTO SYNC ON";
-        document.getElementById('sync-status').style.color = "var(--success)";
+        document.getElementById('sync-status').innerText = "AUTO SYNC ON"; document.getElementById('sync-status').style.color = "var(--success)";
 
         try {
             const res = await fetch('/api/antena?t=' + Date.now());
@@ -191,10 +166,9 @@
             
             if (data.database && data.database.chats) {
                 cachedData = data.database.chats;
-                const tbody = document.getElementById('list-gc');
                 let htmlContent = '';
-                
                 document.getElementById('count-gc').innerText = cachedData.length;
+                const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
                 
                 cachedData.forEach((g, index) => {
                     const statusClass = g.status.toUpperCase() === 'AKTIF' ? 'badge-aktif' : 'badge-banned';
@@ -204,8 +178,32 @@
                     const s = g.settings || {}; 
                     const sec = g.security || {};
 
-                    let openTimeStr = (sec.openHour != null && sec.openMinute != null) ? `${pad2(sec.openHour)}:${pad2(sec.openMinute)}` : '';
-                    let closeTimeStr = (sec.closeHour != null && sec.closeMinute != null) ? `${pad2(sec.closeHour)}:${pad2(sec.closeMinute)}` : '';
+                    // BIKIN FORM GCAUTO PER HARI
+                    let gcAutoHtml = `
+                    <div class="gcauto-box">
+                        <div class="feature-title" style="border:none; margin-bottom:10px; color:#fff;">⏰ Jadwal Buka/Tutup (Per Hari)
+                            <label class="switch"><input type="checkbox" id="gcauto-active-${g.id}" ${sec.isActive ? 'checked' : ''} ${isAdmin ? '' : 'disabled'}><span class="slider" style="${isAdmin ? '' : 'cursor: not-allowed; opacity: 0.6;'}"></span></label>
+                        </div>
+                        <div style="display:grid; gap:8px;">`;
+                    
+                    for(let i=1; i<=7; i++) {
+                        let d = sec.daily && sec.daily[i] ? sec.daily[i] : null;
+                        let oTime = d && d.openHour != null ? `${pad2(d.openHour)}:${pad2(d.openMinute)}` : '';
+                        let cTime = d && d.closeHour != null ? `${pad2(d.closeHour)}:${pad2(d.closeMinute)}` : '';
+
+                        gcAutoHtml += `
+                        <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(0,0,0,0.3); padding:6px 12px; border-radius:6px; border: 1px solid rgba(255,255,255,0.05);">
+                            <span style="font-size:11px; width:50px; color:var(--text-sub);">${days[i-1]}</span>
+                            <div style="display:flex; gap:5px; align-items:center;">
+                                <input type="time" id="gca-o-${g.id}-${i}" value="${oTime}" style="background:transparent; color:var(--success); border:1px solid var(--border); padding:3px 5px; border-radius:4px; font-size:11px; outline:none;" ${isAdmin ? '' : 'disabled'}>
+                                <span style="font-size:10px; color:var(--text-sub);">s/d</span>
+                                <input type="time" id="gca-c-${g.id}-${i}" value="${cTime}" style="background:transparent; color:var(--danger); border:1px solid var(--border); padding:3px 5px; border-radius:4px; font-size:11px; outline:none;" ${isAdmin ? '' : 'disabled'}>
+                            </div>
+                        </div>`;
+                    }
+                    gcAutoHtml += `</div>`;
+                    if(isAdmin) gcAutoHtml += `<button class="btn-save" style="margin-top:15px; padding:10px; width:100%;" onclick="saveGcAuto('${g.id}')"><i class="fas fa-save"></i> Simpan Jadwal</button>`;
+                    gcAutoHtml += `</div>`;
 
                     htmlContent += `
                         <tr>
@@ -218,136 +216,85 @@
                     `;
 
                     htmlContent += `
-                        <tr id="detail-${index}" class="detail-row">
-                            <td colspan="5">
-                                <div class="detail-content">
-                                    <div>
-                                        <div class="info-grid">
-                                            <div class="info-box full">
-                                                <div class="info-label">NAMA GRUP</div>
-                                                ${isAdmin ? `<input type="text" class="info-value" value="${g.name}" id="edit-name-${index}">` : `<div class="info-value">${g.name}</div>`}
-                                            </div>
-                                            <div class="info-box"><div class="info-label">SISA HARI</div><div class="info-value">${g.sisa_angka}</div></div>
-                                            <div class="info-box"><div class="info-label">TGL GABUNG</div><div class="info-value">${g.tgl_join}</div></div>
-                                            <div class="info-box"><div class="info-label">CHAT HARI INI</div><div class="info-value" style="color: var(--net);">${g.chat_today}</div></div>
-                                            <div class="info-box"><div class="info-label">TOTAL CHAT</div><div class="info-value" style="color: var(--net);">${g.chat_all}</div></div>
-                                        </div>
-
-                                        ${isAdmin ? `
-                                        <div class="admin-actions">
-                                            <button class="btn-save" onclick="saveEdit(${index}, '${g.id}')"><i class="fas fa-save"></i> Ubah Nama</button>
-                                            <button class="btn-leave" onclick="leaveGroup('${g.id}')"><i class="fas fa-sign-out-alt"></i> Keluar</button>
-                                        </div>
-                                        <div style="margin-top: 15px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
-                                            <div class="info-label">📢 Kirim Pesan ke Grup Ini</div>
-                                            <div class="bc-box">
-                                                <input type="text" id="bc-gc-${g.id}" class="bc-input" placeholder="Ketik pesan...">
-                                                <button class="bc-btn" onclick="broadcastGroup('${g.id}')"><i class="fas fa-paper-plane"></i></button>
-                                            </div>
-                                        </div>
-                                        ` : ''}
-                                    </div>
-
-                                    <div class="feature-section">
-                                        <div class="feature-title">⚙️ Kontrol Keamanan & Fitur Grup</div>
-                                        <div class="feature-grid">
-                                            ${createSwitch(g.id, 'Welcome', 'welcome', s.welcome)}
-                                            ${createSwitch(g.id, 'Bye', 'bye', s.bye)}
-                                            ${createSwitch(g.id, 'Anti Link', 'antilink', s.antilink)}
-                                            ${createSwitch(g.id, 'Anti Link All', 'antilinkall', s.antilinkall)}
-                                            ${createSwitch(g.id, 'Anti Video', 'antivideo', s.antivideo)}
-                                            ${createSwitch(g.id, 'Anti Foto', 'antipoto', s.antipoto)}
-                                            ${createSwitch(g.id, 'Anti Sticker', 'antisticker', s.antisticker)}
-                                            ${createSwitch(g.id, 'Anti NSFW', 'antinsfw', s.antinsfw)}
-                                            ${createSwitch(g.id, 'Anti Saluran', 'antisaluran', s.antisaluran)}
-                                            ${createSwitch(g.id, 'Anti Nomor Luar', 'antinomorluar', s.antinomorluar)}
-                                            ${createSwitch(g.id, 'Anti Upsw', 'antiupsw', s.antiupsw)}
-                                            ${createSwitch(g.id, 'Anti Toxic', 'antitoxic', s.antitoxic)}
-                                            ${createSwitch(g.id, 'Anti Delete', 'antidelete', s.antidelete)}
-                                            ${createSwitch(g.id, 'Anti Edit Chat', 'antieditchat', s.antieditchat)}
-                                            ${createSwitch(g.id, 'Anti Promo', 'antipromo', s.antipromo)}
-                                            ${createSwitch(g.id, 'Anti Spam Chat', 'antispamchat', s.antispamchat)}
-                                            ${createSwitch(g.id, 'Anti Hidetag', 'antihidetag', s.antihidetag)}
-                                            ${createSwitch(g.id, 'Anti ALL', 'antiall', s.antiall)}
-                                            ${createSwitch(g.id, 'Auto Levelup', 'autolevelup', s.autolevelup)}
-                                            ${createSwitch(g.id, 'Auto Sticker', 'autosticker', s.autosticker)}
-                                            ${createSwitch(g.id, 'Notif Gempa', 'notifgempa', s.notifgempa)}
-                                        </div>
-
-                                        <div class="gcauto-box">
-                                            <div class="feature-title" style="border:none; margin-bottom:5px; color:#fff;">⏰ Jadwal Buka/Tutup Grup
-                                                <label class="switch">
-                                                    <input type="checkbox" id="gcauto-active-${g.id}" ${sec.isActive ? 'checked' : ''} ${isAdmin ? '' : 'disabled'}>
-                                                    <span class="slider" style="${isAdmin ? '' : 'cursor: not-allowed; opacity: 0.6;'}"></span>
-                                                </label>
-                                            </div>
-                                            <div class="gcauto-row">
-                                                <span style="font-size: 11px; color: var(--text-sub);">Jam Buka:</span>
-                                                <input type="time" id="gcauto-open-${g.id}" value="${openTimeStr}" ${isAdmin ? '' : 'disabled'}>
-                                            </div>
-                                            <div class="gcauto-row">
-                                                <span style="font-size: 11px; color: var(--text-sub);">Jam Tutup:</span>
-                                                <input type="time" id="gcauto-close-${g.id}" value="${closeTimeStr}" ${isAdmin ? '' : 'disabled'}>
-                                            </div>
-                                            ${isAdmin ? `<button class="btn-detail" style="width:100%; margin-top:5px; padding:8px;" onclick="saveGcAuto('${g.id}')"><i class="fas fa-clock"></i> Simpan Jadwal</button>` : ''}
-                                        </div>
-
-                                        ${!isAdmin ? `<div style="position: absolute; top: 15px; right: 20px; font-size: 10px; color: var(--danger); font-style: italic;">*Login Admin untuk mengubah setingan</div>` : ''}
-                                    </div>
+                        <tr id="detail-${index}" class="detail-row"><td colspan="5"><div class="detail-content">
+                            <div>
+                                <div class="info-grid">
+                                    <div class="info-box full"><div class="info-label">NAMA GRUP</div>${isAdmin ? `<input type="text" class="info-value" value="${g.name}" id="edit-name-${index}">` : `<div class="info-value">${g.name}</div>`}</div>
+                                    <div class="info-box"><div class="info-label">SISA HARI</div><div class="info-value">${g.sisa_angka}</div></div>
+                                    <div class="info-box"><div class="info-label">TGL GABUNG</div><div class="info-value">${g.tgl_join}</div></div>
+                                    <div class="info-box"><div class="info-label">CHAT HARI INI</div><div class="info-value" style="color: var(--net);">${g.chat_today}</div></div>
+                                    <div class="info-box"><div class="info-label">TOTAL CHAT</div><div class="info-value" style="color: var(--net);">${g.chat_all}</div></div>
                                 </div>
-                            </td>
-                        </tr>
-                    `;
+                                ${isAdmin ? `
+                                <div class="admin-actions"><button class="btn-save" onclick="saveEdit(${index}, '${g.id}')"><i class="fas fa-save"></i> Ubah Nama</button><button class="btn-leave" onclick="leaveGroup('${g.id}')"><i class="fas fa-sign-out-alt"></i> Keluar</button></div>
+                                <div style="margin-top: 15px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
+                                    <div class="info-label">📢 Kirim Pesan ke Grup Ini</div>
+                                    <div class="bc-box"><input type="text" id="bc-gc-${g.id}" class="bc-input" placeholder="Ketik pesan..."><button class="bc-btn" onclick="broadcastGroup('${g.id}')"><i class="fas fa-paper-plane"></i></button></div>
+                                </div>` : ''}
+                            </div>
+                            <div class="feature-section">
+                                <div class="feature-title">⚙️ Kontrol Keamanan & Fitur Grup</div>
+                                <div class="feature-grid">
+                                    ${createSwitch(g.id, 'Welcome', 'welcome', s.welcome)}
+                                    ${createSwitch(g.id, 'Bye', 'bye', s.bye)}
+                                    ${createSwitch(g.id, 'Anti Link', 'antilink', s.antilink)}
+                                    ${createSwitch(g.id, 'Anti Link All', 'antilinkall', s.antilinkall)}
+                                    ${createSwitch(g.id, 'Anti Video', 'antivideo', s.antivideo)}
+                                    ${createSwitch(g.id, 'Anti Foto', 'antipoto', s.antipoto)}
+                                    ${createSwitch(g.id, 'Anti Sticker', 'antisticker', s.antisticker)}
+                                    ${createSwitch(g.id, 'Anti NSFW', 'antinsfw', s.antinsfw)}
+                                    ${createSwitch(g.id, 'Anti Saluran', 'antisaluran', s.antisaluran)}
+                                    ${createSwitch(g.id, 'Anti Nomor Luar', 'antinomorluar', s.antinomorluar)}
+                                    ${createSwitch(g.id, 'Anti Upsw', 'antiupsw', s.antiupsw)}
+                                    ${createSwitch(g.id, 'Anti Toxic', 'antitoxic', s.antitoxic)}
+                                    ${createSwitch(g.id, 'Anti Delete', 'antidelete', s.antidelete)}
+                                    ${createSwitch(g.id, 'Anti Edit Chat', 'antieditchat', s.antieditchat)}
+                                    ${createSwitch(g.id, 'Anti Promo', 'antipromo', s.antipromo)}
+                                    ${createSwitch(g.id, 'Anti Spam Chat', 'antispamchat', s.antispamchat)}
+                                    ${createSwitch(g.id, 'Anti Hidetag', 'antihidetag', s.antihidetag)}
+                                    ${createSwitch(g.id, 'Anti ALL', 'antiall', s.antiall)}
+                                    ${createSwitch(g.id, 'Auto Levelup', 'autolevelup', s.autolevelup)}
+                                    ${createSwitch(g.id, 'Auto Sticker', 'autosticker', s.autosticker)}
+                                    ${createSwitch(g.id, 'Notif Gempa', 'notifgempa', s.notifgempa)}
+                                </div>
+                                ${gcAutoHtml}
+                            </div>
+                        </div></td></tr>`;
                 });
-
-                tbody.innerHTML = htmlContent;
+                document.getElementById('list-gc').innerHTML = htmlContent;
             }
         } catch (e) { }
     }
 
     function createSwitch(groupId, label, featureKey, isChecked) {
-        return `
-            <div class="feature-item">
-                <span class="feature-name">${label}</span>
-                <label class="switch">
-                    <input type="checkbox" ${isChecked ? 'checked' : ''} 
-                    ${isAdmin ? `onchange="apiAction({type: 'toggle_group_feature', target: '${groupId}', feature: '${featureKey}', value: this.checked})"` : 'disabled'}>
-                    <span class="slider" style="${isAdmin ? '' : 'cursor: not-allowed; opacity: 0.6;'}"></span>
-                </label>
-            </div>
-        `;
+        return `<div class="feature-item"><span class="feature-name">${label}</span><label class="switch"><input type="checkbox" ${isChecked ? 'checked' : ''} ${isAdmin ? `onchange="apiAction({type: 'toggle_group_feature', target: '${groupId}', feature: '${featureKey}', value: this.checked})"` : 'disabled'}><span class="slider" style="${isAdmin ? '' : 'cursor: not-allowed; opacity: 0.6;'}"></span></label></div>`;
     }
 
     async function apiAction(payloadData) {
-        try {
-            await fetch('/api/antena', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' }, body: JSON.stringify({ action: payloadData }) });
-            alert("✅ Perintah berhasil dikirim ke bot!");
+        try { await fetch('/api/antena', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'RafkaVl_Botzz' }, body: JSON.stringify({ action: payloadData }) });
         } catch(e) { alert("Gagal koneksi ke server."); }
     }
 
-    function saveEdit(index, id) { 
-        const newName = document.getElementById(`edit-name-${index}`).value;
-        if(newName.trim() !== '') apiAction({ type: 'change_group_name', target: id, value: newName });
-    }
-
+    function saveEdit(index, id) { const newName = document.getElementById(`edit-name-${index}`).value; if(newName.trim() !== '') { apiAction({ type: 'change_group_name', target: id, value: newName }); alert("Perintah ubah nama dikirim!"); } }
+    
+    // FUNGSI KIRIM JADWAL HARIAN KE BOT
     function saveGcAuto(id) {
         const isActive = document.getElementById(`gcauto-active-${id}`).checked;
-        const openTime = document.getElementById(`gcauto-open-${id}`).value;
-        const closeTime = document.getElementById(`gcauto-close-${id}`).value;
-        
-        if (isActive && (!openTime || !closeTime)) {
-            return alert("Pilih Jam Buka dan Jam Tutup terlebih dahulu!");
+        let schedule = {};
+        for(let i=1; i<=7; i++) {
+            let o = document.getElementById(`gca-o-${id}-${i}`).value;
+            let c = document.getElementById(`gca-c-${id}-${i}`).value;
+            if(o && c) schedule[i] = { open: o, close: c };
         }
-        
-        apiAction({ type: 'update_gcauto', target: id, isActive: isActive, openTime: openTime, closeTime: closeTime });
+        apiAction({ type: 'update_gcauto', target: id, isActive: isActive, schedule: schedule });
+        alert("✅ Jadwal Buka/Tutup grup per hari berhasil dikirim ke bot!");
     }
 
     function leaveGroup(id) { if(confirm("Yakin ingin mengeluarkan bot dari grup ini?")) apiAction({ type: 'leave_gc', target: id }); }
-    function broadcastAll() { const text = document.getElementById('bc-all-text').value; if(text.trim() === '') return alert("Pesan tidak boleh kosong!"); if(confirm("Yakin kirim broadcast ke SEMUA GRUP?")) { apiAction({ type: 'broadcast_all', text: text }); document.getElementById('bc-all-text').value = ''; } }
-    function broadcastGroup(id) { const text = document.getElementById(`bc-gc-${id}`).value; if(text.trim() === '') return alert("Pesan tidak boleh kosong!"); apiAction({ type: 'broadcast_group', target: id, text: text }); document.getElementById(`bc-gc-${id}`).value = ''; }
+    function broadcastAll() { const text = document.getElementById('bc-all-text').value; if(text.trim() === '') return alert("Pesan kosong!"); if(confirm("Kirim broadcast ke SEMUA GRUP?")) { apiAction({ type: 'broadcast_all', text: text }); document.getElementById('bc-all-text').value = ''; alert("Broadcast diproses bot!"); } }
+    function broadcastGroup(id) { const text = document.getElementById(`bc-gc-${id}`).value; if(text.trim() === '') return alert("Pesan kosong!"); apiAction({ type: 'broadcast_group', target: id, text: text }); document.getElementById(`bc-gc-${id}`).value = ''; alert("Pesan dikirim!"); }
 
-    loadData();
-    setInterval(loadData, 5000); 
+    loadData(); setInterval(loadData, 5000); 
 </script>
 </body>
 </html>
