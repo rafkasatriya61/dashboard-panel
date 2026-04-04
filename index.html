@@ -38,22 +38,29 @@
         .circle-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 20px; text-align: center; backdrop-filter: blur(10px); position: relative; }
         .circle-card h4 { font-size: 11px; color: var(--text-sub); text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
         
-        /* SVG CIRCLE PROGRESS */
         .circle-box { position: relative; width: 100px; height: 100px; margin: 0 auto 15px; }
         .circle-box svg { transform: rotate(-90deg); width: 100px; height: 100px; }
         .circle-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 8; }
         .circle-progress { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
         .circle-box .val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px; font-weight: 700; }
 
-        /* NETWORK & MINI INFO */
         .net-value { font-size: 18px; font-weight: 700; color: var(--neon-blue); margin-top: 5px; }
+        
+        /* MINI INFO GRID */
         .mini-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .mini-card { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; }
         .mini-card p { font-size: 9px; color: var(--text-sub); text-transform: uppercase; margin-bottom: 5px; }
         .mini-card h5 { font-size: 13px; font-weight: 700; color: #fff; word-break: break-all; }
 
+        /* DATABASE SUMMARY KHUSUS (TAMBAHAN MAS RAFKA) */
+        .db-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .db-card { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 15px; }
+        .db-icon { font-size: 24px; padding: 12px; border-radius: 10px; }
+        .db-info h3 { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+        .db-info p { font-size: 10px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
+
         /* PERFORMANCE BOX (BARS) */
-        .perf-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 25px; margin-top: 10px; }
+        .perf-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 25px; }
         .perf-header { margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
         .perf-header h3 { font-size: 14px; text-transform: uppercase; }
         .perf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
@@ -91,7 +98,7 @@
     <div class="header">
         <div>
             <h1><i class="fas fa-bars menu-btn" onclick="toggleSidebar()"></i> <span>◆</span> RafkaVL Botzz DASHBOARD</h1>
-            <p style="font-size: 9px; color: var(--text-sub); margin-left: 32px;">Made By Rafkasatriya61.</p>
+            <p style="font-size: 9px; color: var(--text-sub); margin-left: 32px;" id="sync-status">SINKRONISASI DATABASE...</p>
         </div>
         <div class="latency-box">
             <h2 id="ping">0ms</h2>
@@ -103,22 +110,16 @@
         <div class="circle-card">
             <h4>CPU USAGE</h4>
             <div class="circle-box">
-                <svg>
-                    <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
-                    <circle id="cpu-circle" class="circle-progress" cx="50" cy="50" r="42" stroke="var(--neon-blue)" stroke-dasharray="264" stroke-dashoffset="264"></circle>
-                </svg>
+                <svg><circle class="circle-bg" cx="50" cy="50" r="42"></circle><circle id="cpu-circle" class="circle-progress" cx="50" cy="50" r="42" stroke="var(--neon-blue)" stroke-dasharray="264" stroke-dashoffset="264"></circle></svg>
                 <div class="val" id="cpu-text">0%</div>
             </div>
-            <p style="font-size: 9px; color: var(--neon-blue);" id="sys-model">Loading CPU Info...</p>
+            <p style="font-size: 9px; color: var(--neon-blue);">Core Processing</p>
         </div>
 
         <div class="circle-card">
             <h4>MEMORY</h4>
             <div class="circle-box">
-                <svg>
-                    <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
-                    <circle id="ram-circle" class="circle-progress" cx="50" cy="50" r="42" stroke="var(--neon-green)" stroke-dasharray="264" stroke-dashoffset="264"></circle>
-                </svg>
+                <svg><circle class="circle-bg" cx="50" cy="50" r="42"></circle><circle id="ram-circle" class="circle-progress" cx="50" cy="50" r="42" stroke="var(--neon-green)" stroke-dasharray="264" stroke-dashoffset="264"></circle></svg>
                 <div class="val" id="ram-text">0%</div>
             </div>
             <p style="font-size: 9px; color: var(--neon-green);"><span id="sys-ram-used">0</span> / <span id="sys-ram-tot">0</span></p>
@@ -127,10 +128,7 @@
         <div class="circle-card">
             <h4>STORAGE</h4>
             <div class="circle-box">
-                <svg>
-                    <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
-                    <circle id="disk-circle" class="circle-progress" cx="50" cy="50" r="42" stroke="var(--neon-purple)" stroke-dasharray="264" stroke-dashoffset="264"></circle>
-                </svg>
+                <svg><circle class="circle-bg" cx="50" cy="50" r="42"></circle><circle id="disk-circle" class="circle-progress" cx="50" cy="50" r="42" stroke="var(--neon-purple)" stroke-dasharray="264" stroke-dashoffset="264"></circle></svg>
                 <div class="val" id="disk-text">0%</div>
             </div>
             <p style="font-size: 9px; color: var(--neon-purple);">Disk System Usage</p>
@@ -147,11 +145,29 @@
         </div>
     </div>
 
+    <div class="db-grid">
+        <div class="db-card" style="border-left: 3px solid var(--neon-blue);">
+            <div class="db-icon" style="color: var(--neon-blue); background: rgba(0, 210, 255, 0.1);"><i class="fas fa-users"></i></div>
+            <div class="db-info"><h3 id="db-users" style="color: var(--neon-blue);">0</h3><p>Total User</p></div>
+        </div>
+        <div class="db-card" style="border-left: 3px solid var(--neon-green);">
+            <div class="db-icon" style="color: var(--neon-green); background: rgba(0, 255, 136, 0.1);"><i class="fas fa-comments"></i></div>
+            <div class="db-info"><h3 id="db-groups" style="color: var(--neon-green);">0</h3><p>Total Grup</p></div>
+        </div>
+        <div class="db-card" style="border-left: 3px solid var(--neon-purple);">
+            <div class="db-icon" style="color: var(--neon-purple); background: rgba(157, 80, 187, 0.1);"><i class="fas fa-crown"></i></div>
+            <div class="db-info"><h3 id="db-premium" style="color: var(--neon-purple);">0</h3><p>User Premium</p></div>
+        </div>
+        <div class="db-card" style="border-left: 3px solid var(--neon-yellow);">
+            <div class="db-icon" style="color: var(--neon-yellow); background: rgba(255, 204, 0, 0.1);"><i class="fas fa-clock"></i></div>
+            <div class="db-info"><h3 id="db-uptime" style="color: var(--neon-yellow);">0h 0m</h3><p>Bot Uptime</p></div>
+        </div>
+    </div>
+
     <div class="mini-grid">
         <div class="mini-card"><p>HOSTNAME</p><h5 id="sys-host">-</h5></div>
         <div class="mini-card"><p>PLATFORM</p><h5 id="sys-plat">-</h5></div>
-        <div class="mini-card"><p>BOT UPTIME</p><h5 id="bot-uptime">-</h5></div>
-        <div class="mini-card"><p>SERVER UPTIME</p><h5 id="sys-uptime" style="color: var(--neon-yellow);">-</h5></div>
+        <div class="mini-card"><p>OS RELEASE</p><h5 id="sys-os">-</h5></div>
         <div class="mini-card"><p>NODEJS</p><h5 style="color: var(--neon-blue);" id="sys-node">-</h5></div>
     </div>
 
@@ -180,11 +196,11 @@
                 </div>
             </div>
             <div>
-                <div class="detail-item"><span class="detail-label">OS Release</span><span class="detail-val" id="sys-os">-</span></div>
                 <div class="detail-item"><span class="detail-label">Total Memory</span><span class="detail-val" id="det-ram-tot">-</span></div>
+                <div class="detail-item"><span class="detail-label">Used Memory</span><span class="detail-val" id="det-ram-used">-</span></div>
                 <div class="detail-item"><span class="detail-label">Free Memory</span><span class="detail-val" id="det-ram-free">-</span></div>
-                <div class="detail-item"><span class="detail-label">Total Groups</span><span class="detail-val" id="total-groups" style="color: var(--neon-blue);">-</span></div>
-                <div class="detail-item"><span class="detail-label">Total Users</span><span class="detail-val" id="total-users" style="color: var(--neon-green);">-</span></div>
+                <div class="detail-item"><span class="detail-label">Active Users</span><span class="detail-val" id="det-users" style="color: var(--neon-blue);">-</span></div>
+                <div class="detail-item"><span class="detail-label">Active Groups</span><span class="detail-val" id="det-groups" style="color: var(--neon-green);">-</span></div>
             </div>
         </div>
     </div>
@@ -222,6 +238,13 @@
     async function loadDashboard() {
         try {
             const res = await fetch('/api/antena?t=' + Date.now()); const data = await res.json();
+            
+            if (data.status === 'offline') { 
+                document.getElementById('sync-status').innerText = "BOT OFFLINE 🔴"; 
+                document.getElementById('sync-status').style.color = "var(--danger)";
+                return; 
+            }
+
             if (data.system && data.database) {
                 const sys = data.system; const db = data.database;
                 
@@ -231,18 +254,17 @@
                 updateCircle('ram-circle', sys.ram_percent); document.getElementById('ram-text').innerText = sys.ram_percent + '%';
                 updateCircle('disk-circle', sys.disk_percent); document.getElementById('disk-text').innerText = sys.disk_percent + '%';
                 
+                // DATABASE SUMMARY (TAMBAHAN MAS RAFKA)
+                document.getElementById('db-users').innerText = db.users ? db.users.length : 0;
+                document.getElementById('db-groups').innerText = db.chats ? db.chats.length : 0;
+                document.getElementById('db-premium').innerText = db.users ? db.users.filter(u => u.premium).length : 0;
+                document.getElementById('db-uptime').innerText = formatUptime(sys.uptime);
+
                 // NETWORK & MINI INFO
-                document.getElementById('sys-rx').innerText = sys.net_rx;
-                document.getElementById('sys-tx').innerText = sys.net_tx;
-                document.getElementById('sys-host').innerText = sys.hostname;
-                document.getElementById('sys-plat').innerText = sys.platform;
-                document.getElementById('bot-uptime').innerText = formatUptime(sys.uptime); // Ini Uptime Bot
-                document.getElementById('sys-uptime').innerText = formatUptime(sys.uptime + 500000); // Simulasi Server Uptime lebih lama
-                document.getElementById('sys-node').innerText = sys.nodejs;
-                
-                // MEMORY INFO
-                document.getElementById('sys-ram-used').innerText = formatBytes(sys.used_ram);
-                document.getElementById('sys-ram-tot').innerText = formatBytes(sys.total_ram);
+                document.getElementById('sys-rx').innerText = sys.net_rx; document.getElementById('sys-tx').innerText = sys.net_tx;
+                document.getElementById('sys-host').innerText = sys.hostname; document.getElementById('sys-plat').innerText = sys.platform;
+                document.getElementById('sys-os').innerText = sys.os_release; document.getElementById('sys-node').innerText = sys.nodejs;
+                document.getElementById('sys-ram-used').innerText = formatBytes(sys.used_ram); document.getElementById('sys-ram-tot').innerText = formatBytes(sys.total_ram);
 
                 // PERFORMANCE BARS
                 document.getElementById('bar-cpu').style.width = sys.cpu + '%'; document.getElementById('bar-cpu-val').innerText = sys.cpu + '%';
@@ -252,11 +274,14 @@
                 document.getElementById('bar-ping').style.width = pingPercent + '%'; document.getElementById('bar-ping-val').innerText = sys.latency + 'ms';
 
                 // DETAILS
-                document.getElementById('sys-os').innerText = sys.os_release;
                 document.getElementById('det-ram-tot').innerText = formatBytes(sys.total_ram);
+                document.getElementById('det-ram-used').innerText = formatBytes(sys.used_ram);
                 document.getElementById('det-ram-free').innerText = formatBytes(sys.total_ram - sys.used_ram);
-                document.getElementById('total-groups').innerText = db.chats ? db.chats.length : 0;
-                document.getElementById('total-users').innerText = db.users ? db.users.length : 0;
+                document.getElementById('det-users').innerText = db.users ? db.users.length : 0;
+                document.getElementById('det-groups').innerText = db.chats ? db.chats.length : 0;
+
+                document.getElementById('sync-status').innerText = "LIVE SYNC 🟢"; 
+                document.getElementById('sync-status').style.color = "var(--success)";
             }
         } catch (e) {}
     }
@@ -265,3 +290,4 @@
 </script>
 </body>
 </html>
+
