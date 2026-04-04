@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { 
-            --bg-dark: #050a18; --card-bg: rgba(13, 22, 45, 0.8); --border: rgba(30, 48, 96, 0.5); 
+            --bg-dark: #050a18; --card-bg: rgba(13, 22, 45, 0.7); --border: rgba(30, 48, 96, 0.4); 
             --neon-blue: #00d2ff; --neon-green: #00ff88; --neon-purple: #9d50bb; --neon-yellow: #ffcc00;
             --text-main: #ffffff; --text-sub: #8ab0d8;
         }
@@ -17,7 +17,6 @@
         body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; overflow-x: hidden; }
         .container { max-width: 1200px; margin: 0 auto; }
         
-        /* SIDEBAR & OVERLAY */
         #sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: rgba(10, 16, 32, 0.95); backdrop-filter: blur(10px); border-right: 1px solid var(--border); z-index: 1000; transition: 0.3s; padding: 20px; }
         #sidebar.active { left: 0; }
         .sidebar-links a { display: block; padding: 12px 15px; color: var(--text-sub); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
@@ -25,17 +24,14 @@
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; }
         #overlay.active { display: block; }
 
-        /* HEADER SECTION */
         .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
         .header h1 { font-size: 18px; font-weight: 700; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
-        .header h1 span { color: var(--neon-blue); }
         .latency-box { text-align: right; }
         .latency-box h2 { color: var(--neon-yellow); font-size: 22px; line-height: 1; }
         .latency-box p { font-size: 10px; color: var(--text-sub); text-transform: uppercase; }
 
-        /* CIRCLE GRID */
         .circle-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .circle-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 20px; text-align: center; backdrop-filter: blur(10px); position: relative; }
+        .circle-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 20px; text-align: center; backdrop-filter: blur(12px); position: relative; }
         .circle-card h4 { font-size: 11px; color: var(--text-sub); text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
         
         .circle-box { position: relative; width: 100px; height: 100px; margin: 0 auto 15px; }
@@ -46,21 +42,19 @@
 
         .net-value { font-size: 18px; font-weight: 700; color: var(--neon-blue); margin-top: 5px; }
         
-        /* MINI INFO GRID */
         .mini-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .mini-card { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; }
+        .mini-card { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; backdrop-filter: blur(10px); }
         .mini-card p { font-size: 9px; color: var(--text-sub); text-transform: uppercase; margin-bottom: 5px; }
         .mini-card h5 { font-size: 13px; font-weight: 700; color: #fff; word-break: break-all; }
 
-        /* DATABASE SUMMARY KHUSUS (TAMBAHAN MAS RAFKA) */
+        /* 🔥 FIX BLUR DATABASE SUMMARY 🔥 */
         .db-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .db-card { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 15px; }
+        .db-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 15px; backdrop-filter: blur(12px); }
         .db-icon { font-size: 24px; padding: 12px; border-radius: 10px; }
         .db-info h3 { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
         .db-info p { font-size: 10px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* PERFORMANCE BOX (BARS) */
-        .perf-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 25px; }
+        .perf-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 25px; backdrop-filter: blur(15px); }
         .perf-header { margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
         .perf-header h3 { font-size: 14px; text-transform: uppercase; }
         .perf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
@@ -70,7 +64,7 @@
         .bar-outer { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
         .bar-inner { height: 100%; width: 0%; transition: 1s ease; }
 
-        .detail-item { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 5px; }
+        .detail-item { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 11px; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 5px; }
         .detail-label { color: var(--text-sub); }
         .detail-val { font-weight: 600; font-family: monospace; }
         
@@ -90,7 +84,7 @@
         <a href="groups.html">👥 Manajemen Grup & Sewa</a>
         <a href="users.html">👤 User, Limit & Premium</a>
         <a href="settings.html">⚙️ Pengaturan Fitur Bot</a>
-        <a id="auth-btn" style="margin-top:30px; border-top: 1px solid var(--border); padding-top: 15px; cursor: pointer; display: block; font-weight: bold;">Loading...</a>
+        <a id="auth-btn" style="margin-top:30px; border-top: 1px solid var(--border); padding-top: 15px; cursor: pointer; display: bold;">Loading...</a>
     </div>
 </div>
 
@@ -98,7 +92,7 @@
     <div class="header">
         <div>
             <h1><i class="fas fa-bars menu-btn" onclick="toggleSidebar()"></i> <span>◆</span> RafkaVL Botzz DASHBOARD</h1>
-            <p style="font-size: 9px; color: var(--text-sub); margin-left: 32px;" id="sync-status">SINKRONISASI DATABASE...</p>
+            <p style="font-size: 9px; color: var(--text-sub); margin-left: 32px;" id="sync-status">LIVE SYNC 🟢</p>
         </div>
         <div class="latency-box">
             <h2 id="ping">0ms</h2>
@@ -148,19 +142,19 @@
     <div class="db-grid">
         <div class="db-card" style="border-left: 3px solid var(--neon-blue);">
             <div class="db-icon" style="color: var(--neon-blue); background: rgba(0, 210, 255, 0.1);"><i class="fas fa-users"></i></div>
-            <div class="db-info"><h3 id="db-users" style="color: var(--neon-blue);">0</h3><p>Total User</p></div>
+            <div class="db-info"><h3 id="db-users" style="color: var(--neon-blue);">0</h3><p>TOTAL USER</p></div>
         </div>
         <div class="db-card" style="border-left: 3px solid var(--neon-green);">
             <div class="db-icon" style="color: var(--neon-green); background: rgba(0, 255, 136, 0.1);"><i class="fas fa-comments"></i></div>
-            <div class="db-info"><h3 id="db-groups" style="color: var(--neon-green);">0</h3><p>Total Grup</p></div>
+            <div class="db-info"><h3 id="db-groups" style="color: var(--neon-green);">0</h3><p>TOTAL GRUP</p></div>
         </div>
         <div class="db-card" style="border-left: 3px solid var(--neon-purple);">
             <div class="db-icon" style="color: var(--neon-purple); background: rgba(157, 80, 187, 0.1);"><i class="fas fa-crown"></i></div>
-            <div class="db-info"><h3 id="db-premium" style="color: var(--neon-purple);">0</h3><p>User Premium</p></div>
+            <div class="db-info"><h3 id="db-premium" style="color: var(--neon-purple);">0</h3><p>USER PREMIUM</p></div>
         </div>
         <div class="db-card" style="border-left: 3px solid var(--neon-yellow);">
             <div class="db-icon" style="color: var(--neon-yellow); background: rgba(255, 204, 0, 0.1);"><i class="fas fa-clock"></i></div>
-            <div class="db-info"><h3 id="db-uptime" style="color: var(--neon-yellow);">0h 0m</h3><p>Bot Uptime</p></div>
+            <div class="db-info"><h3 id="db-uptime" style="color: var(--neon-yellow);">0h 0m</h3><p>BOT UPTIME</p></div>
         </div>
     </div>
 
@@ -173,7 +167,7 @@
 
     <div class="perf-card">
         <div class="perf-header">
-            <h3>RafkaVL Botzz PERFORMANCE</h3>
+            <h3>RAFKAVL BOTZZ PERFORMANCE</h3>
             <p style="font-size: 9px; color: var(--text-sub);">Real-time Metrics Tracking</p>
         </div>
         <div class="perf-grid">
@@ -226,7 +220,7 @@
     }
 
     function formatBytes(bytes) { 
-        if(bytes === 0) return '0 Bytes'; const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'], i = Math.floor(Math.log(bytes) / Math.log(k)); 
+        if(!bytes || bytes === 0) return '0 Bytes'; const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'], i = Math.floor(Math.log(bytes) / Math.log(k)); 
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]; 
     }
     
@@ -238,50 +232,44 @@
     async function loadDashboard() {
         try {
             const res = await fetch('/api/antena?t=' + Date.now()); const data = await res.json();
-            
-            if (data.status === 'offline') { 
-                document.getElementById('sync-status').innerText = "BOT OFFLINE 🔴"; 
-                document.getElementById('sync-status').style.color = "var(--danger)";
-                return; 
-            }
-
             if (data.system && data.database) {
                 const sys = data.system; const db = data.database;
                 
-                // PING & CIRCLES
-                document.getElementById('ping').innerText = sys.latency + 'ms';
+                // 🔥 FIX UNDEFINED PING 🔥
+                const safePing = sys.latency || 0;
+                document.getElementById('ping').innerText = safePing + 'ms';
+                document.getElementById('bar-ping-val').innerText = safePing + 'ms';
+                let pingPercent = Math.min(100, (safePing / 500) * 100);
+                document.getElementById('bar-ping').style.width = pingPercent + '%';
+
                 updateCircle('cpu-circle', sys.cpu); document.getElementById('cpu-text').innerText = sys.cpu + '%';
                 updateCircle('ram-circle', sys.ram_percent); document.getElementById('ram-text').innerText = sys.ram_percent + '%';
                 updateCircle('disk-circle', sys.disk_percent); document.getElementById('disk-text').innerText = sys.disk_percent + '%';
                 
-                // DATABASE SUMMARY (TAMBAHAN MAS RAFKA)
                 document.getElementById('db-users').innerText = db.users ? db.users.length : 0;
                 document.getElementById('db-groups').innerText = db.chats ? db.chats.length : 0;
                 document.getElementById('db-premium').innerText = db.users ? db.users.filter(u => u.premium).length : 0;
                 document.getElementById('db-uptime').innerText = formatUptime(sys.uptime);
 
-                // NETWORK & MINI INFO
-                document.getElementById('sys-rx').innerText = sys.net_rx; document.getElementById('sys-tx').innerText = sys.net_tx;
-                document.getElementById('sys-host').innerText = sys.hostname; document.getElementById('sys-plat').innerText = sys.platform;
-                document.getElementById('sys-os').innerText = sys.os_release; document.getElementById('sys-node').innerText = sys.nodejs;
-                document.getElementById('sys-ram-used').innerText = formatBytes(sys.used_ram); document.getElementById('sys-ram-tot').innerText = formatBytes(sys.total_ram);
+                document.getElementById('sys-rx').innerText = sys.net_rx || '0.00 MB'; 
+                document.getElementById('sys-tx').innerText = sys.net_tx || '0.00 MB';
+                document.getElementById('sys-host').innerText = sys.hostname; 
+                document.getElementById('sys-plat').innerText = sys.platform;
+                document.getElementById('sys-os').innerText = sys.os_release; 
+                document.getElementById('sys-node').innerText = sys.nodejs;
+                
+                document.getElementById('sys-ram-used').innerText = formatBytes(sys.used_ram);
+                document.getElementById('sys-ram-tot').innerText = formatBytes(sys.total_ram);
 
-                // PERFORMANCE BARS
                 document.getElementById('bar-cpu').style.width = sys.cpu + '%'; document.getElementById('bar-cpu-val').innerText = sys.cpu + '%';
                 document.getElementById('bar-ram').style.width = sys.ram_percent + '%'; document.getElementById('bar-ram-val').innerText = sys.ram_percent + '%';
                 document.getElementById('bar-disk').style.width = sys.disk_percent + '%'; document.getElementById('bar-disk-val').innerText = sys.disk_percent + '%';
-                let pingPercent = Math.min(100, (sys.latency / 500) * 100);
-                document.getElementById('bar-ping').style.width = pingPercent + '%'; document.getElementById('bar-ping-val').innerText = sys.latency + 'ms';
 
-                // DETAILS
                 document.getElementById('det-ram-tot').innerText = formatBytes(sys.total_ram);
                 document.getElementById('det-ram-used').innerText = formatBytes(sys.used_ram);
                 document.getElementById('det-ram-free').innerText = formatBytes(sys.total_ram - sys.used_ram);
                 document.getElementById('det-users').innerText = db.users ? db.users.length : 0;
                 document.getElementById('det-groups').innerText = db.chats ? db.chats.length : 0;
-
-                document.getElementById('sync-status').innerText = "LIVE SYNC 🟢"; 
-                document.getElementById('sync-status').style.color = "var(--success)";
             }
         } catch (e) {}
     }
@@ -290,4 +278,3 @@
 </script>
 </body>
 </html>
-
